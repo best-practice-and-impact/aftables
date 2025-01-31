@@ -13,20 +13,25 @@ Generate spreadsheet publications that follow best practice guidance from the UK
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://co-analysis.github.io/a11ytables/}
-  \item \url{https://github.com/co-analysis/a11ytables}
-  \item Report bugs at \url{https://github.com/co-analysis/a11ytables/issues}
+  \item \url{https://best-practice-and-impact.github.io/a11ytables/}
+  \item \url{https://github.com/best-practice-and-impact/a11ytables}
+  \item Report bugs at \url{https://github.com/best-practice-and-impact/a11ytables/issues}
 }
 
 }
 \author{
-\strong{Maintainer}: Matt Dray \email{mwdray@gmail.com}
+\strong{Maintainer}: Olivia Box Power \email{Olivia.BoxPower@dhsc.gov.uk} [contributor]
+
+Authors:
+\itemize{
+  \item Matt Dray \email{mwdray@gmail.com}
+}
 
 Other contributors:
 \itemize{
   \item Tim Taylor [contributor]
   \item Matt Kerlogue [contributor]
-  \item Crown Copyright [copyright holder, funder]
+  \item Crown Copyright [copyright holder]
 }
 
 }
