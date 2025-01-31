@@ -113,7 +113,7 @@ cover_list <- list(
   "Section 1" = c("First row of Section 1.", "Second row of Section 1."),
   "Section 2" = "The only row of Section 2.",
   "Section 3" = c(
-    "[Website](https://co-analysis.github.io/a11ytables/)",
+    "[Website](https://best-practice-and-impact.github.io/a11ytables/)",
     "[Email address](mailto:fake.address@a11ytables.com)"
   )
 )
@@ -170,14 +170,14 @@ x <-
       NA_character_,
       "A custom row.",
       c(
-        "First custom row [with a hyperlink.](https://co-analysis.github.io/a11ytables/)",
+        "First custom row [with a hyperlink.](https://best-practice-and-impact.github.io/a11ytables/)",
         "Second custom row."
       ),
       "A custom row."
     ),
     sources = c(
       rep(NA_character_, 3),
-      "[The Source Material, 2024.](https://co-analysis.github.io/a11ytables/)",
+      "[The Source Material, 2024.](https://best-practice-and-impact.github.io/a11ytables/)",
       "The Source Material, 2024."
     ),
     tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)

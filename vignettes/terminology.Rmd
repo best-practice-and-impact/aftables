@@ -59,4 +59,4 @@ The labels in the image above highlight:
 
 # Contribute
 
-To contribute, please add [an issue](https://github.com/co-analysis/a11ytables/issues) or [a pull request](https://github.com/co-analysis/a11ytables/pulls) after reading [the code of conduct](https://github.com/co-analysis/a11ytables/blob/main/CODE_OF_CONDUCT.md) and [contributing](https://github.com/co-analysis/a11ytables/blob/main/.github/CONTRIBUTING.md) guidance. 
+To contribute, please add [an issue](https://github.com/best-practice-and-impact/a11ytables/issues) or [a pull request](https://github.com/best-practice-and-impact/a11ytables/pulls) after reading [the code of conduct](https://github.com/best-practice-and-impact/a11ytables/blob/main/CODE_OF_CONDUCT.md) and [contributing](https://github.com/best-practice-and-impact/a11ytables/blob/main/.github/CONTRIBUTING.md) guidance. 

@@ -1,4 +1,4 @@
-url: https://co-analysis.github.io/a11ytables/
+url: https://best-practice-and-impact.github.io/a11ytables/
 
 template:
   bootstrap: 5
@@ -16,7 +16,7 @@ footer:
     left: legal
     right: built_with
   components:
-    legal: © Crown Copyright, 2023, Cabinet Office
+    legal: © Crown Copyright, 2023
 
 reference:
   - title: "a11ytables"

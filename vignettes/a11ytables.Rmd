@@ -20,11 +20,11 @@ This vignette demonstrates how to use {a11ytables} to generate a spreadsheet out
 
 ## Installation
 
-Install the package [from GitHub](https://github.com/co-analysis/a11ytables) using [{remotes}](https://remotes.r-lib.org/).
+Install the package [from GitHub](https://github.com/best-practice-and-impact/a11ytables) using [{remotes}](https://remotes.r-lib.org/).
 
 ```{r install, eval=FALSE}
 install.packages("remotes")  # if not already installed
-remotes::install_github("co-analysis/a11ytables")
+remotes::install_github("best-practice-and-impact/a11ytables")
 ```
 
 The package depends on [{openxlsx}](https://ycphs.github.io/openxlsx/) and [{pillar}](https://pillar.r-lib.org/), which are also installed with {a11ytables}.
@@ -53,7 +53,7 @@ Each argument to `create_a11ytable()` provides the information needed to constru
 | `sources` | No | Character vector | | A sentence provides the source of the data found in each table (if applicable, likely only needed for sheets with `sheet_types` of 'table') |
 | `tables` | Yes | List of dataframes (although the cover sheet content can be provided as a list object) | | The main content for each sheet, expressed as flat ([probably tidy](https://www.jstatsoft.org/article/view/v059i10)) dataframes of rows and columns (though the cover can be a list) |
 
-You can read more about these arguments and their requirements in the function's help pages, which you can access by running `?create_a11ytable` in the R console. See also the [terminology vignette](https://co-analysis.github.io/a11ytables/articles/terminology), `vignette("terminology", "a11ytables")`, for these terms and more.
+You can read more about these arguments and their requirements in the function's help pages, which you can access by running `?create_a11ytable` in the R console. See also the [terminology vignette](https://best-practice-and-impact.github.io/a11ytables/articles/terminology), `vignette("terminology", "a11ytables")`, for these terms and more.
 
 #### Pre-prepare tables
 
@@ -72,7 +72,7 @@ cover_list <- list(
   "Section 1" = c("First row of Section 1.", "Second row of Section 1."),
   "Section 2" = "The only row of Section 2.",
   "Section 3" = c(
-    "[Website](https://co-analysis.github.io/a11ytables/)",
+    "[Website](https://best-practice-and-impact.github.io/a11ytables/)",
     "[Email address](mailto:fake.address@a11ytables.com)"
   )
 )
@@ -176,14 +176,14 @@ my_a11ytable <-
       NA_character_,
       "A custom row.",
       c(
-        "First custom row [with a hyperlink.](https://co-analysis.github.io/a11ytables/)",
+        "First custom row [with a hyperlink.](https://best-practice-and-impact.github.io/a11ytables/)",
         "Second custom row."
       ),
       "A custom row."
     ),
     sources = c(
       rep(NA_character_, 3),
-      "[The Source Material., 2024](https://co-analysis.github.io/a11ytables/)",
+      "[The Source Material., 2024](https://best-practice-and-impact.github.io/a11ytables/)",
       "The Source Material, 2024."
     ),
     tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)
@@ -257,8 +257,8 @@ At time of writing (v0.3.0) you might want to address manually some other [acces
 3. Convert to an ODS file rather than the proprietary xlsx format
 4. Various number-formatting issues, like padding decimal places with zeroes
 
-We're trying to address a number of these limitations. Please [see the issues on GitHub](https://github.com/co-analysis/a11ytables/issues) for the current status.
+We're trying to address a number of these limitations. Please [see the issues on GitHub](https://github.com/best-practice-and-impact/a11ytables/issues) for the current status.
 
 ## Contribute
 
-To contribute, please add [an issue](https://github.com/co-analysis/a11ytables/issues) or [a pull request](https://github.com/co-analysis/a11ytables/pulls) after reading [the code of conduct](https://github.com/co-analysis/a11ytables/blob/main/CODE_OF_CONDUCT.md) and [contributing](https://github.com/co-analysis/a11ytables/blob/main/.github/CONTRIBUTING.md) guidance. 
+To contribute, please add [an issue](https://github.com/best-practice-and-impact/a11ytables/issues) or [a pull request](https://github.com/best-practice-and-impact/a11ytables/pulls) after reading [the code of conduct](https://github.com/best-practice-and-impact/a11ytables/blob/main/CODE_OF_CONDUCT.md) and [contributing](https://github.com/best-practice-and-impact/a11ytables/blob/main/.github/CONTRIBUTING.md) guidance. 

@@ -29,7 +29,7 @@ This simplicity is a feature, not a bug. It's designed to greatly simplify the p
 
 This vignette provides a quick look at what's happening 'under the hood' in these functions.
 
-Please add [an issue](https://github.com/co-analysis/a11ytables/issues) to the package's GitHub repository if you would like any of this explanation to be expanded, or provide a solution in [a pull request](https://github.com/co-analysis/a11ytables/pulls).
+Please add [an issue](https://github.com/best-practice-and-impact/a11ytables/issues) to the package's GitHub repository if you would like any of this explanation to be expanded, or provide a solution in [a pull request](https://github.com/best-practice-and-impact/a11ytables/pulls).
 
 # Files
 
@@ -171,4 +171,4 @@ There are a few `.style_*()` functions that create styles and apply them on the 
 
 # Contribute
 
-To contribute, please add [an issue](https://github.com/co-analysis/a11ytables/issues) or [a pull request](https://github.com/co-analysis/a11ytables/pulls) after reading [the code of conduct](https://github.com/co-analysis/a11ytables/blob/main/CODE_OF_CONDUCT.md) and [contributing](https://github.com/co-analysis/a11ytables/blob/main/.github/CONTRIBUTING.md) guidance. 
+To contribute, please add [an issue](https://github.com/best-practice-and-impact/a11ytables/issues) or [a pull request](https://github.com/best-practice-and-impact/a11ytables/pulls) after reading [the code of conduct](https://github.com/best-practice-and-impact/a11ytables/blob/main/CODE_OF_CONDUCT.md) and [contributing](https://github.com/best-practice-and-impact/a11ytables/blob/main/.github/CONTRIBUTING.md) guidance. 
