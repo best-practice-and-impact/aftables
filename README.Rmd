@@ -19,9 +19,8 @@ knitr::opts_chunk$set(
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/a11ytables)](https://CRAN.R-project.org/package=a11ytables)
-[![R-CMD-check](https://github.com/best-practice-and-impact/a11ytables/workflows/R-CMD-check/badge.svg)](https://github.com/best-practice-and-impact/a11ytables/actions)
-[![Codecov test
-coverage](https://codecov.io/gh/best-practice-and-impact/a11ytables/branch/main/graph/badge.svg)](https://codecov.io/gh/best-practice-and-impact/a11ytables?branch=main)
+[![R-CMD-check](https://github.com/best-practice-and-impact/a11ytables/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/best-practice-and-impact/a11ytables/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/best-practice-and-impact/a11ytables/graph/badge.svg)](https://app.codecov.io/gh/best-practice-and-impact/a11ytables)
 <!-- badges: end -->
 
 ## Purpose
