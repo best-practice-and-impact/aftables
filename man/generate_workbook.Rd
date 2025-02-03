@@ -2,13 +2,13 @@
 % Please edit documentation in R/workbook.R
 \name{generate_workbook}
 \alias{generate_workbook}
-\title{Generate A Workbook Object From An 'a11ytable'}
+\title{Generate A Workbook Object From An 'aftable'}
 \usage{
-generate_workbook(a11ytable)
+generate_workbook(aftable)
 }
 \arguments{
-\item{a11ytable}{An a11ytable-class object created using
-\code{\link{create_a11ytable}} (or \code{\link{as_a11ytable}}), which
+\item{aftable}{An aftable-class object created using
+\code{\link{create_aftable}} (or \code{\link{as_aftable}}), which
 contains the data and information needed to create a workbook.}
 }
 \value{
@@ -16,17 +16,17 @@ A Workbook-class object.
 }
 \description{
 Populate an 'openxlsx' Workbook-class object with content from an
-a11ytable-class object. In turn, the output can be passed to
+aftable-class object. In turn, the output can be passed to
 \code{\link[openxlsx]{saveWorkbook}} from 'openxlsx'
 }
 \examples{
-# Convert an a11ytable to a Workbook-class object
-x <- generate_workbook(demo_a11ytable)
+# Convert an aftable to a Workbook-class object
+x <- generate_workbook(demo_aftable)
 class(x)
 
 # As above, using a compliant data.frame and the base pipe
 y <- demo_df |>
-  as_a11ytable() |>
+  as_aftable() |>
   generate_workbook()
 
 }

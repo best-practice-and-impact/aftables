@@ -1,11 +1,11 @@
 
-test_that("a11ytable can be created by hand (with list for cover)", {
+test_that("aftable can be created by hand (with list for cover)", {
 
   # Uses demo_df, which has a list containing cover information in the
   # 'table' column.
 
   x <- suppressWarnings(
-    create_a11ytable(
+    create_aftable(
       tab_titles   = demo_df$tab_title,
       sheet_types  = demo_df$sheet_type,
       sheet_titles = demo_df$sheet_title,
@@ -13,12 +13,12 @@ test_that("a11ytable can be created by hand (with list for cover)", {
     )
   )
 
-  expect_s3_class(x, class = "a11ytable")
-  expect_identical(class(x), c("a11ytable", "tbl", "data.frame"))
+  expect_s3_class(x, class = "aftable")
+  expect_identical(class(x), c("aftable", "tbl", "data.frame"))
 
   expect_error(
     suppressWarnings(
-      create_a11ytable(
+      create_aftable(
         tab_titles   = demo_df$tab_title,
         sheet_types  = "x",
         sheet_titles = demo_df$sheet_title,
@@ -29,10 +29,10 @@ test_that("a11ytable can be created by hand (with list for cover)", {
 
 })
 
-test_that("a11ytable can be created by hand (with df for cover)", {
+test_that("aftable can be created by hand (with df for cover)", {
 
   x <- suppressWarnings(
-    create_a11ytable(
+    create_aftable(
       tab_titles   = demo_df$tab_title,
       sheet_types  = demo_df$sheet_type,
       sheet_titles = demo_df$sheet_title,
@@ -43,12 +43,12 @@ test_that("a11ytable can be created by hand (with df for cover)", {
     )
   )
 
-  expect_s3_class(x, class = "a11ytable")
-  expect_identical(class(x), c("a11ytable", "tbl", "data.frame"))
+  expect_s3_class(x, class = "aftable")
+  expect_identical(class(x), c("aftable", "tbl", "data.frame"))
 
   expect_error(
     suppressWarnings(
-      create_a11ytable(
+      create_aftable(
         tab_titles   = demo_df$tab_title,
         sheet_types  = "x",
         sheet_titles = demo_df$sheet_title,
@@ -62,7 +62,7 @@ test_that("a11ytable can be created by hand (with df for cover)", {
 test_that("strings are not converted to factors", {
 
   x <- suppressWarnings(
-    create_a11ytable(
+    create_aftable(
       tab_titles   = demo_df$tab_title,
       sheet_types  = demo_df$sheet_type,
       sheet_titles = demo_df$sheet_title,
@@ -79,70 +79,70 @@ test_that("strings are not converted to factors", {
 
 test_that("suitable objects can be coerced", {
 
-  x <- suppressWarnings(as_a11ytable(demo_df))
+  x <- suppressWarnings(as_aftable(demo_df))
 
-  expect_s3_class(x, class = "a11ytable")
-  expect_identical(class(x), c("a11ytable", "tbl", "data.frame"))
+  expect_s3_class(x, class = "aftable")
+  expect_identical(class(x), c("aftable", "tbl", "data.frame"))
 
-  expect_identical(is_a11ytable(x), TRUE)
-  expect_identical(is_a11ytable("x"), FALSE)
+  expect_identical(is_aftable(x), TRUE)
+  expect_identical(is_aftable("x"), FALSE)
 
-  expect_true(is_a11ytable(x))
-  expect_false(is_a11ytable(mtcars))
+  expect_true(is_aftable(x))
+  expect_false(is_aftable(mtcars))
 
 })
 
 test_that("class validation works", {
 
-  expect_length(suppressWarnings(as_a11ytable(demo_df)), 7)
+  expect_length(suppressWarnings(as_aftable(demo_df)), 7)
 
-  expect_error(as_a11ytable(1))
-  expect_error(as_a11ytable("x"))
-  expect_error(as_a11ytable(list()))
-  expect_error(as_a11ytable(data.frame()))
+  expect_error(as_aftable(1))
+  expect_error(as_aftable("x"))
+  expect_error(as_aftable(list()))
+  expect_error(as_aftable(data.frame()))
 
   x <- demo_df
   names(x)[1] <- "foo"
-  expect_error(as_a11ytable(x))
+  expect_error(as_aftable(x))
 
   x <- demo_df
   x[["table"]] <- as.character(x[["table"]])
-  expect_error(as_a11ytable(x))
+  expect_error(as_aftable(x))
 
   x <- demo_df[, 1:4]
-  expect_error(as_a11ytable(x))
+  expect_error(as_aftable(x))
 
   x <- demo_df[1, ]
-  expect_error(as_a11ytable(x))
+  expect_error(as_aftable(x))
 
   x <- demo_df
   x[x$sheet_type %in% c("cover", "contents"), "sheet_type"] <- "foo"
-  expect_error(as_a11ytable(x))
+  expect_error(as_aftable(x))
 
   x <- demo_df
   x[x$tab_title == "Table_2", "sheet_type"] <- "foo"
-  expect_error(as_a11ytable(x))
+  expect_error(as_aftable(x))
 
   x <- demo_df
   x$sheet_type <- NA_character_
-  expect_error(as_a11ytable(x))
+  expect_error(as_aftable(x))
 
   x <- demo_df
   x$custom_rows <- NA_character_
-  expect_error(as_a11ytable(x))
+  expect_error(as_aftable(x))
 
   x <- demo_df
   x$custom_rows <- rep(list(1), nrow(x))
-  expect_error(as_a11ytable(x))
+  expect_error(as_aftable(x))
 
   x <- demo_df
   x[x$tab_title == "Table_2", "tab_title"] <-
     "Lorem_ipsum_dolor_sit_amet__consectetur_adipiscing"
-  expect_warning(as_a11ytable(x))
+  expect_warning(as_aftable(x))
 
   x <- demo_df
   x[x$tab_title == "Table_2", "tab_title"] <- "!?"
-  expect_warning(as_a11ytable(x))
+  expect_warning(as_aftable(x))
 
   x <- demo_df
   x[x$sheet_type == "notes", "table"][[1]] <-
@@ -153,23 +153,23 @@ test_that("class validation works", {
         check.names = FALSE
       )
     )
-  expect_warning(as_a11ytable(x))
+  expect_warning(as_aftable(x))
 
 })
 
 test_that("summary method works", {
 
-  x <- suppressWarnings(as_a11ytable(demo_df))
+  x <- suppressWarnings(as_aftable(demo_df))
   expect_output(summary(x))
 
 })
 
-test_that("absence of note sheets doesn't prevent a11ytable formation", {
+test_that("absence of note sheets doesn't prevent aftable formation", {
 
   df <- demo_df[demo_df$sheet_type != "notes", ]
-  suppressWarnings(x <- as_a11ytable(df))
+  suppressWarnings(x <- as_aftable(df))
 
-  expect_s3_class(x, "a11ytable")
+  expect_s3_class(x, "aftable")
   expect_s4_class(generate_workbook(x), "Workbook")
 
 })
@@ -181,7 +181,7 @@ test_that("tab_titles with starting numeral will error", {
   expect_error(
     with(
       demo_df,
-      create_a11ytable(
+      create_aftable(
         tab_titles   = tab_title,
         sheet_types  = sheet_type,
         sheet_titles = sheet_title,
@@ -196,7 +196,7 @@ test_that("tab_titles with starting numeral will error", {
 test_that("non-conforming tab_titles are cleaned", {
 
   expect_warning(
-    create_a11ytable(
+    create_aftable(
       tab_titles   = c("cover", "contents", "Table 2"),
       sheet_types  = c("cover", "contents", "tables"),
       sheet_titles = c("Cover", "Contents", "Table"),
@@ -219,7 +219,7 @@ test_that("tab_titles are unique", {
   expect_error(
     with(
       demo_df,
-      create_a11ytable(
+      create_aftable(
         tab_titles   = tab_title,
         sheet_types  = sheet_type,
         sheet_titles = sheet_title,
@@ -232,7 +232,7 @@ test_that("tab_titles are unique", {
 
 test_that("tbl output looks as intended", {
 
-  x <- create_a11ytable(
+  x <- create_aftable(
     tab_titles = LETTERS[1:3],
     sheet_type = c("cover", "contents", "tables"),
     sheet_titles = LETTERS[1:3],
@@ -244,25 +244,25 @@ test_that("tbl output looks as intended", {
     )
   )
 
-  expect_snapshot_output(as_a11ytable(x))
+  expect_snapshot_output(as_aftable(x))
 
 })
 
 test_that("input other than data.frame is intercepted during validation", {
 
-  expect_error(.validate_a11ytable("x"))
+  expect_error(.validate_aftable("x"))
 
   x <- demo_df
   x[, "table"] <- "x"
   expect_error(
-    as_a11ytable(x),
+    as_aftable(x),
     "Column 'table' must be a listcol of data.frame objects."
   )
 
   y <- subset(demo_df, select = -table)
   y[, "table"] <- list(rep(list("x"), nrow(y)))
   expect_error(
-    as_a11ytable(y),
+    as_aftable(y),
     "List-column 'table' must contain data.frame objects only."
   )
 
@@ -277,9 +277,9 @@ test_that("only one cover, contents, notes can be used", {
   notes_dupe <-
     rbind(demo_df, demo_df[demo_df$sheet_type == "notes", ])
 
-  expect_error(as_a11ytable(cover_dupe))
-  expect_error(as_a11ytable(contents_dupe))
-  expect_error(as_a11ytable(notes_dupe))
+  expect_error(as_aftable(cover_dupe))
+  expect_error(as_aftable(contents_dupe))
+  expect_error(as_aftable(notes_dupe))
 
 })
 
@@ -294,10 +294,10 @@ test_that("NAs in certain columns cause failure", {
   table_na <- demo_df
   table_na$table <- NA_character_
 
-  expect_error(as_a11ytable(tab_na))
-  expect_error(as_a11ytable(type_na))
-  expect_error(as_a11ytable(title_na))
-  expect_error(as_a11ytable(table_na))
+  expect_error(as_aftable(tab_na))
+  expect_error(as_aftable(type_na))
+  expect_error(as_aftable(title_na))
+  expect_error(as_aftable(table_na))
 
 })
 
@@ -307,7 +307,7 @@ test_that("Note mismatch is caught", {
   x[x$sheet_type == "contents", "table"][[1]] <-
     list(data.frame(x = c("x", "y"), y = c("x", "y")))
 
-  expect_warning(as_a11ytable(x), "You have a 'notes' sheet")
+  expect_warning(as_aftable(x), "You have a 'notes' sheet")
 
   z <- demo_df[!demo_df$tab_title == "Table_2", ]
   z[z$sheet_type == "contents", "table"][[1]] <-
@@ -320,7 +320,7 @@ test_that("Note mismatch is caught", {
     )
   )
 
-  expect_warning(as_a11ytable(z), "Some notes are in the notes sheet")
+  expect_warning(as_aftable(z), "Some notes are in the notes sheet")
 
 })
 
@@ -329,7 +329,7 @@ test_that("warning is raised if a source statement is missing", {
 
   demo_df[demo_df$tab_title == "Table_1", "source"] <- NA_character_
   expect_warning(
-    as_a11ytable(demo_df),
+    as_aftable(demo_df),
     "One of your tables is missing a source statement."
   )
 
@@ -339,7 +339,7 @@ test_that("warning is raised if there's no blank cells but there is a reason", {
 
   demo_df[demo_df$tab_title == "Table_2", "blank_cells"] <- "x"
   expect_warning(
-    as_a11ytable(demo_df),
+    as_aftable(demo_df),
     "There's no blank cells in these tables"
   )
 
@@ -389,23 +389,23 @@ test_that("tab titles are cleaned and warnings provided", {
 
   x <- demo_df
   x[1, "tab_title"] <- long_title
-  expect_warning(as_a11ytable(x))
+  expect_warning(as_aftable(x))
 
   x <- demo_df
   x[1, "tab_title"] <- "Cover!"
-  expect_warning(as_a11ytable(x))
+  expect_warning(as_aftable(x))
 
   x <- demo_df
   x["tab_title"][5, ] <- long_title
   expect_warning(
-    .warn_a11ytable(x),
+    .warn_aftable(x),
     "Each tab_title must be shorter than 31 characters."
   )
 
   x <- demo_df
   x["tab_title"][5, ] <- "Table-1!"
   expect_warning(
-    .warn_a11ytable(x),
+    .warn_aftable(x),
     "Each tab_title must contain only letters, numbers or underscores."
   )
 
@@ -414,13 +414,13 @@ test_that("tab titles are cleaned and warnings provided", {
 test_that("input column names are okay", {
 
   names(demo_df)[1] <- "x"
-  expect_error(as_a11ytable(demo_df))
+  expect_error(as_aftable(demo_df))
 
 })
 
 test_that("character class columns are caught if not character class", {
 
   demo_df[, "sheet_type"] <- seq_len(nrow(demo_df))
-  expect_error(as_a11ytable(demo_df))
+  expect_error(as_aftable(demo_df))
 
 })

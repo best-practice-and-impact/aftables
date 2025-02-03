@@ -60,11 +60,11 @@
 
 }
 
-#' Validate an 'a11ytable' Object
-#' @param text x. An object with class 'a11ytable', likely created with
-#'     \code{\link{create_a11ytable}}.
+#' Validate an 'aftable' Object
+#' @param text x. An object with class 'aftable', likely created with
+#'     \code{\link{create_aftable}}.
 #' @noRd
-.validate_a11ytable <- function(x) {
+.validate_aftable <- function(x) {
 
   names_req <- c(
     "tab_title",
@@ -194,11 +194,11 @@
 
 }
 
-#' Warn if an 'a11ytable' Has a Non-critical Problem
-#' @param text x. An object with class 'a11ytable', likely created with
-#'     \code{\link{create_a11ytable}}.
+#' Warn if an 'aftable' Has a Non-critical Problem
+#' @param text x. An object with class 'aftable', likely created with
+#'     \code{\link{create_aftable}}.
 #' @noRd
-.warn_a11ytable <- function(content) {
+.warn_aftable <- function(content) {
 
   # Warn about tab_title limitations
 

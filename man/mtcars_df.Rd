@@ -26,8 +26,8 @@ Superseded. mtcars_df and \code{\link{mtcars_df2}} have been superseded in
 favour of \code{\link{demo_df}}.
 
 A modified version of the mtcars dataset prepared into a data.frame structure
-ready for coercion to an a11ytables-class object with
-\code{\link{as_a11ytable}}. Uses a dataframe as input to the cover table;
+ready for coercion to an aftables-class object with
+\code{\link{as_aftable}}. Uses a dataframe as input to the cover table;
 \code{\link{mtcars_df}} uses a list as input to the cover table.
 }
 \details{

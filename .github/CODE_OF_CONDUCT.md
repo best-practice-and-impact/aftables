@@ -1,4 +1,4 @@
-# Code of Conduct for `a11ytables`
+# Code of Conduct for `aftables`
 
 ## Civil Service Code
 

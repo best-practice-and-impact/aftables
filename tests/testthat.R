@@ -1,4 +1,4 @@
 library(testthat)
-library(a11ytables)
+library(aftables)
 
-test_check("a11ytables")
+test_check("aftables")

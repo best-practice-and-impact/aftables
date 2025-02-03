@@ -1,7 +1,7 @@
 # This file generates and writes demo datasets
 
 
-# demo_df and demo_a11ytable (as of v0.3) ---------------------------------
+# demo_df and demo_aftable (as of v0.3) ---------------------------------
 
 
 set.seed(1066)
@@ -10,8 +10,8 @@ cover_list <- list(
   "Section 1" = c("First row of Section 1.", "Second row of Section 1."),
   "Section 2" = "The only row of Section 2.",
   "Section 3" = c(
-    "[Website](https://best-practice-and-impact.github.io/a11ytables/)",
-    "[Email address](mailto:fake.address@a11ytables.com)"
+    "[Website](https://best-practice-and-impact.github.io/aftables/)",
+    "[Email address](mailto:fake.address@aftables.com)"
   )
 )
 
@@ -44,12 +44,11 @@ table_1_df <- data.frame(
 
 table_2_df <- data.frame(Category = LETTERS[1:10], Numeric = 1:10)
 
-demo_a11ytable <-
-  a11ytables::create_a11ytable(
+demo_aftable <- create_aftable(
     tab_titles = c("Cover", "Contents", "Notes", "Table_1", "Table_2"),
     sheet_types = c("cover", "contents", "notes", "tables", "tables"),
     sheet_titles = c(
-      "The 'a11ytables' Demo Workbook",
+      "The 'aftables' Demo Workbook",
       "Table of contents",
       "Notes",
       "Table_1: First Example Sheet",
@@ -65,26 +64,26 @@ demo_a11ytable <-
       NA_character_,
       "A custom row.",
       c(
-        "First custom row [with a hyperlink.](https://best-practice-and-impact.github.io/a11ytables/)",
+        "First custom row [with a hyperlink.](https://best-practice-and-impact.github.io/aftables/)",
         "Second custom row."
       ),
       "A custom row."
     ),
     sources = c(
       rep(NA_character_, 3),
-      "[The Source Material, 2024.](https://best-practice-and-impact.github.io/a11ytables/)",
+      "[The Source Material, 2024.](https://best-practice-and-impact.github.io/aftables/)",
       "The Source Material, 2024."
     ),
     tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)
   )
 
-demo_df <- as.data.frame(demo_a11ytable)
+demo_df <- as.data.frame(demo_aftable)
 
-demo_workbook <- generate_workbook(demo_a11ytable)
+demo_workbook <- generate_workbook(demo_aftable)
 
 # Write to data/
 usethis::use_data(demo_df, overwrite = TRUE)
-usethis::use_data(demo_a11ytable, overwrite = TRUE)
+usethis::use_data(demo_aftable, overwrite = TRUE)
 usethis::use_data(demo_workbook, overwrite = TRUE)
 
 
@@ -110,7 +109,7 @@ cover_list <-
     ),
     "Properties" =  "Suppressed values are replaced with the value '[c]'.",
     "Contact" = c(
-      "[Visit the website.](https://github.com/best-practice-and-impact/a11ytables)",
+      "[Visit the website.](https://github.com/best-practice-and-impact/aftables)",
       "[Email the team.](mailto:not-a-real-email-address@completely-fake.net)",
       "Telephone 0123456789"
     )

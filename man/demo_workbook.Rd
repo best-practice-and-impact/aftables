@@ -12,6 +12,6 @@ demo_workbook
 }
 \description{
 A pre-created 'openxlsx' Workbook'-class object generated from an
-a11ytables-class object with \code{\link{generate_workbook}}.
+aftables-class object with \code{\link{generate_workbook}}.
 }
 \keyword{datasets}

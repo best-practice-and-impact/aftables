@@ -1,17 +1,17 @@
-#' Insert Demo 'create_a11ytable' Template
+#' Insert Demo 'create_aftable' Template
 #'
-#' Insert at the cursor a template for \code{\link{create_a11ytable}} from the
-#' 'a11ytable' package, pre-filled with demo data.
+#' Insert at the cursor a template for \code{\link{create_aftable}} from the
+#' 'aftable' package, pre-filled with demo data.
 #'
 #' @export
-at_template_a11ytable <- function() {
-  rstudioapi::insertText(string_create_a11ytable())
+at_template_aftable <- function() {
+  rstudioapi::insertText(string_create_aftable())
 }
 
-#' Insert Full Demo 'a11ytables' Template Workflow
+#' Insert Full Demo 'aftables' Template Workflow
 #'
 #' Insert at the cursor (a) demo templates for cover, contents and notes
-#' tables, and (b) a call to \code{\link{create_a11ytable}} pre-filled with
+#' tables, and (b) a call to \code{\link{create_aftable}} pre-filled with
 #' demo data.
 #'
 #' @export
@@ -23,13 +23,13 @@ at_template_workflow <- function() {
       "\n\n",
       string_tables(),
       "\n\n",
-      "# Create new a11ytable",
+      "# Create new aftable",
       "\n\n",
-      string_create_a11ytable(),
+      string_create_aftable(),
       "\n\n",
-      "# Generate workbook from a11ytable",
+      "# Generate workbook from aftable",
       "\n\n",
-      "my_wb <- a11ytables::generate_workbook(my_a11ytable)",
+      "my_wb <- aftables::generate_workbook(my_aftable)",
       "\n\n",
       "# Create output",
       "\n\n",
@@ -41,7 +41,7 @@ at_template_workflow <- function() {
 
 }
 
-#' A String Containing Code to Prepare Tables for an 'a11ytables' Object
+#' A String Containing Code to Prepare Tables for an 'aftables' Object
 #' @noRd
 string_tables <- function() {
 
@@ -49,8 +49,8 @@ string_tables <- function() {
   "Section 1" = c("First row of Section 1.", "Second row of Section 1."),
   "Section 2" = "The only row of Section 2.",
   "Section 3" = c(
-    "[Website](https://best-practice-and-impact.github.io/a11ytables/)",
-    "[Email address](mailto:fake.address@a11ytables.com)"
+    "[Website](https://best-practice-and-impact.github.io/aftables/)",
+    "[Email address](mailto:fake.address@aftables.com)"
   )
 )
 
@@ -85,16 +85,16 @@ table_2_df <- data.frame(Category = LETTERS[1:10], Numeric = 1:10)'
 
 }
 
-#' A String Containing Code to Generate an 'a11ytables' Object
+#' A String Containing Code to Generate an 'aftables' Object
 #' @noRd
-string_create_a11ytable <- function() {
+string_create_aftable <- function() {
 
-  'my_a11ytable <-
-  a11ytables::create_a11ytable(
+  'my_aftable <-
+  aftables::create_aftable(
     tab_titles = c("Cover", "Contents", "Notes", "Table_1", "Table_2"),
     sheet_types = c("cover", "contents", "notes", "tables", "tables"),
     sheet_titles = c(
-      "The \'a11ytables\' Demo Workbook",
+      "The \'aftables\' Demo Workbook",
       "Table of contents",
       "Notes",
       "Table 1: First Example Sheet",
@@ -111,13 +111,13 @@ string_create_a11ytable <- function() {
       NA_character_,
       c(
         "First custom row for Table 1.",
-        "A second custom row [with a hyperlink.](https://best-practice-and-impact.github.io/a11ytables/)"
+        "A second custom row [with a hyperlink.](https://best-practice-and-impact.github.io/aftables/)"
       ),
       "A custom row for Table 2"
     ),
     sources = c(
       rep(NA_character_, 3),
-      "[The Source Material, 2024](https://best-practice-and-impact.github.io/a11ytables/)",
+      "[The Source Material, 2024](https://best-practice-and-impact.github.io/aftables/)",
       "The Source Material, 2024"
     ),
     tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)

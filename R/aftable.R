@@ -1,7 +1,7 @@
 
-#' Create An 'a11ytable' Object
+#' Create An 'aftable' Object
 #'
-#' Create a new a11ytable-class object, which is a special data.frame that
+#' Create a new aftable-class object, which is a special data.frame that
 #' contains all the information needed in your output spreadsheet. In turn, the
 #' object created by this function can be used to populate an 'openxlsx'
 #' Workbook-class object with the function \code{\link{generate_workbook}}.
@@ -79,7 +79,7 @@
 #'     \item To the 'source' argument for sheets of type 'table' only.
 #' }
 #'
-#' @return An object with classes 'a11ytable', 'tbl' and 'data.frame'.
+#' @return An object with classes 'aftable', 'tbl' and 'data.frame'.
 #'
 #' @examples
 #' # Prepare some demo tables of information
@@ -90,8 +90,8 @@
 #'   "Section 1" = c("First row of Section 1.", "Second row of Section 1."),
 #'   "Section 2" = "The only row of Section 2.",
 #'   "Section 3" = c(
-#'     "[Website](https://best-practice-and-impact.github.io/a11ytables/)",
-#'     "[Email address](mailto:fake.address@a11ytables.com)"
+#'     "[Website](https://best-practice-and-impact.github.io/aftables/)",
+#'     "[Email address](mailto:fake.address@aftables.com)"
 #'   )
 #' )
 #'
@@ -124,14 +124,14 @@
 #'
 #' table_2_df <- data.frame(Category = LETTERS[1:10], Numeric = 1:10)
 #'
-#' # Create 'a11ytables' object
+#' # Create 'aftables' object
 #'
 #' x <-
-#'   a11ytables::create_a11ytable(
+#'   aftables::create_aftable(
 #'     tab_titles = c("Cover", "Contents", "Notes", "Table_1", "Table_2"),
 #'     sheet_types = c("cover", "contents", "notes", "tables", "tables"),
 #'     sheet_titles = c(
-#'       "The 'a11ytables' Demo Workbook",
+#'       "The 'aftables' Demo Workbook",
 #'       "Table of contents",
 #'       "Notes",
 #'       "Table 1: First Example Sheet",
@@ -147,27 +147,27 @@
 #'       NA_character_,
 #'       "A custom row.",
 #'       c(
-#'         "First custom row [with a hyperlink.](https://best-practice-and-impact.github.io/a11ytables/)",
+#'         "First custom row [with a hyperlink.](https://best-practice-and-impact.github.io/aftables/)",
 #'         "Second custom row."
 #'       ),
 #'       "A custom row."
 #'     ),
 #'     sources = c(
 #'       rep(NA_character_, 3),
-#'       "[The Source Material, 2024.](https://best-practice-and-impact.github.io/a11ytables/)",
+#'       "[The Source Material, 2024.](https://best-practice-and-impact.github.io/aftables/)",
 #'       "The Source Material, 2024."
 #'     ),
 #'     tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)
 #'   )
 #'
-#' # Test that 'a11ytable' is one of the object's classes
-#' is_a11ytable(x)
+#' # Test that 'aftable' is one of the object's classes
+#' is_aftable(x)
 #'
 #' # Look at the structure of the object
 #' str(x, max.level = 2)
 #'
 #' @export
-create_a11ytable <- function(tab_titles,
+create_aftable <- function(tab_titles,
                              sheet_types = c("cover", "contents", "notes", "tables"),
                              sheet_titles,
                              blank_cells = NA_character_,
@@ -187,25 +187,25 @@ create_a11ytable <- function(tab_titles,
   x[["custom_rows"]] <- custom_rows
   x[["table"]] <- tables
 
-  as_a11ytable(x)
+  as_aftable(x)
 
 }
 
-#' Coerce To An 'a11ytable' Object
+#' Coerce To An 'aftable' Object
 #'
-#' Functions to check if an object is an a11ytable, or coerce it if possible.
+#' Functions to check if an object is an aftable, or coerce it if possible.
 #'
 #' @param x A data.frame object to coerce.
 #'
-#' @return \code{as_a11ytable} returns an object of class a11ytable if possible.
-#'     \code{is_a11ytable} returns \code{TRUE} if the object has class
-#'     a11ytable, otherwise \code{FALSE}.
+#' @return \code{as_aftable} returns an object of class aftable if possible.
+#'     \code{is_aftable} returns \code{TRUE} if the object has class
+#'     aftable, otherwise \code{FALSE}.
 #'
 #' @examples
-#' is_a11ytable(demo_a11ytable)
+#' is_aftable(demo_aftable)
 #'
 #' @export
-as_a11ytable <- function(x) {
+as_aftable <- function(x) {
 
   if (any(names(x) %in% "tab_title")) {
     .check_tab_titles(x[["tab_title"]])
@@ -216,41 +216,41 @@ as_a11ytable <- function(x) {
     x[["blank_cells"]] <- .append_period(x[["blank_cells"]])
   }
 
-  class(x) <- c("a11ytable", "tbl", "data.frame")
+  class(x) <- c("aftable", "tbl", "data.frame")
 
-  .validate_a11ytable(x)
-  .warn_a11ytable(x)
+  .validate_aftable(x)
+  .warn_aftable(x)
 
   x
 
 }
 
-#' @rdname as_a11ytable
+#' @rdname as_aftable
 #' @export
-is_a11ytable <- function(x) {
+is_aftable <- function(x) {
 
-  inherits(x, "a11ytable")
+  inherits(x, "aftable")
 
 }
 
-#' Summarise An 'a11ytable' Object
+#' Summarise An 'aftable' Object
 #'
-#' A concise result summary of an a11ytable-class object to see information
+#' A concise result summary of an aftable-class object to see information
 #' about the sheet content. Shows a numbered list of sheets with each tab title,
 #' sheet type and table dimensions.
 #'
-#' @param object An a11ytable-class object for which to get a summary.
+#' @param object An aftable-class object for which to get a summary.
 #' @param ... Other arguments to pass.
 #'
 #' @examples
-#' # Print a concise summary of the a11ytable-class object
-#' summary(demo_a11ytable)
+#' # Print a concise summary of the aftable-class object
+#' summary(demo_aftable)
 #'
 #' # Alternatively, look at the structure
-#' str(demo_a11ytable, max.level = 2)
+#' str(demo_aftable, max.level = 2)
 #'
 #' @export
-summary.a11ytable <- function(object, ...) {
+summary.aftable <- function(object, ...) {
 
   tables <- object[["table"]]
 
@@ -288,31 +288,31 @@ summary.a11ytable <- function(object, ...) {
     )
   )
 
-  cat("# An a11ytable with", nrow(object), "sheets:", summary_string)
+  cat("# An aftable with", nrow(object), "sheets:", summary_string)
 
   invisible(object)
 
 }
 
 
-#' Provide A Succinct Summary Of An 'a11ytable' Object
+#' Provide A Succinct Summary Of An 'aftable' Object
 #'
-#' A brief text description of an a11ytable-class object.
+#' A brief text description of an aftable-class object.
 #'
-#' @param x An a11ytable-class object to summarise.
+#' @param x An aftable-class object to summarise.
 #' @param ... Other arguments to pass.
 #'
 #' @return Named character vector.
 #'
 #' @examples
 #' # Print with description
-#' print(demo_a11ytable)
+#' print(demo_aftable)
 #'
 #' # Print description only (package 'tibble' must be installed)
-#' tibble::tbl_sum(demo_a11ytable)
+#' tibble::tbl_sum(demo_aftable)
 #'
 #' @export
-tbl_sum.a11ytable <- function(x, ...) {
+tbl_sum.aftable <- function(x, ...) {
 
   header <- sprintf(
     "%s x %s",
@@ -320,6 +320,6 @@ tbl_sum.a11ytable <- function(x, ...) {
     formatC(ncol(x), big.mark = ",")
   )
 
-  c("a11ytable" = header)
+  c("aftable" = header)
 
 }

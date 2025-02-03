@@ -1,6 +1,6 @@
-# Contributing to {a11ytables}
+# Contributing to {aftables}
 
-This outlines how to propose a change to {a11ytables}.
+This outlines how to propose a change to {aftables}.
 
 ## Fixing typos
 

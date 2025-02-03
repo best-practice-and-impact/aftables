@@ -1,7 +1,7 @@
 #' A Demo 'data.frame' Object
 #'
-#' A pre-created data.frame ready to be converted to an a11ytables-class object
-#' with \code{\link{as_a11ytable}} and then an 'openxlsx' Workbook-class object
+#' A pre-created data.frame ready to be converted to an aftables-class object
+#' with \code{\link{as_aftable}} and then an 'openxlsx' Workbook-class object
 #' with \code{\link{generate_workbook}}.
 #'
 #' @format A data.frame with 6 rows and 7 columns:
@@ -16,9 +16,9 @@
 #' }
 "demo_df"
 
-#' A Demo 'a11ytables' Object
+#' A Demo 'aftables' Object
 #'
-#' A pre-created 'a11ytables' object ready to be converted to an 'openxlsx'
+#' A pre-created 'aftables' object ready to be converted to an 'openxlsx'
 #' Workbook-class object with \code{\link{generate_workbook}}.
 #'
 #' @format A data.frame with 6 rows and 7 columns:
@@ -31,12 +31,12 @@
 #'   \item{source}{Character. The origin of the data, if relevant.}
 #'   \item{table}{List-column of data.frames (apart from the cover, which is a list) containing the statistical tables.}
 #' }
-"demo_a11ytable"
+"demo_aftable"
 
 #' A Demo 'Workbook' Object
 #'
 #' A pre-created 'openxlsx' Workbook'-class object generated from an
-#' a11ytables-class object with \code{\link{generate_workbook}}.
+#' aftables-class object with \code{\link{generate_workbook}}.
 #'
 #' @format An 'openxlsx' Workbook-class object with 5 sheets.
 "demo_workbook"
@@ -48,8 +48,8 @@
 #' favour of \code{\link{demo_df}}.
 #'
 #' A modified version of the mtcars dataset prepared into a data.frame structure
-#' ready for coercion to an a11ytables-class object with
-#' \code{\link{as_a11ytable}}. Uses a dataframe as input to the cover table;
+#' ready for coercion to an aftables-class object with
+#' \code{\link{as_aftable}}. Uses a dataframe as input to the cover table;
 #' \code{\link{mtcars_df}} uses a list as input to the cover table.
 #'
 #' @details
@@ -80,8 +80,8 @@
 #' favour of \code{\link{demo_df}}.
 #'
 #' A modified version of the mtcars dataset prepared into a data.frame structure
-#' ready for coercion to an a11ytables-class object with
-#' \code{\link{as_a11ytable}}.
+#' ready for coercion to an aftables-class object with
+#' \code{\link{as_aftable}}.
 #'
 #' @details
 #' Uses a list as input to the cover table (implemented in version 0.2), whereas

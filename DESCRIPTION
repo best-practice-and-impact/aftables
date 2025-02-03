@@ -1,6 +1,6 @@
-Package: a11ytables
+Package: aftables
 Title: Create Spreadsheet Publications Following Best Practice
-Version: 0.3.2
+Version: 1.0.0
 Authors@R: c(
     person("Matt", "Dray", , "mwdray@gmail.com", role = c("aut")),
     person("Tim", "Taylor", role = "ctb"),
@@ -13,11 +13,11 @@ Description: Generate spreadsheet publications that follow best practice
     accessibility. Based on 'openxlsx'. See also the Python package
     'gptables'.
 License: MIT + file LICENSE
-URL: https://best-practice-and-impact.github.io/a11ytables/,
-    https://github.com/best-practice-and-impact/a11ytables
-BugReports: https://github.com/best-practice-and-impact/a11ytables/issues
+URL: https://best-practice-and-impact.github.io/aftables/,
+    https://github.com/best-practice-and-impact/aftables
+BugReports: https://github.com/best-practice-and-impact/aftables/issues
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5)
 Imports: 
     openxlsx,
     pillar

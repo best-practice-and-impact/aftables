@@ -1,4 +1,4 @@
-url: https://best-practice-and-impact.github.io/a11ytables/
+url: https://best-practice-and-impact.github.io/aftables/
 
 template:
   bootstrap: 5
@@ -19,16 +19,16 @@ footer:
     legal: © Crown Copyright, 2023
 
 reference:
-  - title: "a11ytables"
-    desc: "Create, coerce and inspect a11ytable-class objects"
+  - title: "aftables"
+    desc: "Create, coerce and inspect aftable-class objects"
     contents:
-      - as_a11ytable
-      - create_a11ytable
-      - is_a11ytable
-      - summary.a11ytable
-      - tbl_sum.a11ytable
+      - as_aftable
+      - create_aftable
+      - is_aftable
+      - summary.aftable
+      - tbl_sum.aftable
   - title: "Workbooks"
-    desc: "Convert a11ytable- to Workbook-class objects"
+    desc: "Convert aftable- to Workbook-class objects"
     contents: generate_workbook
   - title: "Data"
     desc: "Demo datasets used in package examples"

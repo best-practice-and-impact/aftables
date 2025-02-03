@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# {a11ytables} <a href="https://best-practice-and-impact.github.io/a11ytables/"><img src="man/figures/logo.png" align="right" height="139"/></a>
+# {aftables} <a href="https://best-practice-and-impact.github.io/aftables/"><img src="man/figures/logo.png" align="right" height="139"/></a>
 
 <!-- badges: start -->
 
@@ -9,8 +9,8 @@
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![CRAN
-status](https://www.r-pkg.org/badges/version/a11ytables)](https://CRAN.R-project.org/package=a11ytables)
-[![R-CMD-check](https://github.com/best-practice-and-impact/a11ytables/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/best-practice-and-impact/a11ytables/actions/workflows/R-CMD-check.yaml)
+status](https://www.r-pkg.org/badges/version/aftables)](https://CRAN.R-project.org/package=aftables)
+[![R-CMD-check](https://github.com/best-practice-and-impact/aftables/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/best-practice-and-impact/aftables/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 ## Purpose
@@ -20,10 +20,10 @@ adhere to the guidance on [releasing statistics in
 spreadsheets](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/)
 from the UK government’s [Analysis
 Function](https://analysisfunction.civilservice.gov.uk/), with a focus
-on accessibility (‘a11y’).
+on accessibility.
 
-Visit [the {a11ytables}
-website](https://best-practice-and-impact.github.io/a11ytables/) for
+Visit [the {aftables}
+website](https://best-practice-and-impact.github.io/aftables/) for
 documentation.
 
 ## Accessibility
@@ -42,87 +42,87 @@ monitor use and the outputs produced.
 
 The package is under (opinionated) active development. Please see [the
 NEWS
-file](https://best-practice-and-impact.github.io/a11ytables/news/index.html)
+file](https://best-practice-and-impact.github.io/aftables/news/index.html)
 for the latest changes.
 
 To contribute, please add [an
-issue](https://github.com/best-practice-and-impact/a11ytables/issues) or
+issue](https://github.com/best-practice-and-impact/aftables/issues) or
 [a pull
-request](https://github.com/best-practice-and-impact/a11ytables/pulls)
+request](https://github.com/best-practice-and-impact/aftables/pulls)
 after reading [the code of
-conduct](https://github.com/best-practice-and-impact/a11ytables/blob/main/CODE_OF_CONDUCT.md)
+conduct](https://github.com/best-practice-and-impact/aftables/blob/main/CODE_OF_CONDUCT.md)
 and
-[contributing](https://github.com/best-practice-and-impact/a11ytables/blob/main/.github/CONTRIBUTING.md)
+[contributing](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CONTRIBUTING.md)
 guidance.
 
 ## Install
 
 Install the package [from
-GitHub](https://github.com/best-practice-and-impact/a11ytables) using
+GitHub](https://github.com/best-practice-and-impact/aftables) using
 [{remotes}](https://remotes.r-lib.org/).
 
 ``` r
 install.packages("remotes")  # if not already installed
 
 remotes::install_github(
-  repo = "best-practice-and-impact/a11ytables",  # GitHub user/repository
+  repo = "best-practice-and-impact/aftables",  # GitHub user/repository
   dependencies = TRUE,              # install required/suggested packages
   build_vignettes = TRUE            # generate vignette documentation
 )
 
-library(a11ytables)  # attach package
+library(aftables)  # attach package
 ```
 
 ## Use
 
 To create a spreadsheet:
 
-1.  Use `create_a11ytable()`
+1.  Use `create_aftable()`
 2.  Pass the output to `generate_workbook()`
 3.  Pass the output to `openxlsx::saveWorkbook()`
 
 Run `?function_name` or visit [the package
-website](https://best-practice-and-impact.github.io/a11ytables/reference/index.html)
+website](https://best-practice-and-impact.github.io/aftables/reference/index.html)
 for function documentation. For long-form documentation, [visit the
-package website](https://best-practice-and-impact.github.io/a11ytables/)
-or run `browseVignettes("a11ytables")` to read the:
+package website](https://best-practice-and-impact.github.io/aftables/)
+or run `browseVignettes("aftables")` to read the:
 
 - [introductory
-  vignette](https://best-practice-and-impact.github.io/a11ytables/articles/a11ytables.html)
+  vignette](https://best-practice-and-impact.github.io/aftables/articles/aftables.html)
   to get started
 - [accessbility checklist
-  vignette](https://best-practice-and-impact.github.io/a11ytables/articles/checklist.html)
+  vignette](https://best-practice-and-impact.github.io/aftables/articles/checklist.html)
   to see how the package complies with best-practice guidance
 - [terminology
-  vignette](https://best-practice-and-impact.github.io/a11ytables/articles/terminology)
+  vignette](https://best-practice-and-impact.github.io/aftables/articles/terminology)
   to understand the nomenclature of spreadsheet terms as used in this
   package
 - [package structure
-  vignette](https://best-practice-and-impact.github.io/a11ytables/articles/structure)
+  vignette](https://best-practice-and-impact.github.io/aftables/articles/structure)
   to see how the package works under the hood
 
 This package also includes [an RStudio
 Addin](https://rstudio.github.io/rstudioaddins/) that inserts pre-filled
-demo skeletons of the {a11ytables} workflow.
+demo skeletons of the {aftables} workflow.
 
 ## Related projects
 
 The ONS’s Analysis Standards and Pipelines team has released [a Python
 package called
 ‘gptables’](https://github.com/best-practice-and-impact/gptables).
-{a11ytables} is an independent effort that offers a native R solution
-that is very similar to gptables in its outputs, though there are some
+{aftables} is an independent effort that offers a native R solution that
+is very similar to gptables in its outputs, though there are some
 differences in implementation.
 
-{a11ytables} can help you fulfil a [Reproducible Analytical
+{aftables} can help you fulfill a [Reproducible Analytical
 Pipeline](https://analysisfunction.civilservice.gov.uk/support/reproducible-analytical-pipelines/)
 by automating the generation of compliant spreadsheets for publication.
 
 ## Code of Conduct
 
-Please note that the {a11ytables} project is released with a
-[Contributor Code of
-Conduct](https://best-practice-and-impact.github.io/a11ytables/CODE_OF_CONDUCT.html).
+Please note that the {aftables} project is released with a [Contributor
+Code of
+Conduct](https://best-practice-and-impact.github.io/aftables/CODE_OF_CONDUCT.html).
 
 ## Copyright and Licensing
 
