@@ -5,9 +5,6 @@
 
 <!-- badges: start -->
 
-[![Project Status: Active – The project has reached a stable, usable
-state and is being actively
-developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/aftables)](https://CRAN.R-project.org/package=aftables)
 [![R-CMD-check](https://github.com/best-practice-and-impact/aftables/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/best-practice-and-impact/aftables/actions/workflows/R-CMD-check.yaml)
