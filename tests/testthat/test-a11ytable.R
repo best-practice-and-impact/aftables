@@ -252,7 +252,8 @@ test_that("input other than data.frame is intercepted during validation", {
 
   expect_error(.validate_a11ytable("x"))
 
-  x <- demo_df; x[, "table"] <- "x"
+  x <- demo_df
+  x[, "table"] <- "x"
   expect_error(
     as_a11ytable(x),
     "Column 'table' must be a listcol of data.frame objects."
@@ -284,10 +285,14 @@ test_that("only one cover, contents, notes can be used", {
 
 test_that("NAs in certain columns cause failure", {
 
-  tab_na   <- demo_df; tab_na$tab_title     <- NA_character_
-  type_na  <- demo_df; type_na$sheet_type   <- NA_character_
-  title_na <- demo_df; title_na$sheet_title <- NA_character_
-  table_na <- demo_df; table_na$table       <- NA_character_
+  tab_na <- demo_df
+  tab_na$tab_title <- NA_character_
+  type_na <- demo_df
+  type_na$sheet_type <- NA_character_
+  title_na <- demo_df
+  title_na$sheet_title <- NA_character_
+  table_na <- demo_df
+  table_na$table <- NA_character_
 
   expect_error(as_a11ytable(tab_na))
   expect_error(as_a11ytable(type_na))
@@ -415,7 +420,7 @@ test_that("input column names are okay", {
 
 test_that("character class columns are caught if not character class", {
 
-  demo_df[, "sheet_type"] <- 1:nrow(demo_df)
+  demo_df[, "sheet_type"] <- seq_len(nrow(demo_df))
   expect_error(as_a11ytable(demo_df))
 
 })

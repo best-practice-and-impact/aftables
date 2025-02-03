@@ -1,0 +1,3 @@
+linters: linters_with_defaults(line_length_linter = NULL, object_usage_linter = NULL, cyclocomp_linter = cyclocomp_linter(complexity_limit = 25L)) # see vignette("lintr")
+exclude: "^#| fig.alt = "
+encoding: "UTF-8"

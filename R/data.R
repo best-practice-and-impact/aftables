@@ -102,5 +102,3 @@
 #'
 #' @source \code{\link[datasets:mtcars]{mtcars}}
 "mtcars_df2"
-
-

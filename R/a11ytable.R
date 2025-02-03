@@ -167,15 +167,13 @@
 #' str(x, max.level = 2)
 #'
 #' @export
-create_a11ytable <- function(
-    tab_titles,
-    sheet_types = c("cover", "contents", "notes", "tables"),
-    sheet_titles,
-    blank_cells = NA_character_,
-    sources = NA_character_,
-    custom_rows = list(NA_character_),
-    tables
-) {
+create_a11ytable <- function(tab_titles,
+                             sheet_types = c("cover", "contents", "notes", "tables"),
+                             sheet_titles,
+                             blank_cells = NA_character_,
+                             sources = NA_character_,
+                             custom_rows = list(NA_character_),
+                             tables) {
 
   x <- data.frame(
     tab_title   = unlist(tab_titles),
@@ -217,10 +215,6 @@ as_a11ytable <- function(x) {
   if (any(names(x) %in% "blank_cells")) {
     x[["blank_cells"]] <- .append_period(x[["blank_cells"]])
   }
-
-  # if (any(names(x) %in% "source")) {
-  #   x[["source"]] <- .append_period(x[["source"]])
-  # }
 
   class(x) <- c("a11ytable", "tbl", "data.frame")
 

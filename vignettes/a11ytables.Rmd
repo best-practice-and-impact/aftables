@@ -155,39 +155,38 @@ Note that:
 * you can insert a template of this demo using the package's RStudio Addin
 
 ```{r new-a11ytable}
-my_a11ytable <- 
-  a11ytables::create_a11ytable(
-    tab_titles = c("Cover", "Contents", "Notes", "Table 1", "Table_2"),
-    sheet_types = c("cover", "contents", "notes", "tables", "tables"),
-    sheet_titles = c(
-      "The 'a11ytables' Demo Workbook",
-      "Table of contents",
-      "Notes",
-      "Table 1: First Example Sheet",
-      "Table 2: Second Example Sheet"
+my_a11ytable <- a11ytables::create_a11ytable(
+  tab_titles = c("Cover", "Contents", "Notes", "Table 1", "Table_2"),
+  sheet_types = c("cover", "contents", "notes", "tables", "tables"),
+  sheet_titles = c(
+    "The 'a11ytables' Demo Workbook",
+    "Table of contents",
+    "Notes",
+    "Table 1: First Example Sheet",
+    "Table 2: Second Example Sheet"
+  ),
+  blank_cells = c(
+    rep(NA_character_, 3),
+    "Blank cells indicate that there's no note in that row.",
+    NA_character_
+  ),
+  custom_rows = list(
+    NA_character_,
+    NA_character_,
+    "A custom row.",
+    c(
+      "First custom row [with a hyperlink.](https://best-practice-and-impact.github.io/a11ytables/)",
+      "Second custom row."
     ),
-    blank_cells = c(
-      rep(NA_character_, 3),
-      "Blank cells indicate that there's no note in that row.",
-      NA_character_
-    ),
-    custom_rows = list(
-      NA_character_,
-      NA_character_,
-      "A custom row.",
-      c(
-        "First custom row [with a hyperlink.](https://best-practice-and-impact.github.io/a11ytables/)",
-        "Second custom row."
-      ),
-      "A custom row."
-    ),
-    sources = c(
-      rep(NA_character_, 3),
-      "[The Source Material., 2024](https://best-practice-and-impact.github.io/a11ytables/)",
-      "The Source Material, 2024."
-    ),
-    tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)
-  )
+    "A custom row."
+  ),
+  sources = c(
+    rep(NA_character_, 3),
+    "[The Source Material., 2024](https://best-practice-and-impact.github.io/a11ytables/)",
+    "The Source Material, 2024."
+  ),
+  tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)
+)
 ```
 
 The function will return errors or warnings if anything is missing or seems odd. For example, we were warned that a value we supplied to `tab_title` had to be cleaned from 'Table 1' to 'Table_1', since blank spaces are not allowed in tab names. Note that there will be an error if there are any tab titles that start with a numeral.

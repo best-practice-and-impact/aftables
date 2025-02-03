@@ -50,7 +50,7 @@
 
   for (i in seq_along(text)) {
 
-    if (!is.na(last_char[i]) & last_char[i] != ".") {
+    if (!is.na(last_char[i]) && last_char[i] != ".") {
       text[i] <- paste0(text[i], ".")
     }
 
@@ -84,7 +84,7 @@
   }
 
   # Must have particular dimensions (must have cover, contents table, at least)
-  if (length(names_req) != length(x) | nrow(x) < 3) {
+  if (length(names_req) != length(x) || nrow(x) < 3) {
     stop(
       "Input must be a data.frame with ", names_count,
       " columns and at least 4 rows.", call. = FALSE
@@ -154,9 +154,9 @@
 
   # There must be only one cover, contents and (optional) notes sheet
   if (
-    sum(x[["sheet_type"]] == "cover") > 1 |
-    sum(x[["sheet_type"]] == "contents") > 1 |
-    sum(x[["sheet_type"]] == "notes") > 1
+    sum(x[["sheet_type"]] == "cover") > 1 ||
+      sum(x[["sheet_type"]] == "contents") > 1 ||
+      sum(x[["sheet_type"]] == "notes") > 1
   ) {
     stop(
       "There can be only one 'cover', 'contents' and 'notes' in sheet_type.",
@@ -313,7 +313,7 @@
     not_in_tables <- setdiff(notes_sheet_values, tables_sheet_notes)
     not_in_notes  <- setdiff(tables_sheet_notes, notes_sheet_values)
 
-    if (has_notes_sheet & has_notes & length(not_in_notes) > 0) {
+    if (has_notes_sheet && has_notes && length(not_in_notes) > 0) {
       warning(
         "Some notes are in the tables (",
         paste(not_in_notes, collapse = ", "),
@@ -322,7 +322,7 @@
       )
     }
 
-    if (has_notes_sheet & has_notes & length(not_in_tables) > 0) {
+    if (has_notes_sheet && has_notes && length(not_in_tables) > 0) {
       warning(
         "Some notes are in the notes sheet (",
         paste(not_in_tables, collapse = ", "),
