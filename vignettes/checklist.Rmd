@@ -2,7 +2,7 @@
 title: "Accessibility guidance checklist"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{accessibility}
+  %\VignetteIndexEntry{Accessibility guidance checklist}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

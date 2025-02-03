@@ -2,7 +2,7 @@
 title: "Spreadsheet terminology"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{terminology}
+  %\VignetteIndexEntry{Spreadsheet terminology}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

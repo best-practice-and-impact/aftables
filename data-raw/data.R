@@ -45,37 +45,37 @@ table_1_df <- data.frame(
 table_2_df <- data.frame(Category = LETTERS[1:10], Numeric = 1:10)
 
 demo_aftable <- create_aftable(
-    tab_titles = c("Cover", "Contents", "Notes", "Table_1", "Table_2"),
-    sheet_types = c("cover", "contents", "notes", "tables", "tables"),
-    sheet_titles = c(
-      "The 'aftables' Demo Workbook",
-      "Table of contents",
-      "Notes",
-      "Table_1: First Example Sheet",
-      "Table_2: Second Example Sheet"
+  tab_titles = c("Cover", "Contents", "Notes", "Table_1", "Table_2"),
+  sheet_types = c("cover", "contents", "notes", "tables", "tables"),
+  sheet_titles = c(
+    "The 'aftables' Demo Workbook",
+    "Table of contents",
+    "Notes",
+    "Table_1: First Example Sheet",
+    "Table_2: Second Example Sheet"
+  ),
+  blank_cells = c(
+    rep(NA_character_, 3),
+    "Blank cells indicate that there's no note in that row.",
+    NA_character_
+  ),
+  custom_rows = list(
+    NA_character_,
+    NA_character_,
+    "A custom row.",
+    c(
+      "First custom row [with a hyperlink.](https://best-practice-and-impact.github.io/aftables/)",
+      "Second custom row."
     ),
-    blank_cells = c(
-      rep(NA_character_, 3),
-      "Blank cells indicate that there's no note in that row.",
-      NA_character_
-    ),
-    custom_rows = list(
-      NA_character_,
-      NA_character_,
-      "A custom row.",
-      c(
-        "First custom row [with a hyperlink.](https://best-practice-and-impact.github.io/aftables/)",
-        "Second custom row."
-      ),
-      "A custom row."
-    ),
-    sources = c(
-      rep(NA_character_, 3),
-      "[The Source Material, 2024.](https://best-practice-and-impact.github.io/aftables/)",
-      "The Source Material, 2024."
-    ),
-    tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)
-  )
+    "A custom row."
+  ),
+  sources = c(
+    rep(NA_character_, 3),
+    "[The Source Material, 2024.](https://best-practice-and-impact.github.io/aftables/)",
+    "The Source Material, 2024."
+  ),
+  tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)
+)
 
 demo_df <- as.data.frame(demo_aftable)
 
