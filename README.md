@@ -11,8 +11,6 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 [![CRAN
 status](https://www.r-pkg.org/badges/version/a11ytables)](https://CRAN.R-project.org/package=a11ytables)
 [![R-CMD-check](https://github.com/best-practice-and-impact/a11ytables/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/best-practice-and-impact/a11ytables/actions/workflows/R-CMD-check.yaml)
-[![Codecov test
-coverage](https://codecov.io/gh/best-practice-and-impact/a11ytables/graph/badge.svg)](https://app.codecov.io/gh/best-practice-and-impact/a11ytables)
 <!-- badges: end -->
 
 ## Purpose
