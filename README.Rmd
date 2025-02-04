@@ -54,6 +54,23 @@ library(aftables)  # attach package
 ```
 
 
+## How to install a11ytables
+
+The original name of the aftables package was a11ytables. The package was renamed to make it consistent the [afcharts package](https://github.com/best-practice-and-impact/afcharts). Some function names were updated when the package was renamed. If you need to install a11ytables for a legacy project, the following code can be used.
+
+```{r install a11ytables, eval=FALSE}
+install.packages("remotes")  # if not already installed
+
+remotes::install_github(
+  repo = "best-practice-and-impact/aftables",  # GitHub user/repository
+  ref = "v0.3.2", # this installs the final version of a11ytables. Change if you need an earlier version.
+  dependencies = TRUE,              # install required/suggested packages
+  build_vignettes = TRUE            # generate vignette documentation
+)
+
+library(a11ytables)  # attach package
+```
+
 ## Use
 
 To create a spreadsheet:
@@ -85,4 +102,4 @@ Please note that the {aftables} project is released with a [Contributor Code of 
 
 © Crown Copyright, 2023.
 
-This work is [Crown Copyright](https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/). The source code for the software is released under the MIT licence as per the the [UK Government Licensing Framework](https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/open-government-licence/open-software-licences/) and the [GDS Way licensing guidance](https://gds-way.cloudapps.digital/manuals/licensing.html). The documentation for the software is released under the [Open Government Licence](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
+This work is [Crown Copyright](https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/). The source code for the software is released under the MIT licence as per the the [UK Government Licensing Framework](https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/open-government-licence/open-software-licences/) and the [GDS Way licensing guidance](https://gds-way.digital.cabinet-office.gov.uk/manuals/licensing.html). The documentation for the software is released under the [Open Government Licence](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
