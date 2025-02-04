@@ -12,3 +12,4 @@
 ^doc$
 ^Meta$
 ^cran-comments\.md$
+^\.lintr$
