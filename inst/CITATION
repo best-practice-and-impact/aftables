@@ -1,16 +1,7 @@
-citHeader("To cite aftables in publications use:")
-
-citEntry(
-  entry = "Manual",
-  title = "aftables: Create Spreadsheet Publications Following GSS Best Practice",
-  author = person(given = "Matt", family = "Dray", role = c("aut", "cre"), email = "mwdray@gmail.com"),
-  year = "2021",
-  organization = "Crown Copyright",
-  url = "https://github.com/best-practice-and-impact/aftables",
-  textVersion = paste(
-    "Dray M (2021)",
-    "aftables: Create Spreadsheet Publications Following GSS Best Practice,",
-    "Crown Copyright,",
-    "https://github.com/best-practice-and-impact/aftables"
-  )
+bibentry(
+  bibtype  = "Manual",
+  title    = "aftables: Generate spreadsheet publications that follow best practice guidance from the UK government's Analysis Function",
+  author   = person(given = "Matt", family = "Dray", role = c("aut", "cre"), email = "mwdray@gmail.com"),
+  year     = 2021,
+  url = "https://github.com/best-practice-and-impact/aftables"
 )
