@@ -85,5 +85,3 @@ demo_workbook <- generate_workbook(demo_aftable)
 usethis::use_data(demo_df, overwrite = TRUE)
 usethis::use_data(demo_aftable, overwrite = TRUE)
 usethis::use_data(demo_workbook, overwrite = TRUE)
-
-
