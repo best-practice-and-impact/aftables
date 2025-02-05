@@ -36,6 +36,3 @@ reference:
   - title: "RStudio Addins"
     desc: "RStudio Addin functions for inserting workflow skeletons"
     contents: starts_with("at_")
-  - title: Superseded
-    desc: "Demo datasets superseded in version 0.3 of the package"
-    contents: starts_with("mtcars_df")
