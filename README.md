@@ -108,7 +108,7 @@ or run `browseVignettes("aftables")` to read the:
 - [introductory
   vignette](https://best-practice-and-impact.github.io/aftables/articles/aftables.html)
   to get started
-- [accessbility checklist
+- [accessibility checklist
   vignette](https://best-practice-and-impact.github.io/aftables/articles/checklist.html)
   to see how the package complies with best-practice guidance
 - [terminology

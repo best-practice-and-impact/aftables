@@ -70,7 +70,7 @@ whose elements will make up separate rows of that section
 one column for section titles and one column for corresponding for
 that section's body text. For example, you may have a section with
 the title 'Contact details' that contains an email address and
-telephone number. You can use linebreaks (i.e. '\\n') to separate
+telephone number. You can use line breaks (i.e. '\\n') to separate
 text into paragraphs.
 \item Sheet type 'contents': one row per sheet, two columns suggested at
 least (named 'Tab title' and 'Worksheet title').

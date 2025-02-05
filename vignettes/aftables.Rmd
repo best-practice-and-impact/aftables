@@ -65,7 +65,7 @@ Note that you can use the RStudio Addin 'Insert table templates using 'tibble'' 
 
 ##### Meta-sheets
 
-The cover can accept either a list or a data.frane (the latter was the only acceptable input prior to version 0.2.0). We recommend a list so that you can have multiple rows per section on the cover. This also means you can dedicate certain rows to be hyperlinks to web URLs or mailto links that will open an email client. Here's a demo list for the contents page (required):
+The cover can accept either a list or a data.frame (the latter was the only acceptable input prior to version 0.2.0). We recommend a list so that you can have multiple rows per section on the cover. This also means you can dedicate certain rows to be hyperlinks to web URLs or mailto links that will open an email client. Here's a demo list for the contents page (required):
 
 ```{r tables-cover-list}
 cover_list <- list(
