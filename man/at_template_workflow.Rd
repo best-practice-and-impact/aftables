@@ -6,6 +6,9 @@
 \usage{
 at_template_workflow()
 }
+\value{
+Empty list. Function is used for side effect.
+}
 \description{
 Insert at the cursor (a) demo templates for cover, contents and notes
 tables, and (b) a call to \code{\link{create_aftable}} pre-filled with

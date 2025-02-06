@@ -205,6 +205,7 @@ create_aftable <- function(tab_titles,
 #'     aftable, otherwise \code{FALSE}.
 #'
 #' @examples
+#' as_aftable(demo_df)
 #' is_aftable(demo_aftable)
 #'
 #' @export
@@ -244,6 +245,8 @@ is_aftable <- function(x) {
 #'
 #' @param object An aftable-class object for which to get a summary.
 #' @param ... Other arguments to pass.
+#'
+#' @return `object` unaltered.
 #'
 #' @examples
 #' # Print a concise summary of the aftable-class object

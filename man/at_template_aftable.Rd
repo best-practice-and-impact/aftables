@@ -6,6 +6,9 @@
 \usage{
 at_template_aftable()
 }
+\value{
+Empty list. Function is used for side effect.
+}
 \description{
 Insert at the cursor a template for \code{\link{create_aftable}} from the
 'aftable' package, pre-filled with demo data.

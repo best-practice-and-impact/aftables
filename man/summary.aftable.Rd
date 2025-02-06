@@ -11,6 +11,9 @@
 
 \item{...}{Other arguments to pass.}
 }
+\value{
+\code{object} unaltered.
+}
 \description{
 A concise result summary of an aftable-class object to see information
 about the sheet content. Shows a numbered list of sheets with each tab title,

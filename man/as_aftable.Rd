@@ -21,6 +21,7 @@ aftable, otherwise \code{FALSE}.
 Functions to check if an object is an aftable, or coerce it if possible.
 }
 \examples{
+as_aftable(demo_df)
 is_aftable(demo_aftable)
 
 }
