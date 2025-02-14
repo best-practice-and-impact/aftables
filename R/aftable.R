@@ -106,8 +106,8 @@
 #' )
 #'
 #' notes_df <- data.frame(
-#'   "Note number" = paste0("[note ", 1:3, "]"),
-#'   "Note text" = c("First note.", "Second note.", "Third note."),
+#'   "Note number" = paste0("[note ", 1:2, "]"),
+#'   "Note text" = c("First note.", "Second note."),
 #'   check.names = FALSE
 #' )
 #'
