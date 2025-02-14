@@ -80,7 +80,7 @@ table_1_df <- data.frame(
   "Numeric suppressed" = c(1:4, "[c]", 6:9, "[x]"),
   "Numeric thousands" = abs(round(rnorm(10), 4) * 1e5),
   "Numeric decimal" = abs(round(rnorm(10), 5)),
-  "A column with a long name" = 1:10,
+  "Long name that means that the column width needs to be widened" = 1:10,
   Notes = c("[note 1]", rep(NA_character_, 4), "[note 2]", rep(NA_character_, 4)),
   check.names = FALSE
 )
