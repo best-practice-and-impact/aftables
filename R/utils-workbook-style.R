@@ -24,7 +24,7 @@
     fontName = "Arial"
   )
 
-  return(wb)
+  wb
 
 }
 
@@ -55,7 +55,7 @@
     stack = TRUE
   )
 
-  return(wb)
+  wb
 
 }
 
@@ -152,7 +152,7 @@
     stack = TRUE
   )
 
-  return(wb)
+  wb
 
 }
 
@@ -249,7 +249,7 @@
     stack = TRUE
   )
 
-  return(wb)
+  wb
 
 }
 

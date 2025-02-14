@@ -52,6 +52,6 @@ generate_workbook <- function(aftable) {
     wb <- .add_tables(wb, aftable, table_name = i)
   }
 
-  return(wb)
+  wb
 
 }

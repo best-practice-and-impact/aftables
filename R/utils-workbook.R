@@ -227,7 +227,7 @@
 
   }
 
-  return(wb)
+  wb
 
 }
 
@@ -263,7 +263,7 @@
     startRow = 2  # table count will always be the second row
   )
 
-  return(wb)
+  wb
 
 }
 
@@ -286,7 +286,7 @@
 
   }
 
-  return(wb)
+  wb
 
 }
 
@@ -310,7 +310,7 @@
 
   }
 
-  return(wb)
+  wb
 
 }
 
@@ -343,7 +343,7 @@
 
   }
 
-  return(wb)
+  wb
 
 }
 
@@ -375,7 +375,7 @@
 
   }
 
-  return(wb)
+  wb
 
 }
 
@@ -406,7 +406,7 @@
     bandedRows = FALSE
   )
 
-  return(wb)
+  wb
 
 }
 
@@ -543,7 +543,7 @@
     openxlsx::addWorksheet(wb, i)
   }
 
-  return(wb)
+  wb
 
 }
 
@@ -562,7 +562,7 @@
   .style_sheet_title(wb, tab_title, styles)
   .style_cover(wb, content, styles)  # TODO: needs special handling if list provided
 
-  return(wb)
+  wb
 
 }
 
@@ -585,7 +585,7 @@
   .style_table(wb, content, table_name, styles)
   .style_contents(wb, content, styles)
 
-  return(wb)
+  wb
 
 }
 
@@ -608,7 +608,7 @@
   .style_table(wb, content, table_name, styles)
   .style_notes(wb, content, styles)
 
-  return(wb)
+  wb
 
 }
 
@@ -631,6 +631,6 @@
   .style_sheet_title(wb, tab_title, styles)
   .style_table(wb, content, table_name, styles)
 
-  return(wb)
+  wb
 
 }
