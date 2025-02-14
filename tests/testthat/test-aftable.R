@@ -200,7 +200,7 @@ test_that("non-conforming tab_titles are cleaned", {
       tab_titles   = c("cover", "contents", "Table 2"),
       sheet_types  = c("cover", "contents", "tables"),
       sheet_titles = c("Cover", "Contents", "Table"),
-      source = "Source",
+      sources = "Source",
       tables       = list(
         demo_df[["table"]][[1]],
         demo_df[["table"]][[2]][3, ],
@@ -234,7 +234,7 @@ test_that("tbl output looks as intended", {
 
   x <- create_aftable(
     tab_titles = LETTERS[1:3],
-    sheet_type = c("cover", "contents", "tables"),
+    sheet_types = c("cover", "contents", "tables"),
     sheet_titles = LETTERS[1:3],
     sources = c(NA_character_, NA_character_, "Source"),
     tables = list(
