@@ -8,13 +8,13 @@ You can fix typos, spelling mistakes, or grammatical errors in the documentation
 
 ## Bigger changes
 
-If you want to make a bigger change, it's a good idea to first [file an issue](https://github.com/best-practice-and-impact/afcharts/issues/new) and make sure the package maintainers agree that it’s needed. 
+If you want to make a bigger change, it's a good idea to first [file an issue](https://github.com/best-practice-and-impact/aftables/issues/new) and make sure the package maintainers agree that it’s needed. 
 
 If you’ve found a bug, please file an issue that illustrates the bug with a minimal [reprex](https://www.tidyverse.org/help/#reprex).
 
 ### Pull request process
 
-* If you work in the Government Analysis Function, request write access to the repository by contacting the [package maintainers](https://best-practice-and-impact.github.io/afcharts/authors.html#authors). If you are external, fork the repository.
+* If you work in the Government Analysis Function, request write access to the repository by contacting the [package maintainers](https://best-practice-and-impact.github.io/aftables/authors.html#authors). If you are external, fork the repository.
 
 * Clone the repository onto your computer and crate a Git branch for your changes.
 

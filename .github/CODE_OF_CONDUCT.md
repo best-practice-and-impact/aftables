@@ -10,7 +10,7 @@ and are expected to follow it in their contributions.
 We as members, contributors, and leaders pledge to make participation in our community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, caste, colour, religion, or sexual identity and orientation. We pledge to act and interact in ways that contribute to an open, welcoming, diverse, inclusive, and healthy community.
 
 ## Our Standards
-afcharts is a cross-government collaboration. We encourage contributors to act in accordance with the highest standards of professional conduct, and adhere to the Civil Service Code. We expect all contributors to avoid engaging in any political activity or discussion in forums relating to this project.
+aftables is a cross-government collaboration. We encourage contributors to act in accordance with the highest standards of professional conduct, and adhere to the Civil Service Code. We expect all contributors to avoid engaging in any political activity or discussion in forums relating to this project.
 
 Examples of behaviour that contributes to a positive environment for our community include:
 - Demonstrating empathy and kindness toward other people
