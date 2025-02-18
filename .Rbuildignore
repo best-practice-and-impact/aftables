@@ -1,4 +1,4 @@
-^a11ytables\.Rproj$
+^aftables\.Rproj$
 ^\.Rproj\.user$
 ^data-raw$
 ^README\.Rmd$
@@ -9,3 +9,7 @@
 ^pkgdown$
 ^\.github$
 ^codecov\.yml$
+^doc$
+^Meta$
+^cran-comments\.md$
+^\.lintr$

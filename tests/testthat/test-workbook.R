@@ -1,15 +1,15 @@
 test_that("workbook object is created", {
 
-  x <- suppressWarnings(generate_workbook(as_a11ytable(demo_df)))
+  x <- suppressWarnings(generate_workbook(as_aftable(demo_df)))
 
   expect_s4_class(x, class = "Workbook")
   expect_identical(class(x)[1], "Workbook")
 
 })
 
-test_that("a11ytable is passed", {
+test_that("aftable is passed", {
 
-  x <- suppressWarnings(as_a11ytable(demo_df))
+  x <- suppressWarnings(as_aftable(demo_df))
 
   expect_error(generate_workbook("x"))
   expect_error(generate_workbook(1))
@@ -21,17 +21,17 @@ test_that("a11ytable is passed", {
 test_that(".stop_bad_input works as intended", {
 
   wb <- openxlsx::createWorkbook()
-  a11ytable <- as_a11ytable(demo_df)
+  aftable <- as_aftable(demo_df)
 
-  expect_error(.stop_bad_input("x", a11ytable, "cover"))
-  expect_error(.stop_bad_input(wb, a11ytable, 1))
+  expect_error(.stop_bad_input("x", aftable, "cover"))
+  expect_error(.stop_bad_input(wb, aftable, 1))
 
 })
 
 test_that("hyperlinks are generated on the cover page", {
 
   # demo dataset has two hyperlinks on the cover
-  y <- suppressWarnings(generate_workbook(as_a11ytable(demo_df)))
+  y <- suppressWarnings(generate_workbook(as_aftable(demo_df)))
   expect_length(y$worksheets[[1]]$hyperlinks, 2)
 
 })

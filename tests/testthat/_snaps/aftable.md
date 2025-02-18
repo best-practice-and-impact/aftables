@@ -1,6 +1,6 @@
 # tbl output looks as intended
 
-    # a11ytable: 3 x 7
+    # aftable: 3 x 7
       tab_title sheet_type sheet_title blank_cells source custom_rows table         
       <chr>     <chr>      <chr>       <chr>       <chr>  <list>      <list>        
     1 A         cover      A           <NA>        <NA>   <chr [1]>   <df [1 x 1]>  

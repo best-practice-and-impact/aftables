@@ -1,16 +1,7 @@
-citHeader("To cite a11ytables in publications use:")
-
-citEntry(
-  entry = "Manual",
-  title = "a11ytables: Create Spreadsheet Publications Following GSS Best Practice",
-  author = person(given = "Matt", family = "Dray", role = c("aut", "cre"), email = "mwdray@gmail.com"),
-  year = "2021",
-  organization = "Crown Copyright (Cabinet Office)",
-  url = "https://github.com/co-analysis/a11ytables",
-  textVersion = paste(
-    "Dray M (2021)",
-    "a11ytables: Create Spreadsheet Publications Following GSS Best Practice,",
-    "Crown Copyright (Cabinet Office),",
-    "https://github.com/co-analysis/a11ytables"
-  )
+bibentry(
+  bibtype  = "Manual",
+  title    = "aftables: Generate spreadsheet publications that follow best practice guidance from the UK government's Analysis Function",
+  author   = person(given = "Matt", family = "Dray", role = c("aut", "cre"), email = "mwdray@gmail.com"),
+  year     = 2021,
+  url = "https://github.com/best-practice-and-impact/aftables"
 )

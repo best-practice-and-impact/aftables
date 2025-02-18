@@ -20,8 +20,8 @@ A data.frame with 6 rows and 7 columns:
 demo_df
 }
 \description{
-A pre-created data.frame ready to be converted to an a11ytables-class object
-with \code{\link{as_a11ytable}} and then an 'openxlsx' Workbook-class object
+A pre-created data.frame ready to be converted to an aftables-class object
+with \code{\link{as_aftable}} and then an 'openxlsx' Workbook-class object
 with \code{\link{generate_workbook}}.
 }
 \keyword{datasets}

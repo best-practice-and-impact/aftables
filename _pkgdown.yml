@@ -1,4 +1,4 @@
-url: https://co-analysis.github.io/a11ytables/
+url: https://best-practice-and-impact.github.io/aftables/
 
 template:
   bootstrap: 5
@@ -16,19 +16,19 @@ footer:
     left: legal
     right: built_with
   components:
-    legal: © Crown Copyright, 2023, Cabinet Office
+    legal: © Crown Copyright, 2023
 
 reference:
-  - title: "a11ytables"
-    desc: "Create, coerce and inspect a11ytable-class objects"
+  - title: "aftables"
+    desc: "Create, coerce and inspect aftable-class objects"
     contents:
-      - as_a11ytable
-      - create_a11ytable
-      - is_a11ytable
-      - summary.a11ytable
-      - tbl_sum.a11ytable
+      - as_aftable
+      - create_aftable
+      - is_aftable
+      - summary.aftable
+      - tbl_sum.aftable
   - title: "Workbooks"
-    desc: "Convert a11ytable- to Workbook-class objects"
+    desc: "Convert aftable- to Workbook-class objects"
     contents: generate_workbook
   - title: "Data"
     desc: "Demo datasets used in package examples"
@@ -36,6 +36,3 @@ reference:
   - title: "RStudio Addins"
     desc: "RStudio Addin functions for inserting workflow skeletons"
     contents: starts_with("at_")
-  - title: Superseded
-    desc: "Demo datasets superseded in version 0.3 of the package"
-    contents: starts_with("mtcars_df")

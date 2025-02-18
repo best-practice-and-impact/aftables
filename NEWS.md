@@ -1,3 +1,8 @@
+# aftables 1.0.0
+
+* Updated package name to aftables. Function names have been updated to remove references to a11ytables.
+
+
 # a11ytables 0.3.2
 
 * Bug fix: ensured factors are converted to character before assessing whether the column needs to be widened (#110, #113).

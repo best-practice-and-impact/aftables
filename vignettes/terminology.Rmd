@@ -2,7 +2,7 @@
 title: "Spreadsheet terminology"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{terminology}
+  %\VignetteIndexEntry{Spreadsheet terminology}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 # Purpose
 
-This vignette provides a quick lookup of spreadsheet nomenclature, as used in the {a11ytables} package.
+This vignette provides a quick lookup of spreadsheet nomenclature, as used in the {aftables} package.
 
 # Terminology
 
@@ -44,10 +44,10 @@ _Sheets_ themselves are composed of inserted _elements_ that appear in the follo
 
 # Example
 
-This is an example xlsx output from the {a11ytables} package:
+This is an example xlsx output from the {aftables} package:
 
 <div class="figure">
-<img src="../man/figures/table-sheet-markup.png" alt="A spreadsheet produced by the a11ytables package. Four things have been marked with numbers. 1 points to the current tab, named Table_1. 2 points to the sheet title. 3 points to four rows of elements below the title and below the table, which refer to the number of tables in the sheet, the presence of notes, the meaning of blank cells and the data source. 4 points to the table." width="100%"/>
+<img src="../man/figures/table-sheet-markup.png" alt="A spreadsheet produced by the aftables package. Four things have been marked with numbers. 1 points to the current tab, named Table_1. 2 points to the sheet title. 3 points to four rows of elements below the title and below the table, which refer to the number of tables in the sheet, the presence of notes, the meaning of blank cells and the data source. 4 points to the table." width="100%"/>
 </div>
 
 The labels in the image above highlight:
@@ -59,4 +59,4 @@ The labels in the image above highlight:
 
 # Contribute
 
-To contribute, please add [an issue](https://github.com/co-analysis/a11ytables/issues) or [a pull request](https://github.com/co-analysis/a11ytables/pulls) after reading [the code of conduct](https://github.com/co-analysis/a11ytables/blob/main/CODE_OF_CONDUCT.md) and [contributing](https://github.com/co-analysis/a11ytables/blob/main/.github/CONTRIBUTING.md) guidance. 
+To contribute, please add [an issue](https://github.com/best-practice-and-impact/aftables/issues) or [a pull request](https://github.com/best-practice-and-impact/aftables/pulls) after reading [the code of conduct](https://github.com/best-practice-and-impact/aftables/blob/main/CODE_OF_CONDUCT.md) and [contributing](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CONTRIBUTING.md) guidance. 

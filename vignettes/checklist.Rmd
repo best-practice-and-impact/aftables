@@ -2,7 +2,7 @@
 title: "Accessibility guidance checklist"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{accessibility}
+  %\VignetteIndexEntry{Accessibility guidance checklist}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,68 +16,68 @@ knitr::opts_chunk$set(
 
 ## Purpose
 
-This vignette shows you how {a11ytables} meets accessibility best practice.
+This vignette shows you how {aftables} meets accessibility best practice.
 
 ## Checklists
 
-This page shows how the features of the {a11ytables} package meet the Analysis Function's ['Making spreadsheets accessible: checklist of the basics'](https://analysisfunction.civilservice.gov.uk/policy-store/making-spreadsheets-accessible-a-brief-checklist-of-the-basics/) guidance.
+This page shows how the features of the {aftables} package meet the Analysis Function's ['Making spreadsheets accessible: checklist of the basics'](https://analysisfunction.civilservice.gov.uk/policy-store/making-spreadsheets-accessible-a-brief-checklist-of-the-basics/) guidance.
 
-The assessments in the table below are based on generating an unedited output from a typical {a11ytables} workflow, i.e. use `create_a11ytable()` to make an a11ytable that's passed to `generate_workbook()` and then written with `openxlsx::saveWorkbook()`.
+The assessments in the table below are based on generating an unedited output from a typical {aftables} workflow, i.e. use `create_aftable()` to make an aftable that's passed to `generate_workbook()` and then written with `openxlsx::saveWorkbook()`.
 
 There are several self-assessed indicators used in the 'status' column of the tables below:
 
-* 'met' means that {a11ytables} contains a feature (or the absence of a feature) to help meet the requirement
+* 'met' means that {aftables} contains a feature (or the absence of a feature) to help meet the requirement
 * 'user's responsibility' means that the user must make a decision about how to meet the requirement
-* 'partly' means that {a11ytables} contains a feature to help meet the requirement, but the user may need to provide additional input
-* 'not applicable' means the checklist item does not need to be met due to the way in which {a11ytables} works
+* 'partly' means that {aftables} contains a feature to help meet the requirement, but the user may need to provide additional input
+* 'not applicable' means the checklist item does not need to be met due to the way in which {aftables} works
 
 ### Tables
 
 | Description | Essential? | Status | Explanation |
 | :-- | :- | :- | :---- |
 | Mark up tables | Yes | Met | Provided automatically by `generate_workbook()` |
-| Give tables meaningful names | No | Met | Unique table names are generated from the `tab_titles` argument in `create_a11ytable()` |
-| Remove merged cells, split cells and nested tables | Yes | Met | {a11ytables} doesn't create these features |
-| Remove blank rows and columns within tables | Yes | Partly/user’s responsibility | A warning is supplied to a user if cells in the table are blank but no explanation has been provided in the `blank_cells` column of the provided a11ytables object |
+| Give tables meaningful names | No | Met | Unique table names are generated from the `tab_titles` argument in `create_aftable()` |
+| Remove merged cells, split cells and nested tables | Yes | Met | {aftables} doesn't create these features |
+| Remove blank rows and columns within tables | Yes | Partly/user’s responsibility | A warning is supplied to a user if cells in the table are blank but no explanation has been provided in the `blank_cells` column of the provided aftables object |
 | All tables should have one tagged header row | Yes | Met | R's data.frame class only allows for one header row, which must have unique names; the header row is tagged when marked-up as a table |
-| Wrap text within cells | Yes | Met | `generate_workbook()` wraps content by default; there's a simple check in {a11ytables} to widen a column if it contains long strings |
-| Avoid adding filters and freeze panes | No | Met | Filters and freezing aren't supported by {a11ytables} |
-| Only leave cells with no data empty in certain circumstances | Yes | User's responsibility | The user should describe why there are blank cells in the `blank_cells` column of their a11ytables object |
-| Avoid hiding rows or columns | No | Met | Hiding isn't supported by {a11ytables} |
-| Columns should be a sensible width | No | Partly | {a11ytables} uses a fixed default column width for data tables (16), which is doubled (32) if the length of the content exceeds a threshold number of characters (50) |
+| Wrap text within cells | Yes | Met | `generate_workbook()` wraps content by default; there's a simple check in {aftables} to widen a column if it contains long strings |
+| Avoid adding filters and freeze panes | No | Met | Filters and freezing aren't supported by {aftables} |
+| Only leave cells with no data empty in certain circumstances | Yes | User's responsibility | The user should describe why there are blank cells in the `blank_cells` column of their aftables object |
+| Avoid hiding rows or columns | No | Met | Hiding isn't supported by {aftables} |
+| Columns should be a sensible width | No | Partly | {aftables} uses a fixed default column width for data tables (16), which is doubled (32) if the length of the content exceeds a threshold number of characters (50) |
 
 ### Footnotes
 
 | Description | Essential? | Status | Explanation |
 | :-- | :- | :- | :---- |
-| Do not use symbols or superscript to signpost to notes | Yes | Met/user’s responsibility | Notes are detected automatically as digits in square brackets; superscript is not supported by {a11ytables} |
+| Do not use symbols or superscript to signpost to notes | Yes | Met/user’s responsibility | Notes are detected automatically as digits in square brackets; superscript is not supported by {aftables} |
 | Use the word 'note' when referring to footnotes | No | User’s responsibility | Notes are detected in the form '[note 1]'; the user should be consistent about this wording |
 | Avoid putting note markers in specific cells | No | User’s responsibility | Columns named 'Notes' and note markers in column headers are detected, the user should not put these elsewhere  |
-| Put note text in a notes table on a notes worksheet | No | Met | `create_a11ytable()` expects the `sheet_type` 'notes' |
+| Put note text in a notes table on a notes worksheet | No | Met | `create_aftable()` expects the `sheet_type` 'notes' |
 
 ### Formatting
 
 | Description | Essential? | Status | Explanation |
 | :-- | :- | :- | :---- |
-| All written content needs to meet the accessibility guidelines | No | User's responsibility | {a11ytables} does not check the validity of user-supplied text |
-| Links must be accessible | Yes | User's responsibility | {a11ytables} does not check the validity of user-supplied text |
+| All written content needs to meet the accessibility guidelines | No | User's responsibility | {aftables} does not check the validity of user-supplied text |
+| Links must be accessible | Yes | User's responsibility | {aftables} does not check the validity of user-supplied text |
 | Format text to make it accessible | No | Met | `generate_workbook()` auto-formats the text |
-| All worksheets should have descriptive titles which are properly tagged and formatted | Yes | Partly/user’s responsibility | {a11ytables} does not check user-supplied text nor data; the package handles formatting but not yet mark-up for headings |
-| Avoid using symbols in general | No | User's responsibility | {a11ytables} does not check the validity of user-supplied text |
-| Do not use headers and footers, floating text boxes or floating toolbars | Yes | Met  | These features aren't supported by {a11ytables} |
-| Do not use visual devices to divide data regions | No | Met | Colours and patterns aren't supported by {a11ytables} |
-| Do not use a background fill | No | Met | Fills aren't supported by {a11ytables} |
-| Do not use colour as the only way to convey a message | Yes | Met | Colour is not supported by {a11ytables} |
-| When using colour for emphasis check the contrast | Yes | Not applicable | Colour is not supported by {a11ytables}, so a check is not required |
-| Avoid images in spreadsheets | No | Met | Images aren't supported by {a11ytables} |
-| Remove macros | No | Met | Macros aren't supported by {a11ytables} |
+| All worksheets should have descriptive titles which are properly tagged and formatted | Yes | Partly/user’s responsibility | {aftables} does not check user-supplied text nor data; the package handles formatting but not yet mark-up for headings |
+| Avoid using symbols in general | No | User's responsibility | {aftables} does not check the validity of user-supplied text |
+| Do not use headers and footers, floating text boxes or floating toolbars | Yes | Met  | These features aren't supported by {aftables} |
+| Do not use visual devices to divide data regions | No | Met | Colours and patterns aren't supported by {aftables} |
+| Do not use a background fill | No | Met | Fills aren't supported by {aftables} |
+| Do not use colour as the only way to convey a message | Yes | Met | Colour is not supported by {aftables} |
+| When using colour for emphasis check the contrast | Yes | Not applicable | Colour is not supported by {aftables}, so a check is not required |
+| Avoid images in spreadsheets | No | Met | Images aren't supported by {aftables} |
+| Remove macros | No | Met | Macros aren't supported by {aftables} |
 
 ### Structure
 
 | Description | Essential? | Status | Explanation |
 | :-- | :- | :- | :---- |
-| Give worksheets unique names or numbers | Yes | User's responsibility | Supply `tab_titles` to `create_a11ytable()`, which gives a warning if any names match |
-| Remove blank worksheets | Yes | Met | `create_a11ytable()` will error if expected argument content is missing |
+| Give worksheets unique names or numbers | Yes | User's responsibility | Supply `tab_titles` to `create_aftable()`, which gives a warning if any names match |
+| Remove blank worksheets | Yes | Met | `create_aftable()` will error if expected argument content is missing |
 | Use cells in column A wisely | Yes | Met | `generate_workbook()` inserts the sheet title, table count, notes statement, source statement and tables into column A by default  |
 | Position tables against the left-hand edges of each sheet | Yes | Met | `generate_workbook()` inserts automatically the tables into column A |
 | Avoid putting content below a table | No | Met | `generate_workbook()` adds information to rows above tables only |
@@ -87,11 +87,11 @@ There are several self-assessed indicators used in the 'status' column of the ta
 
 | Description | Essential? | Status | Explanation |
 | :-- | :- | :- | :---- |
-| Run a spelling and grammar check | Yes | User's responsibility | These checks aren't supported by {a11ytables}; the user should check using their own software |
-| Use the accessibility checker | No | User's responsibility | These checks aren't supported by {a11ytables}; the user should check using their own software |
-| Add document information | Yes | User's responsibility | Not yet possible with {a11ytables}; users must do this manually |
+| Run a spelling and grammar check | Yes | User's responsibility | These checks aren't supported by {aftables}; the user should check using their own software |
+| Use the accessibility checker | No | User's responsibility | These checks aren't supported by {aftables}; the user should check using their own software |
+| Add document information | Yes | User's responsibility | Not yet possible with {aftables}; users must do this manually |
 | Ensure the cursor is in cell A1 of the first worksheet when doing your final save | Yes | Met | Occurs automatically |
 
 # Contribute
 
-To contribute, please add [an issue](https://github.com/co-analysis/a11ytables/issues) or [a pull request](https://github.com/co-analysis/a11ytables/pulls) after reading [the code of conduct](https://github.com/co-analysis/a11ytables/blob/main/CODE_OF_CONDUCT.md) and [contributing](https://github.com/co-analysis/a11ytables/blob/main/.github/CONTRIBUTING.md) guidance. 
+To contribute, please add [an issue](https://github.com/best-practice-and-impact/aftables/issues) or [a pull request](https://github.com/best-practice-and-impact/aftables/pulls) after reading [the code of conduct](https://github.com/best-practice-and-impact/aftables/blob/main/CODE_OF_CONDUCT.md) and [contributing](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CONTRIBUTING.md) guidance. 

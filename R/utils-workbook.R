@@ -8,8 +8,8 @@
     stop("'wb' must be a Workbook-class object.")
   }
 
-  if (!is.null(table_name) &
-      !inherits(table_name, "character") &
+  if (!is.null(table_name) &&
+      !inherits(table_name, "character") &&
       length(table_name != 1)
   ) {
     stop("'table_name' must be a string of length 1")
@@ -125,11 +125,9 @@
 
 }
 
-.get_start_row_custom_rows <- function(
-    has_notes,
-    has_blanks_message,
-    start_row = 3
-) {
+.get_start_row_custom_rows <- function(has_notes,
+                                       has_blanks_message,
+                                       start_row = 3) {
 
   if (has_notes) {
     start_row <- start_row + 1
@@ -143,14 +141,12 @@
 
 }
 
-.get_start_row_source <- function(
-    content,
-    tab_title,
-    has_notes,
-    has_blanks_message,
-    has_custom_rows,
-    start_row = 3
-) {
+.get_start_row_source <- function(content,
+                                  tab_title,
+                                  has_notes,
+                                  has_blanks_message,
+                                  has_custom_rows,
+                                  start_row = 3) {
 
   if (has_notes) {
     start_row <- start_row + 1
@@ -169,15 +165,13 @@
 
 }
 
-.get_start_row_table <- function(
-    content,
-    tab_title,
-    has_notes,
-    has_blanks_message,
-    has_custom_rows,
-    has_source,
-    start_row = 3
-) {
+.get_start_row_table <- function(content,
+                                 tab_title,
+                                 has_notes,
+                                 has_blanks_message,
+                                 has_custom_rows,
+                                 has_source,
+                                 start_row = 3) {
 
   if (has_notes) {
     start_row <- start_row + 1
@@ -233,7 +227,7 @@
 
   }
 
-  return(wb)
+  wb
 
 }
 
@@ -269,7 +263,7 @@
     startRow = 2  # table count will always be the second row
   )
 
-  return(wb)
+  wb
 
 }
 
@@ -292,7 +286,7 @@
 
   }
 
-  return(wb)
+  wb
 
 }
 
@@ -303,17 +297,6 @@
   if (has_blanks_message) {
 
     blanks_text <- content[content$tab_title == tab_title, "blank_cells"][[1]]
-
-    # last_char <- strsplit(blanks_text, "")[[1]][nchar(blanks_text)]
-    #
-    # if (last_char == ".") {
-    #   text <- blanks_text
-    # }
-    #
-    # if (last_char != ".") {
-    #   text <- paste0(blanks_text, ".")
-    # }
-
     has_notes <- .has_notes(content, tab_title)
     start_row <- .get_start_row_blanks_message(has_notes)
 
@@ -327,7 +310,7 @@
 
   }
 
-  return(wb)
+  wb
 
 }
 
@@ -360,7 +343,7 @@
 
   }
 
-  return(wb)
+  wb
 
 }
 
@@ -392,7 +375,7 @@
 
   }
 
-  return(wb)
+  wb
 
 }
 
@@ -423,7 +406,7 @@
     bandedRows = FALSE
   )
 
-  return(wb)
+  wb
 
 }
 
@@ -560,7 +543,7 @@
     openxlsx::addWorksheet(wb, i)
   }
 
-  return(wb)
+  wb
 
 }
 
@@ -579,7 +562,7 @@
   .style_sheet_title(wb, tab_title, styles)
   .style_cover(wb, content, styles)  # TODO: needs special handling if list provided
 
-  return(wb)
+  wb
 
 }
 
@@ -602,7 +585,7 @@
   .style_table(wb, content, table_name, styles)
   .style_contents(wb, content, styles)
 
-  return(wb)
+  wb
 
 }
 
@@ -625,7 +608,7 @@
   .style_table(wb, content, table_name, styles)
   .style_notes(wb, content, styles)
 
-  return(wb)
+  wb
 
 }
 
@@ -648,6 +631,6 @@
   .style_sheet_title(wb, tab_title, styles)
   .style_table(wb, content, table_name, styles)
 
-  return(wb)
+  wb
 
 }

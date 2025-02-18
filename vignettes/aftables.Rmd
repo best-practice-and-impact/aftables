@@ -1,8 +1,8 @@
 ---
-title: "Introduction to {a11ytables}"
+title: "Introduction to {aftables}"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{a11ytables}
+  %\VignetteIndexEntry{aftables}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,32 +16,32 @@ knitr::opts_chunk$set(
 
 ## Purpose
 
-This vignette demonstrates how to use {a11ytables} to generate a spreadsheet output that automatically follows [best practice](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/).
+This vignette demonstrates how to use {aftables} to generate a spreadsheet output that automatically follows [best practice](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/).
 
 ## Installation
 
-Install the package [from GitHub](https://github.com/co-analysis/a11ytables) using [{remotes}](https://remotes.r-lib.org/).
+Install the package [from GitHub](https://github.com/best-practice-and-impact/aftables) using [{remotes}](https://remotes.r-lib.org/).
 
 ```{r install, eval=FALSE}
 install.packages("remotes")  # if not already installed
-remotes::install_github("co-analysis/a11ytables")
+remotes::install_github("best-practice-and-impact/aftables")
 ```
 
-The package depends on [{openxlsx}](https://ycphs.github.io/openxlsx/) and [{pillar}](https://pillar.r-lib.org/), which are also installed with {a11ytables}.
+The package depends on [{openxlsx}](https://ycphs.github.io/openxlsx/) and [{pillar}](https://pillar.r-lib.org/), which are also installed with {aftables}.
 
 ## Workflow
 
-Having installed the {a11ytables} package, there are three steps to generating a compliant spreadsheet:
+Having installed the {aftables} package, there are three steps to generating a compliant spreadsheet:
 
-1. Use `create_a11ytable()` to create a special dataframe (with class 'a11ytable') that contains all the content that will go in your spreadsheet
-1. Pass the output to `generate_workbook()` to convert the a11ytable to {openxlsx}'s 'Workbook' class, which adds spreadsheet structure and styles
+1. Use `create_aftable()` to create a special dataframe (with class 'aftable') that contains all the content that will go in your spreadsheet
+1. Pass the output to `generate_workbook()` to convert the aftable to {openxlsx}'s 'Workbook' class, which adds spreadsheet structure and styles
 1. Pass the output to `openxlsx::saveWorkbook()` to write out to an xlsx file (or `openxlsx::openXL()` to open a temporary copy)
 
-You can use the package's [RStudio Addin](https://rstudio.github.io/rstudioaddins/), which is installed with {a11ytables}, to insert a pre-filled demo skeleton of this workflow (RStudio users only).
+You can use the package's [RStudio Addin](https://rstudio.github.io/rstudioaddins/), which is installed with {aftables}, to insert a pre-filled demo skeleton of this workflow (RStudio users only).
 
-### 1. Create an a11ytable
+### 1. Create an aftable
 
-Each argument to `create_a11ytable()` provides the information needed to construct each sheet in the spreadsheet.
+Each argument to `create_aftable()` provides the information needed to construct each sheet in the spreadsheet.
 
 | Argument | Required | Type | Accepted values | Explanation |
 | :--- | :- | :--- | :--- | :------ |
@@ -53,27 +53,27 @@ Each argument to `create_a11ytable()` provides the information needed to constru
 | `sources` | No | Character vector | | A sentence provides the source of the data found in each table (if applicable, likely only needed for sheets with `sheet_types` of 'table') |
 | `tables` | Yes | List of dataframes (although the cover sheet content can be provided as a list object) | | The main content for each sheet, expressed as flat ([probably tidy](https://www.jstatsoft.org/article/view/v059i10)) dataframes of rows and columns (though the cover can be a list) |
 
-You can read more about these arguments and their requirements in the function's help pages, which you can access by running `?create_a11ytable` in the R console. See also the [terminology vignette](https://co-analysis.github.io/a11ytables/articles/terminology), `vignette("terminology", "a11ytables")`, for these terms and more.
+You can read more about these arguments and their requirements in the function's help pages, which you can access by running `?create_aftable` in the R console. See also the [terminology vignette](https://best-practice-and-impact.github.io/aftables/articles/terminology), `vignette("terminology", "aftables")`, for these terms and more.
 
 #### Pre-prepare tables
 
-Rather than pass a big list of dataframes directly to the `tables` argument of `create_a11ytable()`, it's preferable to prepare them first into their own named objects.
+Rather than pass a big list of dataframes directly to the `tables` argument of `create_aftable()`, it's preferable to prepare them first into their own named objects.
 
-Below are some demo tables that we will later pass to `create_a11ytable()`. I've used `tibble::tribble()` for human-readable row-by-row dataframe construction, but you can just use `data.frame()` if you want.
+Below are some demo tables that we will later pass to `create_aftable()`. I've used `tibble::tribble()` for human-readable row-by-row dataframe construction, but you can just use `data.frame()` if you want.
 
 Note that you can use the RStudio Addin 'Insert table templates using 'tibble'' and 'Insert table templates using 'data.frame'' to insert a demo skeleton into your R script.
 
 ##### Meta-sheets
 
-The cover can accept either a list or a data.frane (the latter was the only acceptable input prior to version 0.2.0). We recommend a list so that you can have multiple rows per section on the cover. This also means you can dedicate certain rows to be hyperlinks to web URLs or mailto links that will open an email client. Here's a demo list for the contents page (required):
+The cover can accept either a list or a data.frame (the latter was the only acceptable input prior to version 0.2.0). We recommend a list so that you can have multiple rows per section on the cover. This also means you can dedicate certain rows to be hyperlinks to web URLs or mailto links that will open an email client. Here's a demo list for the contents page (required):
 
 ```{r tables-cover-list}
 cover_list <- list(
   "Section 1" = c("First row of Section 1.", "Second row of Section 1."),
   "Section 2" = "The only row of Section 2.",
   "Section 3" = c(
-    "[Website](https://co-analysis.github.io/a11ytables/)",
-    "[Email address](mailto:fake.address@a11ytables.com)"
+    "[Website](https://best-practice-and-impact.github.io/aftables/)",
+    "[Email address](mailto:fake.address@aftables.com)"
   )
 )
 ```
@@ -123,7 +123,7 @@ table_1_df <- data.frame(
   "Numeric suppressed" = c(1:4, "[c]", 6:9, "[x]"),
   "Numeric thousands" = abs(round(rnorm(10), 4) * 1e5),
   "Numeric decimal" = abs(round(rnorm(10), 5)),
-  "This column has a very long name that means that the column width needs to be widened" = 1:10,
+  "Long name that means that the column width needs to be widened" = 1:10,
   Notes = c("[note 1]", rep(NA_character_, 4), "[note 2]", rep(NA_character_, 4)),
   check.names = FALSE
 )
@@ -144,9 +144,9 @@ table_2_df
 
 See [the best practice guidance](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/) for more information on how to present data in these tables.
 
-#### Create a11ytable
+#### Create aftable
 
-Now we can construct an a11ytable by passing the required sheet elements as character vectors with `c()`—or a `list()` in the case of the `tables` and `custom_rows` arguments—to the `create_a11ytable()` function. 
+Now we can construct an aftable by passing the required sheet elements as character vectors with `c()`—or a `list()` in the case of the `tables` and `custom_rows` arguments—to the `create_aftable()` function. 
 
 Note that:
 
@@ -154,64 +154,63 @@ Note that:
 * you must use `NA_character_` wherever an element isn't required (e.g. there is no information about blank cells nor sources for the first three sheets)
 * you can insert a template of this demo using the package's RStudio Addin
 
-```{r new-a11ytable}
-my_a11ytable <- 
-  a11ytables::create_a11ytable(
-    tab_titles = c("Cover", "Contents", "Notes", "Table 1", "Table_2"),
-    sheet_types = c("cover", "contents", "notes", "tables", "tables"),
-    sheet_titles = c(
-      "The 'a11ytables' Demo Workbook",
-      "Table of contents",
-      "Notes",
-      "Table 1: First Example Sheet",
-      "Table 2: Second Example Sheet"
+```{r new-aftable}
+my_aftable <- aftables::create_aftable(
+  tab_titles = c("Cover", "Contents", "Notes", "Table 1", "Table_2"),
+  sheet_types = c("cover", "contents", "notes", "tables", "tables"),
+  sheet_titles = c(
+    "The 'aftables' Demo Workbook",
+    "Table of contents",
+    "Notes",
+    "Table 1: First Example Sheet",
+    "Table 2: Second Example Sheet"
+  ),
+  blank_cells = c(
+    rep(NA_character_, 3),
+    "Blank cells indicate that there's no note in that row.",
+    NA_character_
+  ),
+  custom_rows = list(
+    NA_character_,
+    NA_character_,
+    "A custom row.",
+    c(
+      "First custom row [with a hyperlink.](https://best-practice-and-impact.github.io/aftables/)",
+      "Second custom row."
     ),
-    blank_cells = c(
-      rep(NA_character_, 3),
-      "Blank cells indicate that there's no note in that row.",
-      NA_character_
-    ),
-    custom_rows = list(
-      NA_character_,
-      NA_character_,
-      "A custom row.",
-      c(
-        "First custom row [with a hyperlink.](https://co-analysis.github.io/a11ytables/)",
-        "Second custom row."
-      ),
-      "A custom row."
-    ),
-    sources = c(
-      rep(NA_character_, 3),
-      "[The Source Material., 2024](https://co-analysis.github.io/a11ytables/)",
-      "The Source Material, 2024."
-    ),
-    tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)
-  )
+    "A custom row."
+  ),
+  sources = c(
+    rep(NA_character_, 3),
+    "[The Source Material., 2024](https://best-practice-and-impact.github.io/aftables/)",
+    "The Source Material, 2024."
+  ),
+  tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)
+)
 ```
 
 The function will return errors or warnings if anything is missing or seems odd. For example, we were warned that a value we supplied to `tab_title` had to be cleaned from 'Table 1' to 'Table_1', since blank spaces are not allowed in tab names. Note that there will be an error if there are any tab titles that start with a numeral.
 
 Here's a preview of the object that was created:
 
-```{r a11ytable-preview}
-my_a11ytable
+```{r aftable-preview}
+my_aftable
 ```
 
-You can immediately tell that this is an a11ytable because it's the first word that's printed with the output.
+You can immediately tell that this is an aftable because it's the first word that's printed with the output.
 
-So our a11ytable is basically just a table with one row per sheet and one column per sheet element. In fact, it has class 'data.frame'/'tbl' along with 'a11ytable'. For convenience, you can also check for the a11ytable class with `is_a11ytable()`.
+So our aftable is basically just a table with one row per sheet and one column per sheet element. In fact, it has class 'data.frame'/'tbl' along with 'aftable'. For convenience, you can also check for the aftable class with `is_aftable()`.
 
-Note that `create_a11ytable()` is the preferred method for generating a11ytable-class objects, but it's also possible to convert a correctly-formatted, pre-built data.frame or tibble directly to an a11ytable with `as_a11ytable()`.
+Note that `create_aftable()` is the preferred method for generating aftable-class objects, but it's also possible to convert a correctly-formatted, pre-built data.frame or tibble directly to an aftable with `as_aftable()`.
 
 ### 2. Convert to a workbook
 
-We can use `generate_workbook()` to convert our a11ytable to an [{openxlsx}](https://ycphs.github.io/openxlsx/) Workbook-class object.
+We can use `generate_workbook()` to convert our aftable to an [{openxlsx}](https://ycphs.github.io/openxlsx/) Workbook-class object.
 
-This type of object adds information from each row of our a11ytable into separate sheets and applies other relevant structure, mark-up and styles for compliance with [the best practice guidance](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/).
+This type of object adds information from each row of our aftable into separate sheets and applies other relevant structure, mark-up and styles for compliance with [the best practice guidance](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/).
 
-```{r create-a11y-wb}
-my_wb <- a11ytables::generate_workbook(my_a11ytable)
+```{r create-af-wb}
+my_wb <- aftables::generate_workbook(my_aftable)
 ```
 
 <details><summary>Click for a preview of the Workbook object</summary>
@@ -238,18 +237,18 @@ You could also open a temporary copy of the workbook with `openxlsx::openXL()`, 
 The content of your output spreadsheet will end up looking something like this:
 
 <div class="figure">
-<img src="../man/figures/vignette-workbook.gif" alt="Gif of a simple Excel workbook created using the a11ytables package, revealing tabs for cover, contents, notes and a table." width="100%"/>
+<img src="../man/figures/vignette-workbook.gif" alt="Gif of a simple Excel workbook created using the aftables package, revealing tabs for cover, contents, notes and a table." width="100%"/>
 </div>
 
 You'll notice that various best-practice formatting (e.g. Arial size 12 font for body text) and mark-up (e.g. tables, donated by a marker in the lower-right corner of the lower-right cell of each one) have been applied throughout.
 
-Note also that two 'pre-table' meta-elements were created automatically in the sheets that contain statistical tables, which you didn't need to supply to `create_a11ytable()`: (1) the number of tables and (2) the presence of notes. These are required for accessibility good practice.
+Note also that two 'pre-table' meta-elements were created automatically in the sheets that contain statistical tables, which you didn't need to supply to `create_aftable()`: (1) the number of tables and (2) the presence of notes. These are required for accessibility good practice.
 
 #### Final tweaks
 
-It's your responsibility to check and amend the output from {a11ytables} to ensure it meets users' accessibility needs.
+It's your responsibility to check and amend the output from {aftables} to ensure it meets users' accessibility needs.
 
-You can apply some final tweaks to the output xlsx file if the defaults don't quite meet your requirements (e.g. some column widths), though it's advisable to keep changes to a minimum for reproducibility purposes and because you may undo some of the compliant structuring and formatting that {a11ytables} provides.
+You can apply some final tweaks to the output xlsx file if the defaults don't quite meet your requirements (e.g. some column widths), though it's advisable to keep changes to a minimum for reproducibility purposes and because you may undo some of the compliant structuring and formatting that {aftables} provides.
 
 At time of writing (v0.3.0) you might want to address manually some other [accessibility requirements](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/) that are not yet covered by the package:
 
@@ -257,8 +256,8 @@ At time of writing (v0.3.0) you might want to address manually some other [acces
 3. Convert to an ODS file rather than the proprietary xlsx format
 4. Various number-formatting issues, like padding decimal places with zeroes
 
-We're trying to address a number of these limitations. Please [see the issues on GitHub](https://github.com/co-analysis/a11ytables/issues) for the current status.
+We're trying to address a number of these limitations. Please [see the issues on GitHub](https://github.com/best-practice-and-impact/aftables/issues) for the current status.
 
 ## Contribute
 
-To contribute, please add [an issue](https://github.com/co-analysis/a11ytables/issues) or [a pull request](https://github.com/co-analysis/a11ytables/pulls) after reading [the code of conduct](https://github.com/co-analysis/a11ytables/blob/main/CODE_OF_CONDUCT.md) and [contributing](https://github.com/co-analysis/a11ytables/blob/main/.github/CONTRIBUTING.md) guidance. 
+To contribute, please add [an issue](https://github.com/best-practice-and-impact/aftables/issues) or [a pull request](https://github.com/best-practice-and-impact/aftables/pulls) after reading [the code of conduct](https://github.com/best-practice-and-impact/aftables/blob/main/CODE_OF_CONDUCT.md) and [contributing](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CONTRIBUTING.md) guidance. 
