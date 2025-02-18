@@ -47,7 +47,7 @@ issue](https://github.com/best-practice-and-impact/aftables/issues) or
 [a pull
 request](https://github.com/best-practice-and-impact/aftables/pulls)
 after reading [the code of
-conduct](https://github.com/best-practice-and-impact/aftables/blob/main/CODE_OF_CONDUCT.md)
+conduct](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CODE_OF_CONDUCT.md)
 and
 [contributing](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CONTRIBUTING.md)
 guidance.

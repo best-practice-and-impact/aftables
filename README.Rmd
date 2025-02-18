@@ -35,7 +35,7 @@ This package is not yet capable of creating perfectly accessible spreadsheets bu
 
 The package is under (opinionated) active development. Please see [the NEWS file](https://best-practice-and-impact.github.io/aftables/news/index.html) for the latest changes. 
 
-To contribute, please add [an issue](https://github.com/best-practice-and-impact/aftables/issues) or [a pull request](https://github.com/best-practice-and-impact/aftables/pulls) after reading [the code of conduct](https://github.com/best-practice-and-impact/aftables/blob/main/CODE_OF_CONDUCT.md) and [contributing](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CONTRIBUTING.md) guidance. 
+To contribute, please add [an issue](https://github.com/best-practice-and-impact/aftables/issues) or [a pull request](https://github.com/best-practice-and-impact/aftables/pulls) after reading [the code of conduct](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CODE_OF_CONDUCT.md) and [contributing](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CONTRIBUTING.md) guidance. 
 
 
 ## Installation
