@@ -37,7 +37,18 @@ The package is under (opinionated) active development. Please see [the NEWS file
 
 To contribute, please add [an issue](https://github.com/best-practice-and-impact/aftables/issues) or [a pull request](https://github.com/best-practice-and-impact/aftables/pulls) after reading [the code of conduct](https://github.com/best-practice-and-impact/aftables/blob/main/CODE_OF_CONDUCT.md) and [contributing](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CONTRIBUTING.md) guidance. 
 
-## Install
+
+## Installation
+
+### Install from CRAN
+
+Install the latest release version of aftables directly from CRAN:
+
+``` {r install from CRAN, eval=FALSE}
+install.packages("aftables")
+```
+
+### Install from GitHub
 
 Install the package [from GitHub](https://github.com/best-practice-and-impact/aftables) using [{remotes}](https://remotes.r-lib.org/).
 
@@ -49,10 +60,7 @@ remotes::install_github(
   dependencies = TRUE,              # install required/suggested packages
   build_vignettes = TRUE            # generate vignette documentation
 )
-
-library(aftables)  # attach package
 ```
-
 
 ## How to install a11ytables
 

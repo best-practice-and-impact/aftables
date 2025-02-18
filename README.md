@@ -52,7 +52,17 @@ and
 [contributing](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CONTRIBUTING.md)
 guidance.
 
-## Install
+## Installation
+
+### Install from CRAN
+
+Install the latest release version of aftables directly from CRAN:
+
+``` r
+install.packages("aftables")
+```
+
+### Install from GitHub
 
 Install the package [from
 GitHub](https://github.com/best-practice-and-impact/aftables) using
@@ -66,8 +76,6 @@ remotes::install_github(
   dependencies = TRUE,              # install required/suggested packages
   build_vignettes = TRUE            # generate vignette documentation
 )
-
-library(aftables)  # attach package
 ```
 
 ## How to install a11ytables
