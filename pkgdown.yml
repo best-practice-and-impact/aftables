@@ -1,13 +1,12 @@
 pandoc: 3.1.11
-pkgdown: 2.0.9
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
-  a11ytables: a11ytables.html
+  aftables: aftables.html
   checklist: checklist.html
   structure: structure.html
   terminology: terminology.html
-last_built: 2024-05-27T14:08Z
+last_built: 2025-02-18T11:55Z
 urls:
-  reference: https://co-analysis.github.io/a11ytables/reference
-  article: https://co-analysis.github.io/a11ytables/articles
-
+  reference: https://best-practice-and-impact.github.io/aftables/reference
+  article: https://best-practice-and-impact.github.io/aftables/articles

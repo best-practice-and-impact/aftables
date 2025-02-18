@@ -5,8 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="a11ytables">
-<title>Accessibility guidance checklist • a11ytables</title>
+<title>Accessibility guidance checklist • aftables</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,67 +15,49 @@
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Fira_Code-0.4.9/font.css" rel="stylesheet">
-<!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Accessibility guidance checklist">
-<meta property="og:description" content="a11ytables">
-<meta property="og:image" content="https://co-analysis.github.io/a11ytables/logo.png">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
-    
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
-    
-    <a class="navbar-brand me-2" href="../index.html">a11ytables</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
+    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
-    
+    <a class="navbar-brand me-2" href="../index.html">aftables</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item">
-  <a class="nav-link" href="../articles/a11ytables.html">Get started</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="../reference/index.html">Reference</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../articles/aftables.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/checklist.html">Accessibility guidance checklist</a>
-    <a class="dropdown-item" href="../articles/structure.html">Package structure</a>
-    <a class="dropdown-item" href="../articles/terminology.html">Spreadsheet terminology</a>
-  </div>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/checklist.html">Accessibility guidance checklist</a></li>
+    <li><a class="dropdown-item" href="../articles/structure.html">Package structure</a></li>
+    <li><a class="dropdown-item" href="../articles/terminology.html">Spreadsheet terminology</a></li>
+  </ul>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../news/index.html">Changelog</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
-<form class="form-inline my-2 my-lg-0" role="search">
-        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
-</form>
-
-      <ul class="navbar-nav">
-<li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/co-analysis/a11ytables/" aria-label="github">
-    <span class="fab fa fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/best-practice-and-impact/aftables/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
-    
+
   </div>
 </nav><div class="container template-article">
 
@@ -88,7 +69,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Accessibility guidance checklist</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/co-analysis/a11ytables/blob/HEAD/vignettes/checklist.Rmd" class="external-link"><code>vignettes/checklist.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/best-practice-and-impact/aftables/blob/main/vignettes/checklist.Rmd" class="external-link"><code>vignettes/checklist.Rmd</code></a></small>
       <div class="d-none name"><code>checklist.Rmd</code></div>
     </div>
 
@@ -97,31 +78,31 @@
 <div class="section level3">
 <h3 id="purpose">Purpose<a class="anchor" aria-label="anchor" href="#purpose"></a>
 </h3>
-<p>This vignette shows you how {a11ytables} meets accessibility best
+<p>This vignette shows you how {aftables} meets accessibility best
 practice.</p>
 </div>
 <div class="section level3">
 <h3 id="checklists">Checklists<a class="anchor" aria-label="anchor" href="#checklists"></a>
 </h3>
-<p>This page shows how the features of the {a11ytables} package meet the
+<p>This page shows how the features of the {aftables} package meet the
 Analysis Function’s <a href="https://analysisfunction.civilservice.gov.uk/policy-store/making-spreadsheets-accessible-a-brief-checklist-of-the-basics/" class="external-link">‘Making
 spreadsheets accessible: checklist of the basics’</a> guidance.</p>
 <p>The assessments in the table below are based on generating an
-unedited output from a typical {a11ytables} workflow, i.e. use
-<code><a href="../reference/create_a11ytable.html">create_a11ytable()</a></code> to make an a11ytable that’s passed to
+unedited output from a typical {aftables} workflow, i.e. use
+<code><a href="../reference/create_aftable.html">create_aftable()</a></code> to make an aftable that’s passed to
 <code><a href="../reference/generate_workbook.html">generate_workbook()</a></code> and then written with
 <code><a href="https://rdrr.io/pkg/openxlsx/man/saveWorkbook.html" class="external-link">openxlsx::saveWorkbook()</a></code>.</p>
 <p>There are several self-assessed indicators used in the ‘status’
 column of the tables below:</p>
 <ul>
-<li>‘met’ means that {a11ytables} contains a feature (or the absence of
-a feature) to help meet the requirement</li>
+<li>‘met’ means that {aftables} contains a feature (or the absence of a
+feature) to help meet the requirement</li>
 <li>‘user’s responsibility’ means that the user must make a decision
 about how to meet the requirement</li>
-<li>‘partly’ means that {a11ytables} contains a feature to help meet the
+<li>‘partly’ means that {aftables} contains a feature to help meet the
 requirement, but the user may need to provide additional input</li>
 <li>‘not applicable’ means the checklist item does not need to be met
-due to the way in which {a11ytables} works</li>
+due to the way in which {aftables} works</li>
 </ul>
 <div class="section level4">
 <h4 id="tables">Tables<a class="anchor" aria-label="anchor" href="#tables"></a>
@@ -153,14 +134,14 @@ due to the way in which {a11ytables} works</li>
 <td align="left">No</td>
 <td align="left">Met</td>
 <td align="left">Unique table names are generated from the
-<code>tab_titles</code> argument in <code><a href="../reference/create_a11ytable.html">create_a11ytable()</a></code>
+<code>tab_titles</code> argument in <code><a href="../reference/create_aftable.html">create_aftable()</a></code>
 </td>
 </tr>
 <tr class="odd">
 <td align="left">Remove merged cells, split cells and nested tables</td>
 <td align="left">Yes</td>
 <td align="left">Met</td>
-<td align="left">{a11ytables} doesn’t create these features</td>
+<td align="left">{aftables} doesn’t create these features</td>
 </tr>
 <tr class="even">
 <td align="left">Remove blank rows and columns within tables</td>
@@ -168,7 +149,7 @@ due to the way in which {a11ytables} works</li>
 <td align="left">Partly/user’s responsibility</td>
 <td align="left">A warning is supplied to a user if cells in the table
 are blank but no explanation has been provided in the
-<code>blank_cells</code> column of the provided a11ytables object</td>
+<code>blank_cells</code> column of the provided aftables object</td>
 </tr>
 <tr class="odd">
 <td align="left">All tables should have one tagged header row</td>
@@ -184,7 +165,7 @@ a table</td>
 <td align="left">Met</td>
 <td align="left">
 <code><a href="../reference/generate_workbook.html">generate_workbook()</a></code> wraps content by
-default; there’s a simple check in {a11ytables} to widen a column if it
+default; there’s a simple check in {aftables} to widen a column if it
 contains long strings</td>
 </tr>
 <tr class="odd">
@@ -192,7 +173,7 @@ contains long strings</td>
 <td align="left">No</td>
 <td align="left">Met</td>
 <td align="left">Filters and freezing aren’t supported by
-{a11ytables}</td>
+{aftables}</td>
 </tr>
 <tr class="even">
 <td align="left">Only leave cells with no data empty in certain
@@ -200,19 +181,19 @@ circumstances</td>
 <td align="left">Yes</td>
 <td align="left">User’s responsibility</td>
 <td align="left">The user should describe why there are blank cells in
-the <code>blank_cells</code> column of their a11ytables object</td>
+the <code>blank_cells</code> column of their aftables object</td>
 </tr>
 <tr class="odd">
 <td align="left">Avoid hiding rows or columns</td>
 <td align="left">No</td>
 <td align="left">Met</td>
-<td align="left">Hiding isn’t supported by {a11ytables}</td>
+<td align="left">Hiding isn’t supported by {aftables}</td>
 </tr>
 <tr class="even">
 <td align="left">Columns should be a sensible width</td>
 <td align="left">No</td>
 <td align="left">Partly</td>
-<td align="left">{a11ytables} uses a fixed default column width for data
+<td align="left">{aftables} uses a fixed default column width for data
 tables (16), which is doubled (32) if the length of the content exceeds
 a threshold number of characters (50)</td>
 </tr>
@@ -242,7 +223,7 @@ notes</td>
 <td align="left">Yes</td>
 <td align="left">Met/user’s responsibility</td>
 <td align="left">Notes are detected automatically as digits in square
-brackets; superscript is not supported by {a11ytables}</td>
+brackets; superscript is not supported by {aftables}</td>
 </tr>
 <tr class="even">
 <td align="left">Use the word ‘note’ when referring to footnotes</td>
@@ -264,7 +245,7 @@ worksheet</td>
 <td align="left">No</td>
 <td align="left">Met</td>
 <td align="left">
-<code><a href="../reference/create_a11ytable.html">create_a11ytable()</a></code> expects the
+<code><a href="../reference/create_aftable.html">create_aftable()</a></code> expects the
 <code>sheet_type</code> ‘notes’</td>
 </tr>
 </tbody>
@@ -292,15 +273,15 @@ worksheet</td>
 guidelines</td>
 <td align="left">No</td>
 <td align="left">User’s responsibility</td>
-<td align="left">{a11ytables} does not check the validity of
-user-supplied text</td>
+<td align="left">{aftables} does not check the validity of user-supplied
+text</td>
 </tr>
 <tr class="even">
 <td align="left">Links must be accessible</td>
 <td align="left">Yes</td>
 <td align="left">User’s responsibility</td>
-<td align="left">{a11ytables} does not check the validity of
-user-supplied text</td>
+<td align="left">{aftables} does not check the validity of user-supplied
+text</td>
 </tr>
 <tr class="odd">
 <td align="left">Format text to make it accessible</td>
@@ -315,62 +296,61 @@ text</td>
 properly tagged and formatted</td>
 <td align="left">Yes</td>
 <td align="left">Partly/user’s responsibility</td>
-<td align="left">{a11ytables} does not check user-supplied text nor
-data; the package handles formatting but not yet mark-up for
-headings</td>
+<td align="left">{aftables} does not check user-supplied text nor data;
+the package handles formatting but not yet mark-up for headings</td>
 </tr>
 <tr class="odd">
 <td align="left">Avoid using symbols in general</td>
 <td align="left">No</td>
 <td align="left">User’s responsibility</td>
-<td align="left">{a11ytables} does not check the validity of
-user-supplied text</td>
+<td align="left">{aftables} does not check the validity of user-supplied
+text</td>
 </tr>
 <tr class="even">
 <td align="left">Do not use headers and footers, floating text boxes or
 floating toolbars</td>
 <td align="left">Yes</td>
 <td align="left">Met</td>
-<td align="left">These features aren’t supported by {a11ytables}</td>
+<td align="left">These features aren’t supported by {aftables}</td>
 </tr>
 <tr class="odd">
 <td align="left">Do not use visual devices to divide data regions</td>
 <td align="left">No</td>
 <td align="left">Met</td>
 <td align="left">Colours and patterns aren’t supported by
-{a11ytables}</td>
+{aftables}</td>
 </tr>
 <tr class="even">
 <td align="left">Do not use a background fill</td>
 <td align="left">No</td>
 <td align="left">Met</td>
-<td align="left">Fills aren’t supported by {a11ytables}</td>
+<td align="left">Fills aren’t supported by {aftables}</td>
 </tr>
 <tr class="odd">
 <td align="left">Do not use colour as the only way to convey a
 message</td>
 <td align="left">Yes</td>
 <td align="left">Met</td>
-<td align="left">Colour is not supported by {a11ytables}</td>
+<td align="left">Colour is not supported by {aftables}</td>
 </tr>
 <tr class="even">
 <td align="left">When using colour for emphasis check the contrast</td>
 <td align="left">Yes</td>
 <td align="left">Not applicable</td>
-<td align="left">Colour is not supported by {a11ytables}, so a check is
+<td align="left">Colour is not supported by {aftables}, so a check is
 not required</td>
 </tr>
 <tr class="odd">
 <td align="left">Avoid images in spreadsheets</td>
 <td align="left">No</td>
 <td align="left">Met</td>
-<td align="left">Images aren’t supported by {a11ytables}</td>
+<td align="left">Images aren’t supported by {aftables}</td>
 </tr>
 <tr class="even">
 <td align="left">Remove macros</td>
 <td align="left">No</td>
 <td align="left">Met</td>
-<td align="left">Macros aren’t supported by {a11ytables}</td>
+<td align="left">Macros aren’t supported by {aftables}</td>
 </tr>
 </tbody>
 </table>
@@ -397,7 +377,7 @@ not required</td>
 <td align="left">Yes</td>
 <td align="left">User’s responsibility</td>
 <td align="left">Supply <code>tab_titles</code> to
-<code><a href="../reference/create_a11ytable.html">create_a11ytable()</a></code>, which gives a warning if any names
+<code><a href="../reference/create_aftable.html">create_aftable()</a></code>, which gives a warning if any names
 match</td>
 </tr>
 <tr class="even">
@@ -405,7 +385,7 @@ match</td>
 <td align="left">Yes</td>
 <td align="left">Met</td>
 <td align="left">
-<code><a href="../reference/create_a11ytable.html">create_a11ytable()</a></code> will error if expected
+<code><a href="../reference/create_aftable.html">create_aftable()</a></code> will error if expected
 argument content is missing</td>
 </tr>
 <tr class="odd">
@@ -465,21 +445,21 @@ now)</td>
 <td align="left">Run a spelling and grammar check</td>
 <td align="left">Yes</td>
 <td align="left">User’s responsibility</td>
-<td align="left">These checks aren’t supported by {a11ytables}; the user
+<td align="left">These checks aren’t supported by {aftables}; the user
 should check using their own software</td>
 </tr>
 <tr class="even">
 <td align="left">Use the accessibility checker</td>
 <td align="left">No</td>
 <td align="left">User’s responsibility</td>
-<td align="left">These checks aren’t supported by {a11ytables}; the user
+<td align="left">These checks aren’t supported by {aftables}; the user
 should check using their own software</td>
 </tr>
 <tr class="odd">
 <td align="left">Add document information</td>
 <td align="left">Yes</td>
 <td align="left">User’s responsibility</td>
-<td align="left">Not yet possible with {a11ytables}; users must do this
+<td align="left">Not yet possible with {aftables}; users must do this
 manually</td>
 </tr>
 <tr class="even">
@@ -496,32 +476,32 @@ when doing your final save</td>
 <div class="section level2">
 <h2 id="contribute">Contribute<a class="anchor" aria-label="anchor" href="#contribute"></a>
 </h2>
-<p>To contribute, please add <a href="https://github.com/co-analysis/a11ytables/issues" class="external-link">an issue</a> or
-<a href="https://github.com/co-analysis/a11ytables/pulls" class="external-link">a pull
-request</a> after reading <a href="https://github.com/co-analysis/a11ytables/blob/main/CODE_OF_CONDUCT.md" class="external-link">the
-code of conduct</a> and <a href="https://github.com/co-analysis/a11ytables/blob/main/.github/CONTRIBUTING.md" class="external-link">contributing</a>
+<p>To contribute, please add <a href="https://github.com/best-practice-and-impact/aftables/issues" class="external-link">an
+issue</a> or <a href="https://github.com/best-practice-and-impact/aftables/pulls" class="external-link">a pull
+request</a> after reading <a href="https://github.com/best-practice-and-impact/aftables/blob/main/CODE_OF_CONDUCT.md" class="external-link">the
+code of conduct</a> and <a href="https://github.com/best-practice-and-impact/aftables/blob/main/.github/CONTRIBUTING.md" class="external-link">contributing</a>
 guidance.</p>
 </div>
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
 
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>© Crown Copyright, 2023, Cabinet Office</p>
+  <p>© Crown Copyright, 2023</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>
 </div>
 
-  
 
-  
+
+
 
   </body>
 </html>

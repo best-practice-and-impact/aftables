@@ -1,84 +1,28 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/404.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/CODE_OF_CONDUCT.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/CONTRIBUTING.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/articles/a11ytables.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/articles/checklist.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/articles/structure.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/articles/terminology.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/index.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/reference/a11ytables-package.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/reference/as_a11ytable.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/reference/at_template_a11ytable.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/reference/at_template_workflow.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/reference/create_a11ytable.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/reference/demo_a11ytable.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/reference/demo_df.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/reference/demo_workbook.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/reference/generate_workbook.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/reference/mtcars_df.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/reference/mtcars_df2.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/reference/summary.a11ytable.html</loc>
-  </url>
-  <url>
-    <loc>https://co-analysis.github.io/a11ytables/reference/tbl_sum.a11ytable.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://best-practice-and-impact.github.io/aftables/404.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/CONTRIBUTING.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/LICENSE-text.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/LICENSE.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/articles/aftables.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/articles/checklist.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/articles/index.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/articles/structure.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/articles/terminology.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/authors.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/index.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/news/index.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/reference/aftables-package.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/reference/as_aftable.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/reference/at_template_aftable.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/reference/at_template_workflow.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/reference/create_aftable.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/reference/demo_aftable.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/reference/demo_df.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/reference/demo_workbook.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/reference/generate_workbook.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/reference/index.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/reference/summary.aftable.html</loc></url>
+<url><loc>https://best-practice-and-impact.github.io/aftables/reference/tbl_sum.aftable.html</loc></url>
 </urlset>
+

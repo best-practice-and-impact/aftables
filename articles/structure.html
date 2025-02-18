@@ -5,8 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="a11ytables">
-<title>Package structure • a11ytables</title>
+<title>Package structure • aftables</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,67 +15,49 @@
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Fira_Code-0.4.9/font.css" rel="stylesheet">
-<!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Package structure">
-<meta property="og:description" content="a11ytables">
-<meta property="og:image" content="https://co-analysis.github.io/a11ytables/logo.png">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
-    
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
-    
-    <a class="navbar-brand me-2" href="../index.html">a11ytables</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
+    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
-    
+    <a class="navbar-brand me-2" href="../index.html">aftables</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item">
-  <a class="nav-link" href="../articles/a11ytables.html">Get started</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="../reference/index.html">Reference</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../articles/aftables.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/checklist.html">Accessibility guidance checklist</a>
-    <a class="dropdown-item" href="../articles/structure.html">Package structure</a>
-    <a class="dropdown-item" href="../articles/terminology.html">Spreadsheet terminology</a>
-  </div>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/checklist.html">Accessibility guidance checklist</a></li>
+    <li><a class="dropdown-item" href="../articles/structure.html">Package structure</a></li>
+    <li><a class="dropdown-item" href="../articles/terminology.html">Spreadsheet terminology</a></li>
+  </ul>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../news/index.html">Changelog</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
-<form class="form-inline my-2 my-lg-0" role="search">
-        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
-</form>
-
-      <ul class="navbar-nav">
-<li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/co-analysis/a11ytables/" aria-label="github">
-    <span class="fab fa fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/best-practice-and-impact/aftables/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
-    
+
   </div>
 </nav><div class="container template-article">
 
@@ -88,7 +69,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Package structure</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/co-analysis/a11ytables/blob/HEAD/vignettes/structure.Rmd" class="external-link"><code>vignettes/structure.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/best-practice-and-impact/aftables/blob/main/vignettes/structure.Rmd" class="external-link"><code>vignettes/structure.Rmd</code></a></small>
       <div class="d-none name"><code>structure.Rmd</code></div>
     </div>
 
@@ -103,16 +84,16 @@ package better and to make it easier for them to contribute.</p>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>There are only two main user-facing functions in {a11ytables}:</p>
+<p>There are only two main user-facing functions in {aftables}:</p>
 <ul>
 <li>
-<code><a href="../reference/create_a11ytable.html">create_a11ytable()</a></code> to create a data.frame object (with
-an additional ‘a11ytable’ S3 class) filled with all the information
-needed to create a spreadsheet output, as well as check the validity of
-the structure and provide errors or warnings</li>
+<code><a href="../reference/create_aftable.html">create_aftable()</a></code> to create a data.frame object (with an
+additional ‘aftable’ S3 class) filled with all the information needed to
+create a spreadsheet output, as well as check the validity of the
+structure and provide errors or warnings</li>
 <li>
 <code><a href="../reference/generate_workbook.html">generate_workbook()</a></code> to convert the output from
-<code><a href="../reference/create_a11ytable.html">create_a11ytable()</a></code> to an <a href="https://ycphs.github.io/openxlsx/" class="external-link">{openxlsx}</a> Workbook-class
+<code><a href="../reference/create_aftable.html">create_aftable()</a></code> to an <a href="https://ycphs.github.io/openxlsx/" class="external-link">{openxlsx}</a> Workbook-class
 object, ready for writing to an xlsx file with
 <code><a href="https://rdrr.io/pkg/openxlsx/man/saveWorkbook.html" class="external-link">openxlsx::saveWorkbook()</a></code>
 </li>
@@ -123,9 +104,9 @@ does the hard work of making the outputs compliant so the user spends
 less time dealing with it.</p>
 <p>This vignette provides a quick look at what’s happening ‘under the
 hood’ in these functions.</p>
-<p>Please add <a href="https://github.com/co-analysis/a11ytables/issues" class="external-link">an issue</a> to
-the package’s GitHub repository if you would like any of this
-explanation to be expanded, or provide a solution in <a href="https://github.com/co-analysis/a11ytables/pulls" class="external-link">a pull
+<p>Please add <a href="https://github.com/best-practice-and-impact/aftables/issues" class="external-link">an
+issue</a> to the package’s GitHub repository if you would like any of
+this explanation to be expanded, or provide a solution in <a href="https://github.com/best-practice-and-impact/aftables/pulls" class="external-link">a pull
 request</a>.</p>
 </div>
 <div class="section level2">
@@ -135,11 +116,11 @@ request</a>.</p>
 are four major groups of scripts in the <code>R/</code> directory of the
 package:</p>
 <ol style="list-style-type: decimal">
-<li>Code to make a11ytable-class objects: <code>a11ytable.R</code> and
-<code>utils-a11ytable.R</code> contain code for handling the a11ytable
-class, most importantly the <code><a href="../reference/create_a11ytable.html">create_a11ytable()</a></code> function,
-but also coercion with <code><a href="../reference/as_a11ytable.html">as_a11ytable()</a></code>, checking with
-<code><a href="../reference/as_a11ytable.html">is_a11ytable()</a></code>, a <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> method and a
+<li>Code to make aftable-class objects: <code>aftable.R</code> and
+<code>utils-aftable.R</code> contain code for handling the aftable
+class, most importantly the <code><a href="../reference/create_aftable.html">create_aftable()</a></code> function, but
+also coercion with <code><a href="../reference/as_aftable.html">as_aftable()</a></code>, checking with
+<code><a href="../reference/as_aftable.html">is_aftable()</a></code>, a <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> method and a
 <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> method, which takes advantage of <a href="https://github.com/r-lib/pillar" class="external-link">the {pillar} package</a> for
 prettier outputs.</li>
 <li>Code to make Workbook-class objects: <code>workbook.R</code>,
@@ -155,15 +136,15 @@ documentation for demo datasets, which are created in the
 .dcf file for which is in the <code>inst/rstudio/</code>
 directory).</li>
 </ol>
-<p>You’ll also find the <code>a11ytables-package.R</code> file in the
+<p>You’ll also find the <code>aftables-package.R</code> file in the
 <code>R/</code> directory, which provides a package-level help page
-derived from the DESCRIPTION file when <code><a href="../reference/a11ytables-package.html">?a11ytables</a></code> is run
-by the user. It doesn’t need to be edited.</p>
+derived from the DESCRIPTION file when <code><a href="../reference/aftables-package.html">?aftables</a></code> is run by
+the user. It doesn’t need to be edited.</p>
 </div>
 <div class="section level2">
 <h2 id="code">Code<a class="anchor" aria-label="anchor" href="#code"></a>
 </h2>
-<p>This sections below focus on the <code><a href="../reference/create_a11ytable.html">create_a11ytable()</a></code> and
+<p>This sections below focus on the <code><a href="../reference/create_aftable.html">create_aftable()</a></code> and
 <code><a href="../reference/generate_workbook.html">generate_workbook()</a></code> functions, which are the primary and
 most complex functions in the package.</p>
 <p>The code that underpins these functions is modularised to aid with
@@ -171,39 +152,38 @@ bug-catching and testing, but also to make it easier for developers to
 understand how the code fits together. Internal sub-functions are
 consistently-named and begin with verbs, which should help you better
 understand their purpose.</p>
-<p>Note that {a11ytables} uses a convention that internal functions
+<p>Note that {aftables} uses a convention that internal functions
 (i.e. those not presented to the user, but accessed via the
 <code>:::</code> qualifier) are prefixed with a period
 (i.e. <code>.f()</code>) to make it clearer that they are internal to
 the package. The exported user-facing functions do not use a leading
 period.</p>
 <div class="section level3">
-<h3 id="to-create-a11ytables">To create a11ytables<a class="anchor" aria-label="anchor" href="#to-create-a11ytables"></a>
+<h3 id="to-create-aftables">To create aftables<a class="anchor" aria-label="anchor" href="#to-create-aftables"></a>
 </h3>
-<p>Actually, <code><a href="../reference/create_a11ytable.html">create_a11ytable()</a></code> itself only does one thing:
+<p>Actually, <code><a href="../reference/create_aftable.html">create_aftable()</a></code> itself only does one thing:
 it takes user inputs from the arguments and combines them into a
 dataframe. It then passes this off to the most important function in the
-package, <code><a href="../reference/as_a11ytable.html">as_a11ytable()</a></code>, which is responsible for coercing
-the dataframe to a11ytable class and performing checks on its
-content.</p>
-<p>Basically, <code><a href="../reference/as_a11ytable.html">as_a11ytable()</a></code> creates an S3-class object
-with classes ‘data.frame’ and ‘tbl’ (i.e. <a href="https://tibble.tidyverse.org/" class="external-link">tibble</a>) and an additional
-‘a11ytable’ class.</p>
+package, <code><a href="../reference/as_aftable.html">as_aftable()</a></code>, which is responsible for coercing
+the dataframe to aftable class and performing checks on its content.</p>
+<p>Basically, <code><a href="../reference/as_aftable.html">as_aftable()</a></code> creates an S3-class object with
+classes ‘data.frame’ and ‘tbl’ (i.e. <a href="https://tibble.tidyverse.org/" class="external-link">tibble</a>) and an additional
+‘aftable’ class.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://co-analysis.github.io/a11ytables/">a11ytables</a></span><span class="op">)</span></span>
-<span><span class="va">my_a11ytable</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_a11ytable.html">as_a11ytable</a></span><span class="op">(</span><span class="va">demo_df</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">my_a11ytable</span><span class="op">)</span></span>
-<span><span class="co"># [1] "a11ytable"  "tbl"        "data.frame"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://best-practice-and-impact.github.io/aftables/">aftables</a></span><span class="op">)</span></span>
+<span><span class="va">my_aftable</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_aftable.html">as_aftable</a></span><span class="op">(</span><span class="va">demo_df</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">my_aftable</span><span class="op">)</span></span>
+<span><span class="co"># [1] "aftable"    "tbl"        "data.frame"</span></span></code></pre></div>
 <p>The object can be manipulated like a ‘normal’ dataframe and—thanks to
 the {pillar} package and the tbl class—it can be printed in compact form
 without the need for the whole of the {tibble} package to be
 imported.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_a11ytable</span></span>
-<span><span class="co"># <span style="color: #949494;"># a11ytable: 5 x 7</span></span></span>
+<code class="sourceCode R"><span><span class="va">my_aftable</span></span>
+<span><span class="co"># <span style="color: #949494;"># aftable: 5 x 7</span></span></span>
 <span><span class="co">#   tab_title sheet_type sheet_title   blank_cells source custom_rows table       </span></span>
 <span><span class="co">#   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>      </span></span>
-<span><span class="co"># <span style="color: #BCBCBC;">1</span> Cover     cover      The 'a11ytab… <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>     <span style="color: #949494;">&lt;chr [1]&gt;</span>   <span style="color: #949494;">&lt;named list&gt;</span></span></span>
+<span><span class="co"># <span style="color: #BCBCBC;">1</span> Cover     cover      The 'aftable… <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>     <span style="color: #949494;">&lt;chr [1]&gt;</span>   <span style="color: #949494;">&lt;named list&gt;</span></span></span>
 <span><span class="co"># <span style="color: #BCBCBC;">2</span> Contents  contents   Table of con… <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>     <span style="color: #949494;">&lt;chr [1]&gt;</span>   <span style="color: #949494;">&lt;df [3 × 2]&gt;</span></span></span>
 <span><span class="co"># <span style="color: #BCBCBC;">3</span> Notes     notes      Notes         <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>     <span style="color: #949494;">&lt;chr [1]&gt;</span>   <span style="color: #949494;">&lt;df [3 × 2]&gt;</span></span></span>
 <span><span class="co"># <span style="color: #BCBCBC;">4</span> Table_1   tables     Table_1: Fir… Blank cell… [The … <span style="color: #949494;">&lt;chr [2]&gt;</span>   <span style="color: #949494;">&lt;df&gt;</span>        </span></span>
@@ -211,71 +191,71 @@ imported.</p>
 <p>Compare this to its appearance as a regular data.frame, which is
 trickier to understand:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">my_a11ytable</span><span class="op">)</span></span>
-<span><span class="co">#   tab_title sheet_type                    sheet_title</span></span>
-<span><span class="co"># 1     Cover      cover The 'a11ytables' Demo Workbook</span></span>
-<span><span class="co"># 2  Contents   contents              Table of contents</span></span>
-<span><span class="co"># 3     Notes      notes                          Notes</span></span>
-<span><span class="co"># 4   Table_1     tables   Table_1: First Example Sheet</span></span>
-<span><span class="co"># 5   Table_2     tables  Table_2: Second Example Sheet</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">my_aftable</span><span class="op">)</span></span>
+<span><span class="co">#   tab_title sheet_type                   sheet_title</span></span>
+<span><span class="co"># 1     Cover      cover  The 'aftables' Demo Workbook</span></span>
+<span><span class="co"># 2  Contents   contents             Table of contents</span></span>
+<span><span class="co"># 3     Notes      notes                         Notes</span></span>
+<span><span class="co"># 4   Table_1     tables  Table_1: First Example Sheet</span></span>
+<span><span class="co"># 5   Table_2     tables Table_2: Second Example Sheet</span></span>
 <span><span class="co">#                                              blank_cells</span></span>
 <span><span class="co"># 1                                                   &lt;NA&gt;</span></span>
 <span><span class="co"># 2                                                   &lt;NA&gt;</span></span>
 <span><span class="co"># 3                                                   &lt;NA&gt;</span></span>
 <span><span class="co"># 4 Blank cells indicate that there's no note in that row.</span></span>
 <span><span class="co"># 5                                                   &lt;NA&gt;</span></span>
-<span><span class="co">#                                                                    source</span></span>
-<span><span class="co"># 1                                                                    &lt;NA&gt;</span></span>
-<span><span class="co"># 2                                                                    &lt;NA&gt;</span></span>
-<span><span class="co"># 3                                                                    &lt;NA&gt;</span></span>
-<span><span class="co"># 4 [The Source Material, 2024.](https://co-analysis.github.io/a11ytables/)</span></span>
-<span><span class="co"># 5                                              The Source Material, 2024.</span></span>
-<span><span class="co">#                                                                                           custom_rows</span></span>
-<span><span class="co"># 1                                                                                                  NA</span></span>
-<span><span class="co"># 2                                                                                                  NA</span></span>
-<span><span class="co"># 3                                                                                       A custom row.</span></span>
-<span><span class="co"># 4 First custom row [with a hyperlink.](https://co-analysis.github.io/a11ytables/), Second custom row.</span></span>
-<span><span class="co"># 5                                                                                       A custom row.</span></span>
+<span><span class="co">#                                                                               source</span></span>
+<span><span class="co"># 1                                                                               &lt;NA&gt;</span></span>
+<span><span class="co"># 2                                                                               &lt;NA&gt;</span></span>
+<span><span class="co"># 3                                                                               &lt;NA&gt;</span></span>
+<span><span class="co"># 4 [The Source Material, 2024.](https://best-practice-and-impact.github.io/aftables/)</span></span>
+<span><span class="co"># 5                                                         The Source Material, 2024.</span></span>
+<span><span class="co">#                                                                                                      custom_rows</span></span>
+<span><span class="co"># 1                                                                                                             NA</span></span>
+<span><span class="co"># 2                                                                                                             NA</span></span>
+<span><span class="co"># 3                                                                                                  A custom row.</span></span>
+<span><span class="co"># 4 First custom row [with a hyperlink.](https://best-practice-and-impact.github.io/aftables/), Second custom row.</span></span>
+<span><span class="co"># 5                                                                                                  A custom row.</span></span>
 <span><span class="co">#                                                                                                                                                                                                                                                                                                                                              table</span></span>
-<span><span class="co"># 1                                                                                                                                                         First row of Section 1., Second row of Section 1., The only row of Section 2., [Website](https://co-analysis.github.io/a11ytables/), [Email address](mailto:fake.address@a11ytables.com)</span></span>
+<span><span class="co"># 1                                                                                                                                                First row of Section 1., Second row of Section 1., The only row of Section 2., [Website](https://best-practice-and-impact.github.io/aftables/), [Email address](mailto:fake.address@aftables.com)</span></span>
 <span><span class="co"># 2                                                                                                                                                                                                                                                  Notes, Table 1, Table 2, Notes used in this workbook, First Example Sheet, Second Example Sheet</span></span>
 <span><span class="co"># 3                                                                                                                                                                                                                                                                             [note 1], [note 2], [note 3], First note., Second note., Third note.</span></span>
 <span><span class="co"># 4 A, B, C, D, E, F, G, H, I, J, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, [c], 6, 7, 8, 9, [x], 59180, 29260, 92130, 24000, 91970, 78650, 281050, 97720, 174630, 15230, 0.56094, 0.27176, 0.47238, 0.62704, 0.01278, 0.01788, 0.31304, 1.276, 0.54384, 0.81019, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, [note 2], NA, NA, NA, NA, [note 3], NA, NA, NA, NA</span></span>
 <span><span class="co"># 5                                                                                                                                                                                                                                                                                      A, B, C, D, E, F, G, H, I, J, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10</span></span></code></pre></div>
-<p>Within <code><a href="../reference/as_a11ytable.html">as_a11ytable()</a></code> itself are two major functions
-that help ensure proper construction of an a11ytable object:</p>
+<p>Within <code><a href="../reference/as_aftable.html">as_aftable()</a></code> itself are two major functions that
+help ensure proper construction of an aftable object:</p>
 <ul>
 <li>
-<code>.validate_a11ytable()</code> will generate errors if basic
-structural expectations of an a11ytable aren’t met (e.g. if ‘cover’,
+<code>.validate_aftable()</code> will generate errors if basic
+structural expectations of an aftable aren’t met (e.g. if ‘cover’,
 ‘contents’ or ‘notes’ have been provided more than once to the
 <code>sheet_type</code> argument)</li>
 <li>
-<code>.warn_a11ytable()</code> checks for things that the user may
+<code>.warn_aftable()</code> checks for things that the user may
 have forgotten and prints warnings about them (e.g. if 5 notes are
 declared in the notes sheet but there are fewer in the tables
 themselves)</li>
 </ul>
 <p>Advanced users can create a correctly-formatted data.frame on the fly
-and convert it to an a11ytable with <code><a href="../reference/as_a11ytable.html">as_a11ytable()</a></code>
-directly. The <code><a href="../reference/as_a11ytable.html">as_a11ytable()</a></code> function mainly exists to make
-testing easier, i.e. you can pass to it the pre-prepared
-<code>demo_df</code> dataset.</p>
+and convert it to an aftable with <code><a href="../reference/as_aftable.html">as_aftable()</a></code> directly.
+The <code><a href="../reference/as_aftable.html">as_aftable()</a></code> function mainly exists to make testing
+easier, i.e. you can pass to it the pre-prepared <code>demo_df</code>
+dataset.</p>
 <div class="section level4">
 <h4 id="methods">Methods<a class="anchor" aria-label="anchor" href="#methods"></a>
 </h4>
-<p>There’s a few methods for a11ytables that are also found in
-<code>R/a11ytables.R</code>.</p>
-<p><code><a href="../reference/as_a11ytable.html">is_a11ytable()</a></code> is a classic logical test that checks for
-the a11ytable class in the object provided to it.</p>
+<p>There’s a few methods for aftables that are also found in
+<code>R/aftables.R</code>.</p>
+<p><code><a href="../reference/as_aftable.html">is_aftable()</a></code> is a classic logical test that checks for
+the aftable class in the object provided to it.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/as_a11ytable.html">is_a11ytable</a></span><span class="op">(</span><span class="va">my_a11ytable</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/as_aftable.html">is_aftable</a></span><span class="op">(</span><span class="va">my_aftable</span><span class="op">)</span></span>
 <span><span class="co"># [1] TRUE</span></span></code></pre></div>
 <p>The <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> method prints a very simple overview of a
-provided a11ytable.</p>
+provided aftable.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">my_a11ytable</span><span class="op">)</span></span>
-<span><span class="co"># # An a11ytable with 5 sheets: </span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">my_aftable</span><span class="op">)</span></span>
+<span><span class="co"># # An aftable with 5 sheets: </span></span>
 <span><span class="co">#   1) Tab 'Cover' (sheet type 'cover') contains a list of length 3 (element lengths 2, 1 and 2)</span></span>
 <span><span class="co">#   2) Tab 'Contents' (sheet type 'contents') contains a 3 x 2 dataframe</span></span>
 <span><span class="co">#   3) Tab 'Notes' (sheet type 'notes') contains a 3 x 2 dataframe</span></span>
@@ -283,21 +263,21 @@ provided a11ytable.</p>
 <span><span class="co">#   5) Tab 'Table_2' (sheet type 'tables') contains a 10 x 2 dataframe</span></span></code></pre></div>
 <p>The <code>tbl_sum()</code> method is provided via the {pillar}
 package, with the goal of providing a bespoke header to the printed
-a11ytable.</p>
+aftable.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">pillar</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/tbl_sum.html" class="external-link">tbl_sum</a></span><span class="op">(</span><span class="va">my_a11ytable</span><span class="op">)</span></span>
-<span><span class="co"># a11ytable </span></span>
-<span><span class="co">#   "5 x 7"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">pillar</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/tbl_sum.html" class="external-link">tbl_sum</a></span><span class="op">(</span><span class="va">my_aftable</span><span class="op">)</span></span>
+<span><span class="co"># aftable </span></span>
+<span><span class="co"># "5 x 7"</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
 <h3 id="to-create-workbooks">To create workbooks<a class="anchor" aria-label="anchor" href="#to-create-workbooks"></a>
 </h3>
 <p>The <code><a href="../reference/generate_workbook.html">generate_workbook()</a></code> function sets up an <a href="https://ycphs.github.io/openxlsx/" class="external-link">{openxlsx}</a> Workbook-class
-object and fills it by iterating over a user-supplied the
-a11ytable-class object.</p>
+object and fills it by iterating over a user-supplied the aftable-class
+object.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_workbook.html">generate_workbook</a></span><span class="op">(</span><span class="va">my_a11ytable</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">my_wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_workbook.html">generate_workbook</a></span><span class="op">(</span><span class="va">my_aftable</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">my_wb</span><span class="op">)</span></span>
 <span><span class="co"># [1] "Workbook"</span></span>
 <span><span class="co"># attr(,"package")</span></span>
@@ -356,25 +336,25 @@ respectively.</p>
 </h4>
 <p>A Workbook-class object is first created with
 <code><a href="https://rdrr.io/pkg/openxlsx/man/createWorkbook.html" class="external-link">openxlsx::createWorkbook()</a></code> and then sheets are added based
-on the contents of the user-supplied a11ytable.</p>
+on the contents of the user-supplied aftable.</p>
 <p>The following functions add sheets and sheet elements into the
 workbook:</p>
 <ul>
 <li>
 <code>.add_tabs()</code> adds the required number of tabs into the
 workbook with <code><a href="https://rdrr.io/pkg/openxlsx/man/addWorksheet.html" class="external-link">openxlsx::addWorksheet()</a></code> (as per the
-<code>tab_title</code> column of the supplied a11ytable)</li>
+<code>tab_title</code> column of the supplied aftable)</li>
 <li>
 <code>.add_cover()</code> and <code>.add_contents()</code> add the
 information needed for the cover and contents sheets (as per the
 required ‘cover’ and ‘contents’ supplied in the <code>sheet_type</code>
-column of an a11ytable)</li>
+column of an aftable)</li>
 <li>
 <code>.add_notes()</code> if a notes sheet exists (i.e. a row in the
-supplied a11ytable with a <code>sheet_type</code> of ‘notes’)</li>
+supplied aftable with a <code>sheet_type</code> of ‘notes’)</li>
 <li>
 <code>.add_table()</code> adds sheets for each statistical table (as
-per rows of supplied a11ytable with a <code>sheet_type</code> of
+per rows of supplied aftable with a <code>sheet_type</code> of
 ‘table’)</li>
 </ul>
 <p>As sheets are added, content is inserted and styles are applied with
@@ -393,7 +373,7 @@ sheet (e.g. bold sheet titles with larger font) and the workbook
 </h5>
 <p>There are several <code>.insert_*()</code> functions that add
 information to each sheet depending on the <code>sheet_type</code> of
-the provided a11ytable, as well as the content, if any, of its
+the provided aftable, as well as the content, if any, of its
 <code>sheet_title</code>, <code>blank_cells</code>, <code>source</code>
 and <code>table</code> columns.</p>
 <p>The following functions insert ‘pre-table’ elements in this
@@ -407,22 +387,22 @@ A1</li>
 number of tables in the sheet</li>
 <li>
 <code>.insert_notes_statement()</code> if a <code>sheet_type</code>
-of ‘notes’ is provided in the user’s a11ytable</li>
+of ‘notes’ is provided in the user’s aftable</li>
 <li>
 <code>.insert_blanks_message()</code> if content is provided in the
-<code>blanks_cells</code> column of the user’s a11ytable</li>
+<code>blanks_cells</code> column of the user’s aftable</li>
 <li>
 <code>.insert_custom_rows()</code> if content is provided in the
-<code>custom_rows</code> column of the user’s a11ytable</li>
+<code>custom_rows</code> column of the user’s aftable</li>
 <li>
 <code>.insert_source()</code> if content is provided in the
-<code>source</code> column of the user’s a11ytable</li>
+<code>source</code> column of the user’s aftable</li>
 </ul>
 <p>A table of data is added under the metadata with
 <code>.insert_table()</code>, which is provided in the
-<code>table</code> column of the user’s a11ytable object.</p>
+<code>table</code> column of the user’s aftable object.</p>
 <p>The exact <code>.insert_*()</code> functions called depend on the
-<code>sheet_type</code> declared in the a11ytable:</p>
+<code>sheet_type</code> declared in the aftable:</p>
 <ul>
 <li>meta sheets (cover, contents and notes) need only
 <code>.insert_title()</code> and <code>.insert_table_count()</code>
@@ -449,7 +429,7 @@ statements like ‘This table has no source statement’.</p>
 </h5>
 <p>There are a few <code>.style_*()</code> functions that create styles
 and apply them on the basis of the <code>sheet_type</code> provided in
-the a11ytable.</p>
+the aftable.</p>
 <ul>
 <li>
 <code>.style_create()</code> creates an easily-referenced lookup of
@@ -475,32 +455,32 @@ larger and bolder than the default font)</li>
 <div class="section level2">
 <h2 id="contribute">Contribute<a class="anchor" aria-label="anchor" href="#contribute"></a>
 </h2>
-<p>To contribute, please add <a href="https://github.com/co-analysis/a11ytables/issues" class="external-link">an issue</a> or
-<a href="https://github.com/co-analysis/a11ytables/pulls" class="external-link">a pull
-request</a> after reading <a href="https://github.com/co-analysis/a11ytables/blob/main/CODE_OF_CONDUCT.md" class="external-link">the
-code of conduct</a> and <a href="https://github.com/co-analysis/a11ytables/blob/main/.github/CONTRIBUTING.md" class="external-link">contributing</a>
+<p>To contribute, please add <a href="https://github.com/best-practice-and-impact/aftables/issues" class="external-link">an
+issue</a> or <a href="https://github.com/best-practice-and-impact/aftables/pulls" class="external-link">a pull
+request</a> after reading <a href="https://github.com/best-practice-and-impact/aftables/blob/main/CODE_OF_CONDUCT.md" class="external-link">the
+code of conduct</a> and <a href="https://github.com/best-practice-and-impact/aftables/blob/main/.github/CONTRIBUTING.md" class="external-link">contributing</a>
 guidance.</p>
 </div>
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
 
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>© Crown Copyright, 2023, Cabinet Office</p>
+  <p>© Crown Copyright, 2023</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>
 </div>
 
-  
 
-  
+
+
 
   </body>
 </html>
