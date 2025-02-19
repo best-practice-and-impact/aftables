@@ -1,3 +1,8 @@
+## Resubmission
+This is a resubmission. In this version I have:
+* Updated the description to put quote marks around 'Python'. (I've followed the R 'reticulate' package in using a capital 'P' for 'Python').
+* Added a reference in the description.
+
 ## R CMD check results
 
 0 errors | 0 warnings | 1 note
