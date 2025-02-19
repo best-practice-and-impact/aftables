@@ -9,7 +9,7 @@ Authors@R: c(
     person("Olivia", "Box Power", , "Olivia.BoxPower@dhsc.gov.uk", role = c("cre", "ctb"))
   )
 Description: Generate spreadsheet publications that follow best practice
-    guidance from the UK government's Analysis Function
+    guidance from the UK government's Analysis Function, available at 
     <https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/>,
     with a focus on accessibility. See also the 'Python' package 'gptables'.
 License: MIT + file LICENSE
