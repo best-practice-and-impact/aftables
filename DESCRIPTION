@@ -1,6 +1,6 @@
 Package: aftables
 Title: Create Spreadsheet Publications Following Best Practice
-Version: 1.0.1
+Version: 1.0.2
 Authors@R: c(
     person("Matt", "Dray", , "mwdray@gmail.com", role = c("aut")),
     person("Tim", "Taylor", role = "ctb"),
@@ -9,9 +9,9 @@ Authors@R: c(
     person("Olivia", "Box Power", , "Olivia.BoxPower@dhsc.gov.uk", role = c("cre", "ctb"))
   )
 Description: Generate spreadsheet publications that follow best practice
-    guidance from the UK government's Analysis Function, with a focus on
-    accessibility. Based on 'openxlsx'. See also the Python package
-    'gptables'.
+    guidance from the UK government's Analysis Function
+    <https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/>,
+    with a focus on accessibility. See also the 'Python' package 'gptables'.
 License: MIT + file LICENSE
 URL: https://best-practice-and-impact.github.io/aftables/,
     https://github.com/best-practice-and-impact/aftables

@@ -1,4 +1,4 @@
-# aftables 1.0.1
+# aftables 1.0.2
 
 * Updated package name to aftables. Function names have been updated to remove references to a11ytables.
 
