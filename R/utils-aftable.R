@@ -255,7 +255,7 @@
     any(
       unlist(
         lapply(
-          tables_sheets[, "tab_title"][[1]],
+          tables_sheets[, "tab_title"],
           function(x) .has_notes(content, x)
         )
       )

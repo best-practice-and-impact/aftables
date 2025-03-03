@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Generate spreadsheet publications that follow best practice guidance from the UK government's Analysis Function, available at \url{https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/}, with a focus on accessibility. See also the 'Python' package 'gptables'.
+Generate spreadsheet publications that follow best practice guidance from the UK government's Analysis Function, with a focus on accessibility. Based on 'openxlsx2'. See also the Python package 'gptables'.
 }
 \seealso{
 Useful links:
@@ -32,6 +32,7 @@ Other contributors:
   \item Tim Taylor [contributor]
   \item Matt Kerlogue [contributor]
   \item Crown Copyright [copyright holder]
+  \item Zachary Gleisner \email{Zachary.Gleisner@dhsc.gov.uk} [contributor]
 }
 
 }

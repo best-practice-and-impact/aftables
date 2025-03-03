@@ -1,18 +1,18 @@
 
 #' Generate A Workbook Object From An 'aftable'
 #'
-#' Populate an 'openxlsx' Workbook-class object with content from an
+#' Populate an 'openxlsx2' wbWorkbook-class object with content from an
 #' aftable-class object. In turn, the output can be passed to
-#' \code{\link[openxlsx]{saveWorkbook}} from 'openxlsx'
+#' \code{\link[openxlsx2]{wb_save}} from 'openxlsx2'
 #'
 #' @param aftable An aftable-class object created using
 #'     \code{\link{create_aftable}} (or \code{\link{as_aftable}}), which
 #'     contains the data and information needed to create a workbook.
 #'
-#' @return A Workbook-class object.
+#' @return An openxlsx2 Workbook-class object.
 #'
 #' @examples
-#' # Convert an aftable to a Workbook-class object
+#' # Convert an aftable to an openxlsx2 wbWorkbook-class object
 #' x <- generate_workbook(demo_aftable)
 #' class(x)
 #'
@@ -34,8 +34,9 @@ generate_workbook <- function(aftable) {
   aftable[["table_name"]] <-
     gsub("(?!_)[[:punct:]]", "", aftable[["table_name"]], perl = TRUE)
 
-  # Create workbook, add tabs, cover, contents (required for all workbooks)
-  wb <- openxlsx::createWorkbook()
+  # Create workbook, set base style, add tabs, cover, contents (required for all workbooks)
+  wb <- wb_workbook()
+  wb <- .style_workbook(wb)
   wb <- .add_tabs(wb, aftable)
   wb <- .add_cover(wb, aftable)
   wb <- .add_contents(wb, aftable)

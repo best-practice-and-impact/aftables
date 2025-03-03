@@ -1,11 +1,10 @@
-
 # Validate ----------------------------------------------------------------
 
 
 .stop_bad_input <- function(wb, content, table_name = NULL) {
 
-  if (!inherits(wb, "Workbook")) {
-    stop("'wb' must be a Workbook-class object.")
+  if (!inherits(wb, "wbWorkbook")) {
+    stop("'wb' must be an openxlsx2 wbWorkbook-class object.")
   }
 
   if (!is.null(table_name) &&
@@ -205,24 +204,22 @@
 
   if (sheet_type %in% c("cover", "contents", "notes")) {
 
-    openxlsx::writeData(
-      wb = wb,
+    wb$add_data(
       sheet = tab_title,
       x = sheet_title,
-      startCol = 1,
-      startRow = 1
+      start_col = 1,
+      start_row = 1
     )
 
   }
 
   if (sheet_type == "tables") {
 
-    openxlsx::writeData(
-      wb = wb,
+    wb$add_data(
       sheet = tab_title,
       x = sheet_title,
-      startCol = 1,
-      startRow = 1
+      start_col = 1,
+      start_row = 1
     )
 
   }
@@ -255,12 +252,11 @@
     ifelse(table_count == "one", "table.", "tables.")
   )
 
-  openxlsx::writeData(
-    wb = wb,
+  wb$add_data(
     sheet = tab_title,
     x = text,
-    startCol = 1,
-    startRow = 2  # table count will always be the second row
+    start_col = 1,
+    start_row = 2  # table count will always be the second row
   )
 
   wb
@@ -276,12 +272,11 @@
     text <-
       "This table contains notes, which can be found in the Notes worksheet."
 
-    openxlsx::writeData(
-      wb = wb,
+    wb$add_data(
       sheet = tab_title,
       x = text,
-      startCol = 1,
-      startRow = 3  # notes will always go in row 3 if they exist
+      start_col = 1,
+      start_row = 3  # notes will always go in row 3 if they exist
     )
 
   }
@@ -300,12 +295,11 @@
     has_notes <- .has_notes(content, tab_title)
     start_row <- .get_start_row_blanks_message(has_notes)
 
-    openxlsx::writeData(
-      wb = wb,
+    wb$add_data(
       sheet = tab_title,
       x = blanks_text,
-      startCol = 1,
-      startRow = start_row
+      start_col = 1,
+      start_row = start_row
     )
 
   }
@@ -331,14 +325,12 @@
 
     for (i in seq_along(custom_rows_text)) {
 
-      openxlsx::writeData(
-        wb = wb,
+      wb$add_data(
         sheet = tab_title,
         x = custom_rows_text[[i]],
-        startCol = 1,
-        startRow = start_row + (i - 1)
+        start_col = 1,
+        start_row = start_row + (i - 1)
       )
-
     }
 
   }
@@ -355,7 +347,6 @@
 
     source_text <- content[content$tab_title == tab_title, "source"][[1]]
     source_text <- paste("Source:", source_text)
-    source_text <- .make_hyperlink(source_text)
 
     start_row <- .get_start_row_source(
       content,
@@ -365,14 +356,24 @@
       .has_custom_rows(content, tab_title)
     )
 
-    openxlsx::writeData(
-      wb = wb,
-      sheet = tab_title,
-      x = source_text,
-      startCol = 1,
-      startRow = start_row
-    )
+    if(.detect_hyperlink(source_text)){
 
+      wb$add_formula(
+        sheet = tab_title,
+        x = create_hyperlink(text = source_text,
+                             file = .extract_hyperlink(source_text)),
+        dims = wb_dims(cols = 1, rows = start_row)
+      )
+
+    } else {
+      wb$add_data(
+        sheet = tab_title,
+        x = source_text,
+        start_col = 1,
+        start_row = start_row
+      )
+
+    }
   }
 
   wb
@@ -394,16 +395,15 @@
     .has_source(content, tab_title)
   )
 
-  openxlsx::writeDataTable(
-    wb = wb,
+  wb$add_data_table(
     sheet = tab_title,
     x = table,
-    tableName = table_name,
-    startCol = 1,
-    startRow = start_row,
-    tableStyle = "none",
-    withFilter = FALSE,
-    bandedRows = FALSE
+    table_name = table_name,
+    start_col = 1,
+    start_row = start_row,
+    table_style = "none",
+    with_filter = FALSE,
+    banded_rows = FALSE
   )
 
   wb
@@ -432,23 +432,23 @@
 
   for (i in seq_along(table_with_links)) {
 
-    has_hyperlink <- .detect_hyperlink(table_with_links[[i]])
+    has_hyperlink <- class(table_with_links[[i]])=="hyperlink"
 
     if (has_hyperlink) {
-      openxlsx::writeFormula(
-        wb = wb,
+
+      wb$add_formula(
         sheet = tab_title,
-        x = table_with_links[[i]],
-        startRow = i + 1
+        x = create_hyperlink(text = table_with_links[[i]],
+                             file = table_with_links[[i]]),
+        dims = wb_dims(cols = 1, rows = i + 1)
       )
     }
 
     if (!has_hyperlink) {
-      openxlsx::writeData(
-        wb = wb,
+      wb$add_data(
         sheet = tab_title,
         x = table_with_links[[i]],
-        startRow = i + 1
+        start_row = i + 1
       )
     }
 
@@ -540,7 +540,7 @@
   .stop_bad_input(wb, content)
 
   for (i in unique(content$tab_title)) {
-    openxlsx::addWorksheet(wb, i)
+    wb$add_worksheet(i)
   }
 
   wb
@@ -558,13 +558,14 @@
   .insert_cover_table(wb, content, table_name)  # rather than .insert_table
 
   styles <- .style_create()
-  .style_workbook(wb)
-  .style_sheet_title(wb, tab_title, styles)
-  .style_cover(wb, content, styles)  # TODO: needs special handling if list provided
+  fonts <- .font_create()
+  .style_sheet_title(wb, tab_title, styles, fonts)
+  .style_cover(wb, content, styles, fonts)  # TODO: needs special handling if list provided
 
   wb
 
 }
+
 
 
 .add_contents <- function(wb, content) {
@@ -580,9 +581,9 @@
   .insert_table(wb, content, table_name)
 
   styles <- .style_create()
-  .style_workbook(wb)
-  .style_sheet_title(wb, tab_title, styles)
-  .style_table(wb, content, table_name, styles)
+  fonts <- .font_create()
+  .style_sheet_title(wb, tab_title, styles, fonts)
+  .style_table(wb, content, table_name, styles, fonts)
   .style_contents(wb, content, styles)
 
   wb
@@ -603,9 +604,9 @@
   .insert_table(wb, content, table_name)
 
   styles <- .style_create()
-  .style_workbook(wb)
-  .style_sheet_title(wb, tab_title, styles)
-  .style_table(wb, content, table_name, styles)
+  fonts <- .font_create()
+  .style_sheet_title(wb, tab_title, styles, fonts)
+  .style_table(wb, content, table_name, styles, fonts)
   .style_notes(wb, content, styles)
 
   wb
@@ -627,9 +628,9 @@
   .insert_table(wb, content, table_name)
 
   styles <- .style_create()
-  .style_workbook(wb)
-  .style_sheet_title(wb, tab_title, styles)
-  .style_table(wb, content, table_name, styles)
+  fonts <- .font_create()
+  .style_sheet_title(wb, tab_title, styles, fonts)
+  .style_table(wb, content, table_name, styles, fonts)
 
   wb
 

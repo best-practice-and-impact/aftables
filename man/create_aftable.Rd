@@ -53,8 +53,8 @@ An object with classes 'aftable', 'tbl' and 'data.frame'.
 \description{
 Create a new aftable-class object, which is a special data.frame that
 contains all the information needed in your output spreadsheet. In turn, the
-object created by this function can be used to populate an 'openxlsx'
-Workbook-class object with the function \code{\link{generate_workbook}}.
+object created by this function can be used to populate an 'openxlsx2'
+wbWorkbook-class object with the function \code{\link{generate_workbook}}.
 }
 \details{
 \subsection{How to supply data to the 'tables' argument}{
