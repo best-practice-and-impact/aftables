@@ -356,7 +356,7 @@
       .has_custom_rows(content, tab_title)
     )
 
-    if(.detect_hyperlink(source_text)){
+    if (.detect_hyperlink(source_text)) {
 
       wb$add_formula(
         sheet = tab_title,
@@ -432,7 +432,7 @@
 
   for (i in seq_along(table_with_links)) {
 
-    has_hyperlink <- class(table_with_links[[i]])=="hyperlink"
+    has_hyperlink <- class(table_with_links[[i]]) == "hyperlink"
 
     if (has_hyperlink) {
 

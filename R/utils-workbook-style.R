@@ -9,7 +9,7 @@
   )
 }
 
-.font_create <- function(){
+.font_create <- function() {
   list(
     bold =  1,
     pt12 = 12,
@@ -265,7 +265,7 @@
 
   wb$add_cell_style(
     sheet = tab_title,
-    dims = wb_dims(rows = seq(start_row, table_height + start_row),cols = seq(table_width)),
+    dims = wb_dims(rows = seq(start_row, table_height + start_row), cols = seq(table_width)),
     wrap_text = style_ref[["wrap_text"]],
     horizontal = style_ref[["lalign"]]
   )
@@ -310,7 +310,7 @@
 
   wb$add_cell_style(
     sheet = tab_title,
-    dims = wb_dims(rows = seq(start_row, table_height + start_row),cols = seq(table_width)),
+    dims = wb_dims(rows = seq(start_row, table_height + start_row), cols = seq(table_width)),
     wrap_text = style_ref[["wrap_text"]],
     horizontal = style_ref[["lalign"]]
   )

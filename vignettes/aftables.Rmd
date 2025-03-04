@@ -227,7 +227,7 @@ my_wb
 Finally, you can use [the `wb_save()` function from {openxlsx2}](https://janmarvin.github.io/openxlsx2/reference/wb_save.html) to write your workbook object to an xlsx file (set the path argument to a location suitable for your work).
 
 ```{r saveworkbook, eval=FALSE}
-openxlsx2::wb_save(wb=my_wb, file="C://Documents//publication.xlsx")
+openxlsx2::wb_save(wb = my_wb, file = "C://Documents//publication.xlsx")
 ```
 
 You could also open a temporary copy of the workbook with `my_wb$open()`, which is convenient during the development process.

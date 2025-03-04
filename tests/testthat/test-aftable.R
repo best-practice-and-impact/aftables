@@ -170,7 +170,7 @@ test_that("absence of note sheets doesn't prevent aftable formation", {
   suppressWarnings(x <- as_aftable(df))
 
   expect_s3_class(x, "aftable")
-  expect_s3_class(generate_workbook(x), c("wbWorkbook","R6"))
+  expect_s3_class(generate_workbook(x), c("wbWorkbook", "R6"))
 
 })
 
