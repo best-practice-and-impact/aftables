@@ -4,8 +4,7 @@
 #   https://www.fontspace.com/freesans-font-f13276
 
 install.packages(c("remotes", "ggplotify"))  # if not yet installed
-remotes::install_github("matt-dray/gex")
-packageVersion("gex")  # v0.2.2
+remotes::install_github("matt-dray/gex@v0.2.2")  # v0.2.2 when hex first created
 
 temp_path <- tempfile(fileext = ".png")
 gex::open_device(temp_path)
