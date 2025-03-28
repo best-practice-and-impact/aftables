@@ -19,7 +19,6 @@
 
 # Detect meta elements ----------------------------------------------------
 
-
 .has_blanks_message <- function(content, tab_title) {
 
   blank_cells_message <- content[content$tab_title == tab_title, "blank_cells"][[1]]
@@ -208,7 +207,8 @@
       sheet = tab_title,
       x = sheet_title,
       start_col = 1,
-      start_row = 1
+      start_row = 1,
+      na.strings = ""
     )
 
   }
@@ -219,7 +219,8 @@
       sheet = tab_title,
       x = sheet_title,
       start_col = 1,
-      start_row = 1
+      start_row = 1,
+      na.strings = ""
     )
 
   }
@@ -256,7 +257,8 @@
     sheet = tab_title,
     x = text,
     start_col = 1,
-    start_row = 2  # table count will always be the second row
+    start_row = 2,  # table count will always be the second row,
+    na.strings = ""
   )
 
   wb
@@ -276,7 +278,8 @@
       sheet = tab_title,
       x = text,
       start_col = 1,
-      start_row = 3  # notes will always go in row 3 if they exist
+      start_row = 3,  # notes will always go in row 3 if they exist
+      na.strings = ""
     )
 
   }
@@ -299,7 +302,8 @@
       sheet = tab_title,
       x = blanks_text,
       start_col = 1,
-      start_row = start_row
+      start_row = start_row,
+      na.strings = ""
     )
 
   }
@@ -325,12 +329,27 @@
 
     for (i in seq_along(custom_rows_text)) {
 
-      wb$add_data(
-        sheet = tab_title,
-        x = custom_rows_text[[i]],
-        start_col = 1,
-        start_row = start_row + (i - 1)
-      )
+      has_hyperlink <- class(custom_rows_text[[i]]) == "hyperlink"
+
+      if (has_hyperlink) {
+
+        wb$add_formula(
+          sheet = tab_title,
+          x = create_hyperlink(text = names(custom_rows_text[[i]]),
+                               file = custom_rows_text[[i]]),
+          dims = wb_dims(cols = 1, rows = start_row + (i - 1))
+        )
+      }
+
+      if (!has_hyperlink) {
+        wb$add_data(
+          sheet = tab_title,
+          x = custom_rows_text[[i]],
+          start_row = start_row + (i - 1),
+          na.strings = ""
+        )
+      }
+
     }
 
   }
@@ -370,7 +389,8 @@
         sheet = tab_title,
         x = source_text,
         start_col = 1,
-        start_row = start_row
+        start_row = start_row,
+        na.strings = ""
       )
 
     }
@@ -403,7 +423,8 @@
     start_row = start_row,
     table_style = "none",
     with_filter = FALSE,
-    banded_rows = FALSE
+    banded_rows = FALSE,
+    na.strings = ""
   )
 
   wb
@@ -438,7 +459,7 @@
 
       wb$add_formula(
         sheet = tab_title,
-        x = create_hyperlink(text = table_with_links[[i]],
+        x = create_hyperlink(text = names(table_with_links[[i]]),
                              file = table_with_links[[i]]),
         dims = wb_dims(cols = 1, rows = i + 1)
       )
@@ -448,7 +469,8 @@
       wb$add_data(
         sheet = tab_title,
         x = table_with_links[[i]],
-        start_row = i + 1
+        start_row = i + 1,
+        na.strings = ""
       )
     }
 
