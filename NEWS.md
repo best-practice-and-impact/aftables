@@ -1,6 +1,6 @@
 # aftables (development version)
 
-* Internal: Added code to generate aftables hex logog using {gex} (#134)
+* Internal: Added code to generate aftables hex logo using {gex} (#134)
 
 
 # aftables 1.0.2
