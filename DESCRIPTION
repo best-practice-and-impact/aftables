@@ -1,6 +1,6 @@
 Package: aftables
 Title: Create Spreadsheet Publications Following Best Practice
-Version: 1.0.2
+Version: 1.0.2.9000
 Authors@R: c(
     person("Matt", "Dray", , "mwdray@gmail.com", role = c("aut")),
     person("Tim", "Taylor", role = "ctb"),
