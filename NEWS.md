@@ -1,5 +1,8 @@
 # aftables (development version)
 
+* Internal: Added code to generate aftables hex logo using {gex} (#134)
+
+
 # aftables 1.0.2
 
 * Updated package name to aftables. Function names have been updated to remove references to a11ytables.
