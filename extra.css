@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100;300;400;500;700;800;900&display=swap');
+
+body {
+  font-family: "Heebo", "HelveticaNeue-Light", "Helvetica Neue Light",
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 300 !important;
+}
+
+strong {
+  font-weight: 500 !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 1rem;
+  font-weight: 500 !important;
+}
+
+svg text {
+  font-family: "Heebo", "HelveticaNeue-Light", "Helvetica Neue Light",
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.footnotes {
+  font-size: 10pt;
+}
+
+.navbar-dark input[type="search"] {
+  background-color: #ffffff;
+  color: var(--co-primary-grey);
+  font-weight: 300;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: rgba(255,255,255,0.85)
+}
+
+.search-details {
+  font-weight: 500;
+}
+
+.text-muted {
+  color: #9dd2ef !important;
+}
+
+.dropdown-menu .dropdown-item {
+  font-weight: 300 !important;
+}
+
+.dropdown-menu .dropdown-header {
+  color: var(--co-primary-blue);
+  font-weight: 500 !important;
+}
+
+dt {
+  font-weight: 500;
+}
