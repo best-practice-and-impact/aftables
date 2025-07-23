@@ -38,6 +38,7 @@
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
 #' @param style_ref List. The style-reference object made with [.style_create].
+#' @param font_ref List. The font-reference object made with [.font_create()].
 #' @noRd
 .style_sheet_title <- function(wb, tab_title, style_ref, font_ref) {
 
@@ -65,6 +66,7 @@
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param table_name Character. The table to which styles should be applied.
 #' @param style_ref List. The style-reference object made with [.style_create].
+#' @param font_ref List. The font-reference object made with [.font_create()].
 #' @noRd
 .style_table <- function(wb, content, table_name, style_ref, font_ref) {
 
@@ -153,6 +155,7 @@
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
 #' @param style_ref List. The style-reference object made with [.style_create].
+#' @param font_ref List. The font-reference object made with [.font_create()].
 #' @noRd
 .style_cover <- function(wb, content, style_ref, font_ref) {
 
