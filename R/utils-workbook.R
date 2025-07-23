@@ -579,8 +579,8 @@
   .insert_title(wb, content, tab_title)
   .insert_cover_table(wb, content, table_name)  # rather than .insert_table
 
-  styles <- .style_create()
-  fonts <- .font_create()
+  styles <- .style_paragraph()
+  fonts <- .style_font()
   .style_sheet_title(wb, tab_title, styles, fonts)
   .style_cover(wb, content, styles, fonts)  # TODO: needs special handling if list provided
 
@@ -602,8 +602,8 @@
   .insert_custom_rows(wb, content, tab_title)
   .insert_table(wb, content, table_name)
 
-  styles <- .style_create()
-  fonts <- .font_create()
+  styles <- .style_paragraph()
+  fonts <- .style_font()
   .style_sheet_title(wb, tab_title, styles, fonts)
   .style_table(wb, content, table_name, styles, fonts)
   .style_contents(wb, content, styles)
@@ -625,8 +625,8 @@
   .insert_custom_rows(wb, content, tab_title)
   .insert_table(wb, content, table_name)
 
-  styles <- .style_create()
-  fonts <- .font_create()
+  styles <- .style_paragraph()
+  fonts <- .style_font()
   .style_sheet_title(wb, tab_title, styles, fonts)
   .style_table(wb, content, table_name, styles, fonts)
   .style_notes(wb, content, styles)
@@ -649,8 +649,8 @@
   .insert_custom_rows(wb, content, tab_title)
   .insert_table(wb, content, table_name)
 
-  styles <- .style_create()
-  fonts <- .font_create()
+  styles <- .style_paragraph()
+  fonts <- .style_font()
   .style_sheet_title(wb, tab_title, styles, fonts)
   .style_table(wb, content, table_name, styles, fonts)
 
