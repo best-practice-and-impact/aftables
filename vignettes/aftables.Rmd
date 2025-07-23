@@ -35,7 +35,7 @@ Having installed the {aftables} package, there are three steps to generating a c
 
 1. Use `create_aftable()` to create a special dataframe (with class 'aftable') that contains all the content that will go in your spreadsheet
 1. Pass the output to `generate_workbook()` to convert the aftable to {openxlsx}'s 'Workbook' class, which adds spreadsheet structure and styles
-1. Pass the output to `openxlsx2::saveWorkbook()` to write out to an xlsx file (or `openxlsx2::wb_open()` to open a temporary copy)
+1. Pass the output to `openxlsx2::wb_save()` to write out to an xlsx file (or `openxlsx2::wb_open()` to open a temporary copy)
 
 You can use the package's [RStudio Addin](https://rstudio.github.io/rstudioaddins/), which is installed with {aftables}, to insert a pre-filled demo skeleton of this workflow (RStudio users only).
 
