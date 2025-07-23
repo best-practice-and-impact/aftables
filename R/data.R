@@ -1,7 +1,7 @@
 #' A Demo 'data.frame' Object
 #'
 #' A pre-created data.frame ready to be converted to an aftables-class object
-#' with \code{\link{as_aftable}} and then an 'openxlsx2' Workbook-class object
+#' with \code{\link{as_aftable}} and then an 'openxlsx2' wbWorkbook-class object
 #' with \code{\link{generate_workbook}}.
 #'
 #' @format A data.frame with 6 rows and 7 columns:
@@ -19,7 +19,7 @@
 #' A Demo 'aftables' Object
 #'
 #' A pre-created 'aftables' object ready to be converted to an 'openxlsx2'
-#' Workbook-class object with \code{\link{generate_workbook}}.
+#' wbWorkbook-class object with \code{\link{generate_workbook}}.
 #'
 #' @format A data.frame with 6 rows and 7 columns:
 #' \describe{
@@ -35,7 +35,7 @@
 
 #' A Demo 'Workbook' Object
 #'
-#' A pre-created 'openxlsx2' wbWorkbook'-class object generated from an
+#' A pre-created 'openxlsx2' wbWorkbook-class object generated from an
 #' aftables-class object with \code{\link{generate_workbook}}.
 #'
 #' @format An 'openxlsx2' wbWorkbook-class object with 5 sheets.

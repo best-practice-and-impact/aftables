@@ -11,7 +11,7 @@ An 'openxlsx2' wbWorkbook-class object with 5 sheets.
 demo_workbook
 }
 \description{
-A pre-created 'openxlsx2' wbWorkbook'-class object generated from an
+A pre-created 'openxlsx2' wbWorkbook-class object generated from an
 aftables-class object with \code{\link{generate_workbook}}.
 }
 \keyword{datasets}

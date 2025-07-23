@@ -53,6 +53,7 @@
 
   wb$add_cell_style(
     sheet = tab_title,
+    dims = "A1",
     horizontal = style_ref[["lalign"]]
   )
 
