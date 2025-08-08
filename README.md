@@ -105,7 +105,7 @@ To create a spreadsheet:
 
 1.  Use `create_aftable()`
 2.  Pass the output to `generate_workbook()`
-3.  Pass the output to `openxlsx::saveWorkbook()`
+3.  Pass the output to `openxlsx2::wb_save()`
 
 Run `?function_name` or visit [the package
 website](https://best-practice-and-impact.github.io/aftables/reference/index.html)

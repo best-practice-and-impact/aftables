@@ -366,6 +366,7 @@
 
     source_text <- content[content$tab_title == tab_title, "source"][[1]]
     source_text <- paste("Source:", source_text)
+    source_text <- .make_hyperlink(source_text)
 
     start_row <- .get_start_row_source(
       content,
@@ -375,12 +376,13 @@
       .has_custom_rows(content, tab_title)
     )
 
-    if (.detect_hyperlink(source_text)) {
+    has_hyperlink <- class(source_text) == "hyperlink"
+    if (has_hyperlink) {
 
       wb$add_formula(
         sheet = tab_title,
-        x = create_hyperlink(text = source_text,
-                             file = .extract_hyperlink(source_text)),
+        x = create_hyperlink(text = names(source_text)[[1]],
+                             file = source_text),
         dims = wb_dims(cols = 1, rows = start_row)
       )
 
@@ -675,8 +677,8 @@
   .insert_title(wb, content, tab_title)
   .insert_cover_table(wb, content, table_name)  # rather than .insert_table
 
-  styles <- .style_create()
-  fonts <- .font_create()
+  styles <- .style_paragraph()
+  fonts <- .style_font()
   .style_sheet_title(wb, tab_title, styles, fonts)
   .style_cover(wb, content, styles, fonts)  # TODO: needs special handling if list provided
 
@@ -698,8 +700,8 @@
   .insert_custom_rows(wb, content, tab_title)
   .insert_table(wb, content, table_name)
 
-  styles <- .style_create()
-  fonts <- .font_create()
+  styles <- .style_paragraph()
+  fonts <- .style_font()
   .style_sheet_title(wb, tab_title, styles, fonts)
   .style_table(wb, content, table_name, styles, fonts)
   .style_contents(wb, content, styles)
@@ -721,8 +723,8 @@
   .insert_custom_rows(wb, content, tab_title)
   .insert_table(wb, content, table_name)
 
-  styles <- .style_create()
-  fonts <- .font_create()
+  styles <- .style_paragraph()
+  fonts <- .style_font()
   .style_sheet_title(wb, tab_title, styles, fonts)
   .style_table(wb, content, table_name, styles, fonts)
   .style_notes(wb, content, styles)
@@ -745,8 +747,8 @@
   .insert_custom_rows(wb, content, tab_title)
   .insert_table(wb, content, table_name)
 
-  styles <- .style_create()
-  fonts <- .font_create()
+  styles <- .style_paragraph()
+  fonts <- .style_font()
   .style_sheet_title(wb, tab_title, styles, fonts)
   .style_table(wb, content, table_name, styles, fonts)
 

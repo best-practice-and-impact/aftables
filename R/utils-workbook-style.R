@@ -1,6 +1,6 @@
 #' Set Up a List of Common Styles
 #' @noRd
-.style_create <- function() {
+.style_paragraph <- function() {
 
   list(
     lalign = "left",
@@ -9,7 +9,7 @@
   )
 }
 
-.font_create <- function() {
+.style_font <- function() {
   list(
     bold =  1,
     pt12 = 12,
@@ -37,7 +37,8 @@
 #' Apply Styles to a Sheet Title
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
-#' @param style_ref List. The style-reference object made with [.style_create].
+#' @param style_ref List. The style-reference object made with [.style_paragraph()].
+#' @param font_ref List. The font-reference object made with [.style_font()].
 #' @noRd
 .style_sheet_title <- function(wb, tab_title, style_ref, font_ref) {
 
@@ -53,6 +54,7 @@
 
   wb$add_cell_style(
     sheet = tab_title,
+    dims = "A1",
     horizontal = style_ref[["lalign"]]
   )
 
@@ -63,7 +65,8 @@
 #' Apply Styles to a Table
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param table_name Character. The table to which styles should be applied.
-#' @param style_ref List. The style-reference object made with [.style_create].
+#' @param style_ref List. The style-reference object made with [.style_paragraph()].
+#' @param font_ref List. The font-reference object made with [.style_font()].
 #' @noRd
 .style_table <- function(wb, content, table_name, style_ref, font_ref) {
 
@@ -157,7 +160,8 @@
 #' Apply Styles to the Cover Sheet
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
-#' @param style_ref List. The style-reference object made with [.style_create].
+#' @param style_ref List. The style-reference object made with [.style_paragraph()].
+#' @param font_ref List. The font-reference object made with [.style_font()].
 #' @noRd
 .style_cover <- function(wb, content, style_ref, font_ref) {
 
@@ -236,7 +240,7 @@
 #' Apply Styles to the Contents Sheet
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
-#' @param style_ref List. The style-reference object made with [.style_create].
+#' @param style_ref List. The style-reference object made with [.style_paragraph()].
 #' @noRd
 .style_contents <- function(wb, content, style_ref) {
 
@@ -281,7 +285,7 @@
 #' Apply Styles to the Notes Sheet
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
-#' @param style_ref List. The style-reference object made with [.style_create].
+#' @param style_ref List. The style-reference object made with [.style_paragraph()].
 #' @noRd
 .style_notes <- function(wb, content, style_ref) {
 

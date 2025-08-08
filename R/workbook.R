@@ -35,7 +35,7 @@ generate_workbook <- function(aftable) {
     gsub("(?!_)[[:punct:]]", "", aftable[["table_name"]], perl = TRUE)
 
   # Create workbook, set base style, add tabs, cover, contents (required for all workbooks)
-  wb <- wb_workbook()
+  wb <- wb_workbook(theme = "Office 2007 - 2010 Theme")
   wb <- .style_workbook(wb)
   wb <- .add_tabs(wb, aftable)
   wb <- .add_cover(wb, aftable)

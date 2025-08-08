@@ -164,7 +164,8 @@ For example, if all the elements are supplied, then the table would begin in row
 
 There are a few `.style_*()` functions that create styles and apply them on the basis of the `sheet_type` provided in the aftable.
 
-* `.style_create()` creates an easily-referenced lookup of styles.
+* `.style_paragraph()` creates an easily-referenced lookup of paragraph styles.
+* `.style_font()` creates an easily-referenced lookup of font styles
 * `.style_workbook()` applies defaults for _the whole workbook_ (i.e. to set the font style to Arial size 12)
 * `.style_cover()`, `.style_contents()` and `.style_notes()` all apply styles to specific _sheets_
 * `.style_sheet_title()` and `.style_table()` apply styles to _particular sheet elements_ (e.g. the title is larger and bolder than the default font)

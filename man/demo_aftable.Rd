@@ -21,6 +21,6 @@ demo_aftable
 }
 \description{
 A pre-created 'aftables' object ready to be converted to an 'openxlsx2'
-Workbook-class object with \code{\link{generate_workbook}}.
+wbWorkbook-class object with \code{\link{generate_workbook}}.
 }
 \keyword{datasets}

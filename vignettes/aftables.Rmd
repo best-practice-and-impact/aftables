@@ -34,8 +34,8 @@ The package depends on [{openxlsx2}](https://janmarvin.github.io/openxlsx2/) and
 Having installed the {aftables} package, there are three steps to generating a compliant spreadsheet:
 
 1. Use `create_aftable()` to create a special dataframe (with class 'aftable') that contains all the content that will go in your spreadsheet
-1. Pass the output to `generate_workbook()` to convert the aftable to {openxlsx}'s 'Workbook' class, which adds spreadsheet structure and styles
-1. Pass the output to `openxlsx2::saveWorkbook()` to write out to an xlsx file (or `openxlsx2::wb_open()` to open a temporary copy)
+1. Pass the output to `generate_workbook()` to convert the aftable to {openxlsx2}'s 'wbWorkbook' class, which adds spreadsheet structure and styles
+1. Pass the output to `openxlsx2::wb_save()` to write out to an xlsx file (or `openxlsx2::wb_open()` to open a temporary copy)
 
 You can use the package's [RStudio Addin](https://rstudio.github.io/rstudioaddins/), which is installed with {aftables}, to insert a pre-filled demo skeleton of this workflow (RStudio users only).
 
@@ -205,7 +205,7 @@ Note that `create_aftable()` is the preferred method for generating aftable-clas
 
 ### 2. Convert to a workbook
 
-We can use `generate_workbook()` to convert our aftable to an [{openxlsx2}](https://janmarvin.github.io/openxlsx2/) Workbook-class object.
+We can use `generate_workbook()` to convert our aftable to an [{openxlsx2}](https://janmarvin.github.io/openxlsx2/) wbWorkbook-class object.
 
 This type of object adds information from each row of our aftable into separate sheets and applies other relevant structure, mark-up and styles for compliance with [the best practice guidance](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/).
 
@@ -260,4 +260,4 @@ We're trying to address a number of these limitations. Please [see the issues on
 
 ## Contribute
 
-To contribute, please add [an issue](https://github.com/best-practice-and-impact/aftables/issues) or [a pull request](https://github.com/best-practice-and-impact/aftables/pulls) after reading [the code of conduct](https://github.com/best-practice-and-impact/aftables/blob/main/CODE_OF_CONDUCT.md) and [contributing](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CONTRIBUTING.md) guidance.
+To contribute, please add [an issue](https://github.com/best-practice-and-impact/aftables/issues) or [a pull request](https://github.com/best-practice-and-impact/aftables/pulls) after reading [the code of conduct](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CODE_OF_CONDUCT.md) and [contributing](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CONTRIBUTING.md) guidance. 
