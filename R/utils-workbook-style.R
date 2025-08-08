@@ -90,8 +90,14 @@
 
   # Some columns may contain numbers but have suppression text in them, e.g.
   # '[c]', which makes the column character class. Find the likely numeric cols.
-  cols_numeric <- suppressWarnings(lapply(table, as.numeric))  # coerce columns to numeric
+  cols_numeric <- lapply(table,
+                         gsub,
+                         pattern = "\\[[[:alnum:][:space:]]+\\]$",
+                         replacement = "") # find numbers with regex to remove all notes
+
+  cols_numeric <- suppressWarnings(lapply(cols_numeric, as.numeric))  # coerce columns to numeric
   cols_numeric <- lapply(cols_numeric, function(x) any(!is.na(x)))  # at least one number after coercion?
+
   likely_num_cols <- names(Filter(isTRUE, cols_numeric))  # return names of columns that are most likely numeric
   num_cols_index <- which(names(table) %in% likely_num_cols)  # get the index of columns that are likely numeric, so styles can be applied
 
