@@ -1,27 +1,33 @@
 #' Set Up a List of Common Styles
 #' @noRd
-.style_create <- function() {
+.style_paragraph <- function() {
 
   list(
-    bold   = openxlsx::createStyle(textDecoration = "Bold"),
-    pt14   = openxlsx::createStyle(fontSize = 14),
-    pt16   = openxlsx::createStyle(fontSize = 16),
-    lalign = openxlsx::createStyle(halign = "left"),
-    ralign = openxlsx::createStyle(halign = "right"),
-    wrap   = openxlsx::createStyle(wrapText = TRUE)
+    lalign = "left",
+    ralign = "right",
+    wrap_text = TRUE
   )
+}
 
+.style_font <- function() {
+  list(
+    bold =  1,
+    pt12 = 12,
+    pt14 = 14,
+    pt16 = 16,
+    name = "Arial"
+  )
 }
 
 #' Apply Styles to the Whole Workbook
-#' @param wb An 'openxlsx' Workbook object.
+#' @param wb An 'openxlsx2' wbWorkbook object.
 #' @noRd
+
 .style_workbook <- function(wb) {
 
-  openxlsx::modifyBaseFont(
-    wb = wb,
-    fontSize = 12,
-    fontName = "Arial"
+  wb$set_base_font(
+    font_size = 12,
+    font_name = "Arial"
   )
 
   wb
@@ -29,30 +35,27 @@
 }
 
 #' Apply Styles to a Sheet Title
-#' @param wb An 'openxlsx' Workbook object.
+#' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
-#' @param style_ref List. The style-reference object made with [.style_create].
+#' @param style_ref List. The style-reference object made with [.style_paragraph()].
+#' @param font_ref List. The font-reference object made with [.style_font()].
 #' @noRd
-.style_sheet_title <- function(wb, tab_title, style_ref) {
+.style_sheet_title <- function(wb, tab_title, style_ref, font_ref) {
 
   # Sheet titles are BOLD and 16PT
 
-  openxlsx::addStyle(
-    wb = wb,
+  wb$add_font(
     sheet = tab_title,
-    rows = 1,
-    cols = 1,
-    style = style_ref[["bold"]],
-    stack = TRUE
+    dims = "A1",
+    size = font_ref[["pt16"]],
+    bold = font_ref[["bold"]],
+    name = font_ref[["name"]]
   )
 
-  openxlsx::addStyle(
-    wb = wb,
+  wb$add_cell_style(
     sheet = tab_title,
-    rows = 1,
-    cols = 1,
-    style = style_ref[["pt16"]],
-    stack = TRUE
+    dims = "A1",
+    horizontal = style_ref[["lalign"]]
   )
 
   wb
@@ -60,11 +63,12 @@
 }
 
 #' Apply Styles to a Table
-#' @param wb An 'openxlsx' Workbook object.
+#' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param table_name Character. The table to which styles should be applied.
-#' @param style_ref List. The style-reference object made with [.style_create].
+#' @param style_ref List. The style-reference object made with [.style_paragraph()].
+#' @param font_ref List. The font-reference object made with [.style_font()].
 #' @noRd
-.style_table <- function(wb, content, table_name, style_ref) {
+.style_table <- function(wb, content, table_name, style_ref, font_ref) {
 
   content_row <- content[content[["table_name"]] == table_name, ]
   table <- content_row[, "table"][[1]]
@@ -105,51 +109,42 @@
   # Table data columns are SET-WIDTH (depending on character length),
   # RIGHT-ALIGNED (if numeric) and WRAPPED
 
-  openxlsx::setColWidths(
-    wb = wb,
+  wb$set_col_widths(
     sheet = tab_title,
     cols = seq(table_width),
-    widths = cellwidth_default  # set all columns to default width first
+    widths = cellwidth_default
   )
 
-  if (length(wide_cols_index[!is.na(wide_cols_index)])) {  # only run if neded
-    openxlsx::setColWidths(
-      wb = wb,
+  if (length(wide_cols_index[!is.na(wide_cols_index)])) {  # only run if needed
+    wb$set_col_widths(
       sheet = tab_title,
       cols = wide_cols_index,
-      widths = cellwidth_wider  # apply larger width to certain columns
+      widths = cellwidth_wider
     )
   }
 
-  openxlsx::addStyle(
-    wb = wb,
+  wb$add_cell_style(
     sheet = tab_title,
-    rows = seq(start_row, start_row + table_height),
-    cols = seq(table_width),
-    gridExpand = TRUE,
-    style = style_ref[["wrap"]],
-    stack = TRUE
+    dims = wb_dims(rows = seq(start_row, start_row + table_height), cols = seq(table_width)),
+    wrap_text = style_ref[["wrap_text"]]
   )
 
-  openxlsx::addStyle(
-    wb = wb,
-    sheet = tab_title,
-    rows = seq(start_row, start_row + table_height),
-    cols = num_cols_index,
-    gridExpand = TRUE,
-    style = style_ref[["ralign"]],
-    stack = TRUE
-  )
+  if (length(num_cols_index[!is.na(num_cols_index)])) {  # only run if needed
+    wb$add_cell_style(
+      sheet = tab_title,
+      dims = wb_dims(rows = seq(start_row, start_row + table_height), cols = num_cols_index),
+      horizontal = style_ref[["ralign"]]
+    )
+  }
 
   # Table headers are also BOLD
 
-  openxlsx::addStyle(
-    wb = wb,
+  wb$add_font(
     sheet = tab_title,
-    rows = start_row,
-    cols = seq(table_width),
-    style = style_ref[["bold"]],
-    stack = TRUE
+    dims = wb_dims(rows = start_row, cols = seq(table_width)),
+    bold = font_ref[["bold"]],
+    size = font_ref[["pt12"]],
+    name = font_ref[["name"]]
   )
 
   wb
@@ -157,11 +152,12 @@
 }
 
 #' Apply Styles to the Cover Sheet
-#' @param wb An 'openxlsx' Workbook object.
+#' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
-#' @param style_ref List. The style-reference object made with [.style_create].
+#' @param style_ref List. The style-reference object made with [.style_paragraph()].
+#' @param font_ref List. The font-reference object made with [.style_font()].
 #' @noRd
-.style_cover <- function(wb, content, style_ref) {
+.style_cover <- function(wb, content, style_ref, font_ref) {
 
   content_row <- content[content[["sheet_type"]] == "cover", ]
   tab_name <- content_row[, "tab_title"][[1]]
@@ -169,8 +165,7 @@
 
   # The cover column is SET-WIDTH
 
-  openxlsx::setColWidths(
-    wb = wb,
+  wb$set_col_widths(
     sheet = tab_name,
     cols = 1,
     widths = 72
@@ -188,13 +183,10 @@
 
     table_height <- length(table_vec)
 
-    openxlsx::addStyle(
-      wb = wb,
+    wb$add_cell_style(
       sheet = tab_name,
-      rows = seq(table_height + 1),
-      cols = 1,
-      style = style_ref[["wrap"]],
-      stack = TRUE
+      dims = wb_dims(rows = seq(table_height + 1), cols = 1),
+      wrap_text = style_ref[["wrap_text"]]
     )
 
     # Also identify rows containing section headers
@@ -208,13 +200,10 @@
 
     table_height <- nrow(table)
 
-    openxlsx::addStyle(
-      wb = wb,
+    wb$add_cell_style(
       sheet = tab_name,
-      rows = seq(table_height * 2 + 1),
-      cols = 1,
-      style = style_ref[["wrap"]],
-      stack = TRUE
+      dims = wb_dims(rows = seq(table_height * 2 + 1), cols = 1),
+      wrap_text = style_ref[["wrap_text"]]
     )
 
     # Also identify rows containing section headers
@@ -224,29 +213,18 @@
 
   # Section header rows also have LARGER ROW HEIGHT, are BOLD and 14PT
 
-  openxlsx::setRowHeights(
-    wb = wb,
+  wb$set_row_heights(
     sheet = tab_name,
     rows = subheader_rows,
     heights = 34
   )
 
-  openxlsx::addStyle(
-    wb = wb,
+  wb$add_font(
     sheet = tab_name,
-    rows = subheader_rows,
-    cols = 1,
-    style = style_ref[["bold"]],
-    stack = TRUE
-  )
-
-  openxlsx::addStyle(
-    wb = wb,
-    sheet = tab_name,
-    rows = subheader_rows,
-    cols = 1,
-    style = style_ref[["pt14"]],
-    stack = TRUE
+    dims = wb_dims(rows = subheader_rows, cols = 1),
+    bold = font_ref[["bold"]],
+    size = font_ref[["pt14"]],
+    name = font_ref[["name"]]
   )
 
   wb
@@ -254,9 +232,9 @@
 }
 
 #' Apply Styles to the Contents Sheet
-#' @param wb An 'openxlsx' Workbook object.
+#' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
-#' @param style_ref List. The style-reference object made with [.style_create].
+#' @param style_ref List. The style-reference object made with [.style_paragraph()].
 #' @noRd
 .style_contents <- function(wb, content, style_ref) {
 
@@ -277,46 +255,31 @@
 
   # Contents columns are SET-WIDTH, WRAPPED and LEFT ALIGNED
 
-  openxlsx::setColWidths(
-    wb = wb,
+  wb$set_col_widths(
     sheet = tab_title,
     cols = 1,
     widths = 16
   )
 
-  openxlsx::setColWidths(
-    wb = wb,
+  wb$set_col_widths(
     sheet = tab_title,
     cols = 2,
     widths = 56
   )
 
-  openxlsx::addStyle(
-    wb = wb,
+  wb$add_cell_style(
     sheet = tab_title,
-    rows = seq(start_row, table_height + start_row),
-    cols = seq(table_width),
-    gridExpand = TRUE,
-    style = style_ref[["wrap"]],
-    stack = TRUE
-  )
-
-  openxlsx::addStyle(
-    wb = wb,
-    sheet = tab_title,
-    rows = seq(start_row, table_height + start_row),
-    cols = seq(table_width),
-    gridExpand = TRUE,
-    style = style_ref[["lalign"]],
-    stack = TRUE
+    dims = wb_dims(rows = seq(start_row, table_height + start_row), cols = seq(table_width)),
+    wrap_text = style_ref[["wrap_text"]],
+    horizontal = style_ref[["lalign"]]
   )
 
 }
 
 #' Apply Styles to the Notes Sheet
-#' @param wb An 'openxlsx' Workbook object.
+#' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
-#' @param style_ref List. The style-reference object made with [.style_create].
+#' @param style_ref List. The style-reference object made with [.style_paragraph()].
 #' @noRd
 .style_notes <- function(wb, content, style_ref) {
 
@@ -337,38 +300,23 @@
 
   # Notes columns are SET-WIDTH, WRAPPED and LEFT ALIGNED
 
-  openxlsx::setColWidths(
-    wb = wb,
+  wb$set_col_widths(
     sheet = tab_title,
     cols = 1,
     widths = 16
   )
 
-  openxlsx::setColWidths(
-    wb = wb,
+  wb$set_col_widths(
     sheet = tab_title,
     cols = 2,
     widths = 56
   )
 
-  openxlsx::addStyle(
-    wb = wb,
+  wb$add_cell_style(
     sheet = tab_title,
-    rows = seq(start_row, table_height + start_row),
-    cols = seq(table_width),
-    gridExpand = TRUE,
-    style = style_ref[["wrap"]],
-    stack = TRUE
-  )
-
-  openxlsx::addStyle(
-    wb = wb,
-    sheet = tab_title,
-    rows = seq(start_row, table_height + start_row),
-    cols = seq(table_width),
-    gridExpand = TRUE,
-    style = style_ref[["lalign"]],
-    stack = TRUE
+    dims = wb_dims(rows = seq(start_row, table_height + start_row), cols = seq(table_width)),
+    wrap_text = style_ref[["wrap_text"]],
+    horizontal = style_ref[["lalign"]]
   )
 
 }

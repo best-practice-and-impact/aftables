@@ -6,7 +6,8 @@ Authors@R: c(
     person("Tim", "Taylor", role = "ctb"),
     person("Matt", "Kerlogue", role = "ctb"),
     person("Crown Copyright", role = c("cph")),
-    person("Olivia", "Box Power", , "Olivia.BoxPower@dhsc.gov.uk", role = c("cre", "ctb"))
+    person("Olivia", "Box Power", , "Olivia.BoxPower@dhsc.gov.uk", role = c("cre", "ctb")),
+    person("Zachary", "Gleisner", , "Zachary.Gleisner@dhsc.gov.uk", role = "ctb")
   )
 Description: Generate spreadsheet publications that follow best practice
     guidance from the UK government's Analysis Function, available at 
@@ -19,7 +20,7 @@ BugReports: https://github.com/best-practice-and-impact/aftables/issues
 Depends: 
     R (>= 3.5)
 Imports: 
-    openxlsx,
+    openxlsx2,
     pillar
 Suggests: 
     covr,

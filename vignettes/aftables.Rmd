@@ -27,15 +27,15 @@ install.packages("remotes")  # if not already installed
 remotes::install_github("best-practice-and-impact/aftables")
 ```
 
-The package depends on [{openxlsx}](https://ycphs.github.io/openxlsx/) and [{pillar}](https://pillar.r-lib.org/), which are also installed with {aftables}.
+The package depends on [{openxlsx2}](https://janmarvin.github.io/openxlsx2/) and [{pillar}](https://pillar.r-lib.org/), which are also installed with {aftables}.
 
 ## Workflow
 
 Having installed the {aftables} package, there are three steps to generating a compliant spreadsheet:
 
 1. Use `create_aftable()` to create a special dataframe (with class 'aftable') that contains all the content that will go in your spreadsheet
-1. Pass the output to `generate_workbook()` to convert the aftable to {openxlsx}'s 'Workbook' class, which adds spreadsheet structure and styles
-1. Pass the output to `openxlsx::saveWorkbook()` to write out to an xlsx file (or `openxlsx::openXL()` to open a temporary copy)
+1. Pass the output to `generate_workbook()` to convert the aftable to {openxlsx2}'s 'wbWorkbook' class, which adds spreadsheet structure and styles
+1. Pass the output to `openxlsx2::wb_save()` to write out to an xlsx file (or `openxlsx2::wb_open()` to open a temporary copy)
 
 You can use the package's [RStudio Addin](https://rstudio.github.io/rstudioaddins/), which is installed with {aftables}, to insert a pre-filled demo skeleton of this workflow (RStudio users only).
 
@@ -205,7 +205,7 @@ Note that `create_aftable()` is the preferred method for generating aftable-clas
 
 ### 2. Convert to a workbook
 
-We can use `generate_workbook()` to convert our aftable to an [{openxlsx}](https://ycphs.github.io/openxlsx/) Workbook-class object.
+We can use `generate_workbook()` to convert our aftable to an [{openxlsx2}](https://janmarvin.github.io/openxlsx2/) wbWorkbook-class object.
 
 This type of object adds information from each row of our aftable into separate sheets and applies other relevant structure, mark-up and styles for compliance with [the best practice guidance](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/).
 
@@ -224,13 +224,13 @@ my_wb
 
 ### 3. Write to file
 
-Finally, you can use [the `saveWorkbook()` function from {openxlsx}](https://ycphs.github.io/openxlsx/reference/saveWorkbook.html) to write your workbook object to an xlsx file (set the filename argument to a location suitable for your work).
+Finally, you can use [the `wb_save()` function from {openxlsx2}](https://janmarvin.github.io/openxlsx2/reference/wb_save.html) to write your workbook object to an xlsx file (set the path argument to a location suitable for your work).
 
 ```{r saveworkbook, eval=FALSE}
-openxlsx::saveWorkbook(my_wb, "publication.xlsx")
+openxlsx2::wb_save(wb = my_wb, file = "C://Documents//publication.xlsx")
 ```
 
-You could also open a temporary copy of the workbook with `openxlsx::openXL()`, which is convenient during the development process.
+You could also open a temporary copy of the workbook with `my_wb$open()`, which is convenient during the development process.
 
 #### Output
 

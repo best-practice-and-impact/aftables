@@ -37,9 +37,9 @@ at_template_workflow <- function() {
       "\n\n",
       "# Create output",
       "\n\n",
-      "openxlsx::openXL(my_wb)  # open temp copy",
+      "openxlsx2::wb_open(my_wb)  # open temp copy",
       "\n\n",
-      'openxlsx::saveWorkbook(my_wb, "example.xlsx")  # change save location'
+      'openxlsx2::wb_save(my_wb, "example.xlsx")  # change save location'
     )
   )
 

@@ -20,7 +20,7 @@ A data.frame with 6 rows and 7 columns:
 demo_aftable
 }
 \description{
-A pre-created 'aftables' object ready to be converted to an 'openxlsx'
-Workbook-class object with \code{\link{generate_workbook}}.
+A pre-created 'aftables' object ready to be converted to an 'openxlsx2'
+wbWorkbook-class object with \code{\link{generate_workbook}}.
 }
 \keyword{datasets}

@@ -12,15 +12,15 @@ generate_workbook(aftable)
 contains the data and information needed to create a workbook.}
 }
 \value{
-A Workbook-class object.
+An openxlsx2 Workbook-class object.
 }
 \description{
-Populate an 'openxlsx' Workbook-class object with content from an
+Populate an 'openxlsx2' wbWorkbook-class object with content from an
 aftable-class object. In turn, the output can be passed to
-\code{\link[openxlsx]{saveWorkbook}} from 'openxlsx'
+\code{\link[openxlsx2]{wb_save}} from 'openxlsx2'
 }
 \examples{
-# Convert an aftable to a Workbook-class object
+# Convert an aftable to an openxlsx2 wbWorkbook-class object
 x <- generate_workbook(demo_aftable)
 class(x)
 

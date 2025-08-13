@@ -1,4 +1,6 @@
-# aftables (development version)
+# aftables 1.0.2.9000 (development version)
+
+ Major update of package back-end to use openxlsx2 functions to build and format workbook (#70).
 
 * Internal: Added code to generate aftables hex logo using {gex} (#134)
 

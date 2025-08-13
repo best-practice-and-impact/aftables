@@ -3,8 +3,8 @@
 #'
 #' Create a new aftable-class object, which is a special data.frame that
 #' contains all the information needed in your output spreadsheet. In turn, the
-#' object created by this function can be used to populate an 'openxlsx'
-#' Workbook-class object with the function \code{\link{generate_workbook}}.
+#' object created by this function can be used to populate an 'openxlsx2'
+#' wbWorkbook-class object with the function \code{\link{generate_workbook}}.
 #'
 #' @param tab_titles Required character vector, one value per sheet. Each title
 #'     will appear literally on each tab of the final spreadsheet output. Keep

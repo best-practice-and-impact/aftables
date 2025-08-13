@@ -85,7 +85,7 @@ To create a spreadsheet:
 
 1. Use `create_aftable()`
 1. Pass the output to `generate_workbook()`
-1. Pass the output to `openxlsx::saveWorkbook()`
+1. Pass the output to `openxlsx2::wb_save()`
 
 Run `?function_name` or visit [the package website](https://best-practice-and-impact.github.io/aftables/reference/index.html) for function documentation. For long-form documentation, [visit the package website](https://best-practice-and-impact.github.io/aftables/) or run `browseVignettes("aftables")` to read the:
 

@@ -32,6 +32,7 @@ Other contributors:
   \item Tim Taylor [contributor]
   \item Matt Kerlogue [contributor]
   \item Crown Copyright [copyright holder]
+  \item Zachary Gleisner \email{Zachary.Gleisner@dhsc.gov.uk} [contributor]
 }
 
 }

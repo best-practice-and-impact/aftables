@@ -21,7 +21,7 @@ demo_df
 }
 \description{
 A pre-created data.frame ready to be converted to an aftables-class object
-with \code{\link{as_aftable}} and then an 'openxlsx' Workbook-class object
+with \code{\link{as_aftable}} and then an 'openxlsx2' wbWorkbook-class object
 with \code{\link{generate_workbook}}.
 }
 \keyword{datasets}

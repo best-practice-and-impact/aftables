@@ -22,7 +22,7 @@ This vignette shows you how {aftables} meets accessibility best practice.
 
 This page shows how the features of the {aftables} package meet the Analysis Function's ['Making spreadsheets accessible: checklist of the basics'](https://analysisfunction.civilservice.gov.uk/policy-store/making-spreadsheets-accessible-a-brief-checklist-of-the-basics/) guidance.
 
-The assessments in the table below are based on generating an unedited output from a typical {aftables} workflow, i.e. use `create_aftable()` to make an aftable that's passed to `generate_workbook()` and then written with `openxlsx::saveWorkbook()`.
+The assessments in the table below are based on generating an unedited output from a typical {aftables} workflow, i.e. use `create_aftable()` to make an aftable that's passed to `generate_workbook()` and then written with `openxlsx2::wb_save()`.
 
 There are several self-assessed indicators used in the 'status' column of the tables below:
 

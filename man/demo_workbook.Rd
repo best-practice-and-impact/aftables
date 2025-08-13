@@ -5,13 +5,13 @@
 \alias{demo_workbook}
 \title{A Demo 'Workbook' Object}
 \format{
-An 'openxlsx' Workbook-class object with 5 sheets.
+An 'openxlsx2' wbWorkbook-class object with 5 sheets.
 }
 \usage{
 demo_workbook
 }
 \description{
-A pre-created 'openxlsx' Workbook'-class object generated from an
+A pre-created 'openxlsx2' wbWorkbook-class object generated from an
 aftables-class object with \code{\link{generate_workbook}}.
 }
 \keyword{datasets}

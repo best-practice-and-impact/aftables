@@ -5,5 +5,6 @@
 # roxygen namespace tags. Modify with care!
 ## usethis namespace: start
 #' @importFrom pillar tbl_sum
+#' @import openxlsx2
 ## usethis namespace: end
 NULL
