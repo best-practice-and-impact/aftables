@@ -417,112 +417,102 @@
     .has_source(content, tab_title)
   )
 
-  if(sheet_type!="tables"){
-    wb$add_data_table(
-      sheet = tab_title,
-      x = table,
-      table_name = table_name,
-      start_col = 1,
-      start_row = start_row,
-      table_style = "none",
-      with_filter = FALSE,
-      banded_rows = FALSE,
-      na.strings = ""
-    )
-  } else { # code to fix mixed data type columns
+  # insert non-mixed columns
+  # check for numeric types when notes have been removed
+  numeric_columns <- lapply(table,
+                            gsub,
+                            pattern = "\\[[[:alnum:][:space:]]+\\]",
+                            replacement = "") # find numbers with regex to remove all notes
 
-    # insert non-mixed columns
-    # check for numeric types when notes have been removed
-    numeric_columns <- lapply(table,
-                           gsub,
-                           pattern = "\\[[[:alnum:][:space:]]+\\]$",
-                           replacement = "") # find numbers with regex to remove all notes
+  numeric_columns <- suppressWarnings(lapply(numeric_columns, as.numeric))  # coerce columns to numeric
+  numeric_columns <- sapply(numeric_columns, function(x) any(!is.na(x))) # at least one number after coercion?
 
-    numeric_columns <- suppressWarnings(lapply(numeric_columns, as.numeric))  # coerce columns to numeric
-    numeric_columns <- sapply(numeric_columns, function(x) any(!is.na(x))) # at least one number after coercion?
+  # check for character types
+  character_columns <- sapply(table, function(x) any(is.character(x)))
 
-    # check for character types
-    character_columns <- sapply(table, function(x) any(is.character(x)))
+  mixed_columns <- numeric_columns & character_columns
 
-    mixed_columns <- numeric_columns & character_columns
+  table_cleaned <- table
 
-    table_cleaned <- table
+  table_cleaned[mixed_columns] <- 0
 
-    table_cleaned[mixed_columns]<-0
+  wb$add_data_table(
+    sheet = tab_title,
+    x = table_cleaned,
+    table_name = table_name,
+    start_col = 1,
+    start_row = start_row,
+    table_style = "none",
+    with_filter = FALSE,
+    banded_rows = FALSE,
+    na.strings = ""
+  )
 
-    wb$add_data_table(
-      sheet = tab_title,
-      x = table_cleaned,
-      table_name = table_name,
-      start_col = 1,
-      start_row = start_row,
-      table_style = "none",
-      with_filter = FALSE,
-      banded_rows = FALSE,
-      na.strings = ""
-    )
+  if (any(mixed_columns)) {
+    # any cell with notes needs to be added to the sheet separately
+    table_replacements <- table[mixed_columns]
 
-    if(any(mixed_columns)){
-      # any cell with notes needs to be added to the sheet separately
-      table_replacements <- table[mixed_columns]
-
-      # get table position on sheet
-      table_info <- wb_get_tables(wb, sheet = tab_title)
-      table_pos <- table_info$tab_ref[table_info$tab_name == table_name]
+    # get table position on sheet
+    table_info <- wb_get_tables(wb, sheet = tab_title)
+    table_pos <- table_info$tab_ref[table_info$tab_name == table_name]
 
 
-      # get anchor position of table
-      first_value_cell <- dims_to_dataframe(table_pos, fill = TRUE)[1, 1]
-      # get position to update: multiple columns selected
-      table_pos       <- wb_dims(x = table, from_dims = first_value_cell, cols = names(table_replacements))
+    # get anchor position of table
+    first_value_cell <- dims_to_dataframe(table_pos, fill = TRUE)[1, 1]
+    # get position to update: multiple columns selected
+    table_pos       <- wb_dims(x = table, from_dims = first_value_cell, cols = names(table_replacements))
 
-      # get the entire table by cell references
-      table_pos <- dims_to_rowcol(table_pos)
+    # get the entire table by cell references
+    table_pos <- dims_to_rowcol(table_pos)
 
-      table_pos <- t(outer(table_pos$col,table_pos$row,paste0))
+    table_pos <- t(outer(table_pos$col, table_pos$row, paste0))
 
-      # only non-numeric values (notes or values with notes) in the character columns need to be replaced
-      table_notes <- is.na(suppressWarnings(data.frame(lapply(table_replacements, as.numeric))))
-      table_values <- !is.na(suppressWarnings(data.frame(lapply(table_replacements, as.numeric))))
+    # only non-numeric values (notes or values with notes) in the character columns need to be replaced
+    table_notes <- is.na(suppressWarnings(data.frame(lapply(table_replacements, as.numeric))))
+    table_values <- !is.na(suppressWarnings(data.frame(lapply(table_replacements, as.numeric))))
 
-      # keep only those cells which overlap with values in table_cols_insert
-      notes_pos <- table_pos[table_notes]
-      values_pos <- table_pos[table_values]
+    # split cells to be replaced into notes and values
+    notes_pos <- table_pos[table_notes]
+    values_pos <- table_pos[table_values]
 
-      table_notes <- table_replacements[sapply(table_replacements,
-                                                      grepl,
-                                                      pattern = "\\[[[:alnum:][:space:]]+\\]")]
+    table_notes <- table_replacements[sapply(table_replacements,
+                                             grepl,
+                                             pattern = "\\[[[:alnum:][:space:]]+\\]")]
 
-      table_values <- as.numeric(table_replacements[!sapply(table_replacements,
-                                               grepl,
-                                               pattern = "\\[[[:alnum:][:space:]]+\\]")])
+    table_values <- as.numeric(table_replacements[!sapply(table_replacements,
+                                                          grepl,
+                                                          pattern = "\\[[[:alnum:][:space:]]+\\]")])
 
-      values_to_insert <- data.frame(cell_text = table_values,
-                                     cell_pos = values_pos)
+    values_to_insert <- data.frame(cell_text = table_values,
+                                   cell_pos = values_pos)
 
-      values_to_insert |>
-        pwalk(\(cell_text, cell_pos) wb$add_data(
+    values_to_insert |>
+      pwalk(\(cell_text,
+              cell_pos) {
+        wb$add_data(
           sheet = tab_title,
           x = cell_text,
           dims = cell_pos,
           col_names = FALSE,
           row_names = FALSE,
           apply_cell_style = FALSE
-        ))
+        )
+      })
 
-      notes_to_insert <- data.frame(cell_text = table_notes,
-                                    cell_pos = notes_pos)
+    notes_to_insert <- data.frame(cell_text = table_notes,
+                                  cell_pos = notes_pos)
 
-      notes_to_insert |>
-        pwalk(\(cell_text, cell_pos) wb$add_data(
+    notes_to_insert |>
+      pwalk(\(cell_text, cell_pos) {
+        wb$add_data(
           sheet = tab_title,
           x = cell_text,
           dims = cell_pos,
           col_names = FALSE,
           row_names = FALSE,
           apply_cell_style = FALSE
-        ))
-    }
+        )
+      })
   }
 
   wb
