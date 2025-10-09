@@ -24,33 +24,34 @@
 #' @export
 generate_workbook <- function(aftable) {
 
-  if (!is_aftable(aftable)) {
+  if (!is_aftable(aftable$tabs)) {
     stop("The object passed to argument 'content' must have class 'aftable'.")
   }
 
   # Create a table_name from tab_title (unique, no spaces, no punctuation)
-  aftable[["table_name"]] <-
-    gsub(" ", "_", tolower(trimws(aftable[["tab_title"]])))
-  aftable[["table_name"]] <-
-    gsub("(?!_)[[:punct:]]", "", aftable[["table_name"]], perl = TRUE)
+  aftable$tabs[["table_name"]] <-
+    gsub(" ", "_", tolower(trimws(aftable$tabs[["tab_title"]])))
+  aftable$tabs[["table_name"]] <-
+    gsub("(?!_)[[:punct:]]", "", aftable$tabs[["table_name"]], perl = TRUE)
 
   # Create workbook, set base style, add tabs, cover, contents (required for all workbooks)
   wb <- wb_workbook(theme = "Office 2007 - 2010 Theme")
+  wb <- .set_workbook_parameters(wb, aftable$properties)
   wb <- .style_workbook(wb)
-  wb <- .add_tabs(wb, aftable)
-  wb <- .add_cover(wb, aftable)
-  wb <- .add_contents(wb, aftable)
+  wb <- .add_tabs(wb, aftable$tabs)
+  wb <- .add_cover(wb, aftable$tabs)
+  wb <- .add_contents(wb, aftable$tabs)
 
   # There won't always be a notes tab
-  if (any(aftable$sheet_type %in% "notes")) {
-    wb <- .add_notes(wb, aftable)
+  if (any(aftable$tabs$sheet_type %in% "notes")) {
+    wb <- .add_notes(wb, aftable$tabs)
   }
 
   # Iterable titles for tabs containing tables
-  table_sheets <- aftable[aftable$sheet_type == "tables", ][["table_name"]]
+  table_sheets <- aftable$tabs[aftable$tabs$sheet_type == "tables", ][["table_name"]]
 
   for (i in table_sheets) {
-    wb <- .add_tables(wb, aftable, table_name = i)
+    wb <- .add_tables(wb, aftable$tabs, table_name = i)
   }
 
   wb

@@ -745,3 +745,19 @@
   wb
 
 }
+
+.set_workbook_parameters <- function(wb, content) {
+
+  wb$set_properties(creator = content$creator,
+                    title = content$title,
+                    subject = content$subject,
+                    category = content$category,
+                    datetime_created = content$datetime_created,
+                    datetime_modified = content$datetime_modified,
+                    modifier = content$modifier,
+                    keywords = content$keywords,
+                    comments = content$comments,
+                    manager = content$manager,
+                    company = content$company)
+  wb
+}
