@@ -1,7 +1,6 @@
 #' Set Up a List of Common Styles
 #' @noRd
 .style_paragraph <- function() {
-
   list(
     lalign = "left",
     ralign = "right",
@@ -24,14 +23,12 @@
 #' @noRd
 
 .style_workbook <- function(wb) {
-
   wb$set_base_font(
     font_size = 12,
     font_name = "Arial"
   )
 
   wb
-
 }
 
 #' Apply Styles to a Sheet Title
@@ -41,7 +38,6 @@
 #' @param font_ref List. The font-reference object made with [.style_font()].
 #' @noRd
 .style_sheet_title <- function(wb, tab_title, style_ref, font_ref) {
-
   # Sheet titles are BOLD and 16PT
 
   wb$add_font(
@@ -59,7 +55,6 @@
   )
 
   wb
-
 }
 
 #' Apply Styles to a Table
@@ -69,7 +64,6 @@
 #' @param font_ref List. The font-reference object made with [.style_font()].
 #' @noRd
 .style_table <- function(wb, content, table_name, style_ref, font_ref) {
-
   content_row <- content[content[["table_name"]] == table_name, ]
   table <- content_row[, "table"][[1]]
   tab_title <- content_row[, "tab_title"][[1]]
@@ -85,7 +79,7 @@
   )
 
   table_height <- nrow(table)
-  table_width  <- ncol(table)
+  table_width <- ncol(table)
 
   cellwidth_default <- 16
   cellwidth_wider <- 32
@@ -93,19 +87,16 @@
 
   # Some columns may contain numbers but have suppression text in them, e.g.
   # '[c]', which makes the column character class. Find the likely numeric cols.
-  cols_numeric <- lapply(table,
-                         gsub,
-                         pattern = "\\[[[:alnum:][:space:]]+\\]",
-                         replacement = "") # find numbers with regex to remove all notes
+  cols_numeric <- .determine_numeric_columns(table)
+  likely_num_cols <- names(Filter(isTRUE, cols_numeric)) # return names of columns that are most likely numeric
+  num_cols_index <- which(names(table) %in% likely_num_cols) # get the index of columns that are likely numeric, so styles can be applied
 
-  cols_numeric <- suppressWarnings(lapply(cols_numeric, as.numeric))  # coerce columns to numeric
-  cols_numeric <- lapply(cols_numeric, function(x) any(!is.na(x)))  # at least one number after coercion?
-
-  likely_num_cols <- names(Filter(isTRUE, cols_numeric))  # return names of columns that are most likely numeric
-  num_cols_index <- which(names(table) %in% likely_num_cols)  # get the index of columns that are likely numeric, so styles can be applied
+  cols_currency <- .determine_currency_columns(table)
+  likely_currency_cols <- names(Filter(isTRUE, cols_currency)) # return names of columns that are most likely numeric currencies
+  currency_cols_index <- which(names(table) %in% likely_currency_cols) # get the index of columns that are likely numeric currencies, so styles can be applied
 
   # Find indices of columns that should be wider than default
-  is_factor_column <- sapply(table, is.factor)   # nchar (below) fails on factors
+  is_factor_column <- sapply(table, is.factor) # nchar (below) fails on factors
   table[is_factor_column] <- lapply(table[is_factor_column], as.character)
   wide_cells <- names(Filter(function(x) max(nchar(x)) > nchar_break, table))
   wide_cells_index <- which(names(table) %in% wide_cells)
@@ -121,7 +112,7 @@
     widths = cellwidth_default
   )
 
-  if (length(wide_cols_index[!is.na(wide_cols_index)])) {  # only run if needed
+  if (length(wide_cols_index[!is.na(wide_cols_index)])) { # only run if needed
     wb$set_col_widths(
       sheet = tab_title,
       cols = wide_cols_index,
@@ -131,16 +122,117 @@
 
   wb$add_cell_style(
     sheet = tab_title,
-    dims = wb_dims(rows = seq(start_row, start_row + table_height), cols = seq(table_width)),
+    dims = wb_dims(rows = seq(start_row, start_row + table_height),
+                   cols = seq(table_width)),
     wrap_text = style_ref[["wrap_text"]]
   )
 
-  if (length(num_cols_index[!is.na(num_cols_index)])) {  # only run if needed
+  if (length(num_cols_index[!is.na(num_cols_index)])) { # only run if needed
     wb$add_cell_style(
       sheet = tab_title,
-      dims = wb_dims(rows = seq(start_row, start_row + table_height), cols = num_cols_index),
+      dims = wb_dims(rows = seq(start_row, start_row + table_height),
+                     cols = num_cols_index),
       horizontal = style_ref[["ralign"]]
     )
+
+    for (c in seq_along(num_cols_index)) {
+      col_precision <- .determine_decimal_places(table[, num_cols_index[c]],
+                                                 type = "numeric")
+
+      numfmt_rows <- seq_len(nrow(table))
+
+      # detect rows with notes to apply nonstandard number formats
+      other_numfmt_rows <- numfmt_rows[grepl(
+        pattern = "^.+?(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
+        table[, num_cols_index[c]],
+        perl = TRUE
+      )]
+
+      # remove rows with nonstandard number formats
+      numfmt_rows <- setdiff(numfmt_rows, other_numfmt_rows)
+
+      wb$add_numfmt(
+        sheet = tab_title,
+        dims = wb_dims(rows = numfmt_rows, cols = num_cols_index[c]),
+        numfmt = paste0(ifelse(col_precision > 0, "#,##0.", "#,##0"),
+                        paste0(rep(0, col_precision), collapse = ""))
+      )
+
+      for (r in other_numfmt_rows) {
+        extra_text_format <- regmatches(
+          table[
+            r,
+            num_cols_index[c]
+          ],
+          regexpr("(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
+            table[r, num_cols_index[c]],
+            perl = TRUE
+          )
+        )
+
+        wb$add_numfmt(
+          sheet = tab_title,
+          dims = wb_dims(rows = start_row + r, cols = num_cols_index[c]),
+          numfmt = paste0(ifelse(col_precision > 0, paste0("#,##0.&quot;", rep(0, col_precision), collapse = ""), "#,##0&quot;"), " ", extra_text_format, "&quot;")
+        )
+      }
+    }
+  }
+
+  if (length(currency_cols_index[!is.na(currency_cols_index)])) { # only run if needed
+    wb$add_cell_style(
+      sheet = tab_title,
+      dims = wb_dims(rows = seq(start_row, start_row + table_height), cols = currency_cols_index),
+      horizontal = style_ref[["ralign"]]
+    )
+
+    for (c in seq_along(currency_cols_index)) { # allows for different currency units in different columns
+
+      col_precision <- .determine_decimal_places(table[, currency_cols_index[c]], type = "currency")
+
+      numfmt_rows <- seq_len(nrow(table))
+
+      # detect rows with notes to apply nonstandard number formats
+      other_numfmt_rows <- numfmt_rows[grepl(
+        pattern = "^.+?(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
+        table[, currency_cols_index[c]],
+        perl = TRUE
+      )]
+
+      # remove rows with nonstandard number formats
+      numfmt_rows <- setdiff(numfmt_rows, other_numfmt_rows)
+
+      wb$add_numfmt(
+        sheet = tab_title,
+        dims = wb_dims(rows = seq(start_row, start_row + table_height), cols = currency_cols_index[c]),
+        numfmt = paste0(
+          unique(gsub("[^£|^$|^€]", "", table[, currency_cols_index[c]])),
+          ifelse(col_precision > 0, paste0("#,##0.", paste0(rep(0, col_precision), collapse = "")), "#,##0")
+        )
+      )
+
+      for (r in other_numfmt_rows) {
+        extra_text_format <- regmatches(
+          table[
+            r,
+            currency_cols_index[c]
+          ],
+          regexpr("\\[[^\\]]*\\](?:\\[[^\\]]*\\])*",
+            table[r, currency_cols_index[c]],
+            perl = TRUE
+          )
+        )
+
+        wb$add_numfmt(
+          sheet = tab_title,
+          dims = wb_dims(rows = start_row + r, cols = currency_cols_index[c]),
+          numfmt = paste0(
+            unique(gsub("[^£|^$|^€]", "", table[, currency_cols_index[c]])),
+            ifelse(col_precision > 0, paste0("#,##0.", paste0(rep(0, col_precision), collapse = ""), "&quot; "), "#,##0&quot;"), " ", extra_text_format, "&quot;"
+          )
+        )
+      }
+    }
   }
 
   # Table headers are also BOLD
@@ -154,7 +246,6 @@
   )
 
   wb
-
 }
 
 #' Apply Styles to the Cover Sheet
@@ -164,7 +255,6 @@
 #' @param font_ref List. The font-reference object made with [.style_font()].
 #' @noRd
 .style_cover <- function(wb, content, style_ref, font_ref) {
-
   content_row <- content[content[["sheet_type"]] == "cover", ]
   tab_name <- content_row[, "tab_title"][[1]]
   table <- content_row[, "table"][[1]]
@@ -182,7 +272,6 @@
   cover_is_df <- is.data.frame(table)
 
   if (cover_is_list) {
-
     table_vec <- unlist(c(rbind(names(table), table)))
 
     # The cover column is SET-WIDTH and WRAPPED
@@ -197,11 +286,9 @@
 
     # Also identify rows containing section headers
     subheader_rows <- which(table_vec %in% names(table)) + 1
-
   }
 
   if (cover_is_df) {
-
     # The cover column is WRAPPED
 
     table_height <- nrow(table)
@@ -214,7 +301,6 @@
 
     # Also identify rows containing section headers
     subheader_rows <- seq(2, table_height * 2, 2)
-
   }
 
   # Section header rows also have LARGER ROW HEIGHT, are BOLD and 14PT
@@ -234,7 +320,6 @@
   )
 
   wb
-
 }
 
 #' Apply Styles to the Contents Sheet
@@ -243,7 +328,6 @@
 #' @param style_ref List. The style-reference object made with [.style_paragraph()].
 #' @noRd
 .style_contents <- function(wb, content, style_ref) {
-
   tab_title <- content[content[["sheet_type"]] == "contents", "tab_title"][[1]]
   table <- content[content[["sheet_type"]] == "contents", "table"][[1]]
 
@@ -258,19 +342,6 @@
     .has_custom_rows(content, tab_title),
     .has_source(content, tab_title)
   )
-
-  # Some columns may contain numbers but also have suppression text in them, e.g.
-  # '[c]', which makes Excel left align them incorrectly. Find the likely numeric cols.
-  cols_numeric <- lapply(table,
-                         gsub,
-                         pattern = "\\[[[:alnum:][:space:]]+\\]",
-                         replacement = "") # find numbers with regex to remove all notes
-
-  cols_numeric <- suppressWarnings(lapply(cols_numeric, as.numeric))  # coerce columns to numeric
-  cols_numeric <- lapply(cols_numeric, function(x) any(!is.na(x)))  # at least one number after coercion?
-
-  likely_num_cols <- names(Filter(isTRUE, cols_numeric))  # return names of columns that are most likely numeric
-  num_cols_index <- which(names(table) %in% likely_num_cols)  # get the index of columns that are likely numeric, so styles can be applied
 
   # Contents columns are SET-WIDTH, WRAPPED and LEFT ALIGNED
 
@@ -292,15 +363,6 @@
     wrap_text = style_ref[["wrap_text"]],
     horizontal = style_ref[["lalign"]]
   )
-
-  if (length(num_cols_index[!is.na(num_cols_index)])) {  # only run if needed
-    wb$add_cell_style(
-      sheet = tab_title,
-      dims = wb_dims(rows = seq(start_row, start_row + table_height), cols = num_cols_index),
-      horizontal = style_ref[["ralign"]]
-    )
-  }
-
 }
 
 #' Apply Styles to the Notes Sheet
@@ -309,7 +371,6 @@
 #' @param style_ref List. The style-reference object made with [.style_paragraph()].
 #' @noRd
 .style_notes <- function(wb, content, style_ref) {
-
   tab_title <- content[content[["sheet_type"]] == "notes", "tab_title"][[1]]
   table <- content[content[["sheet_type"]] == "notes", "table"][[1]]
 
@@ -345,5 +406,35 @@
     wrap_text = style_ref[["wrap_text"]],
     horizontal = style_ref[["lalign"]]
   )
+}
 
+.determine_decimal_places <- function(x, type) {
+  # length zero input
+  if (length(x) == 0) {
+    return(numeric())
+  }
+
+  if (type == "numeric") {
+    x <- x |>
+      .extract_numeric_values()
+  }
+
+  if (type == "currency") {
+    x <- x |>
+      .extract_currency_values()
+  }
+
+  # count decimals
+  x_nchr <- x |>
+    abs() |>
+    as.character() |>
+    nchar() |>
+    as.numeric()
+  x_int <- floor(x) |>
+    abs() |>
+    nchar()
+  x_nchr <- x_nchr - 1 - x_int
+  x_nchr[x_nchr < 0] <- 0
+
+  max(x_nchr, na.rm = TRUE)
 }
