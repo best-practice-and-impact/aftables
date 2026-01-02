@@ -2,25 +2,22 @@
 
 
 .stop_bad_input <- function(wb, content, table_name = NULL) {
-
   if (!inherits(wb, "wbWorkbook")) {
     stop("'wb' must be an openxlsx2 wbWorkbook-class object.")
   }
 
   if (!is.null(table_name) &&
-      !inherits(table_name, "character") &&
-      length(table_name != 1)
+    !inherits(table_name, "character") &&
+    length(table_name != 1)
   ) {
     stop("'table_name' must be a string of length 1")
   }
-
 }
 
 
 # Detect meta elements ----------------------------------------------------
 
 .has_blanks_message <- function(content, tab_title) {
-
   blank_cells_message <- content[content$tab_title == tab_title, "blank_cells"][[1]]
 
   if (!is.na(blank_cells_message)) {
@@ -28,11 +25,9 @@
   } else {
     FALSE
   }
-
 }
 
 .has_source <- function(content, tab_title) {
-
   table_source <- content[content$tab_title == tab_title, "source"][[1]]
 
   if (!is.na(table_source)) {
@@ -40,11 +35,9 @@
   } else {
     FALSE
   }
-
 }
 
 .has_custom_rows <- function(content, tab_title) {
-
   custom_rows <- content[content$tab_title == tab_title, "custom_rows"][[1]]
 
   if (any(!is.na(custom_rows))) {
@@ -52,11 +45,9 @@
   } else {
     FALSE
   }
-
 }
 
 .has_notes <- function(content, tab_title) {
-
   table_names <- names(content[content$tab_title == tab_title, "table"][[1]])
 
   has_header_notes <- any(grepl("(?<=\\[).*(?=\\])", table_names, perl = TRUE))
@@ -64,14 +55,12 @@
   has_notes_column <- any(tolower(table_names) %in% "notes")
 
   any(has_header_notes, has_notes_column)
-
 }
 
 .extract_note_values <- function(content, tab_title) {
-
   has_notes <- .has_notes(content, tab_title)
 
-  if (has_notes) {  # if there are notes in this table
+  if (has_notes) { # if there are notes in this table
 
     # Isolate named table dataframe
 
@@ -104,9 +93,7 @@
         )
       )
     )
-
   }
-
 }
 
 
@@ -114,19 +101,16 @@
 
 
 .get_start_row_blanks_message <- function(has_notes, start_row = 3) {
-
   if (has_notes) {
     start_row <- start_row + 1
   }
 
   return(start_row)
-
 }
 
 .get_start_row_custom_rows <- function(has_notes,
                                        has_blanks_message,
                                        start_row = 3) {
-
   if (has_notes) {
     start_row <- start_row + 1
   }
@@ -136,7 +120,6 @@
   }
 
   return(start_row)
-
 }
 
 .get_start_row_source <- function(content,
@@ -145,7 +128,6 @@
                                   has_blanks_message,
                                   has_custom_rows,
                                   start_row = 3) {
-
   if (has_notes) {
     start_row <- start_row + 1
   }
@@ -160,7 +142,6 @@
   }
 
   return(start_row)
-
 }
 
 .get_start_row_table <- function(content,
@@ -170,7 +151,6 @@
                                  has_custom_rows,
                                  has_source,
                                  start_row = 3) {
-
   if (has_notes) {
     start_row <- start_row + 1
   }
@@ -189,7 +169,6 @@
   }
 
   return(start_row)
-
 }
 
 
@@ -197,12 +176,10 @@
 
 
 .insert_title <- function(wb, content, tab_title) {
-
   sheet_type <- content[content$tab_title == tab_title, "sheet_type"][[1]]
   sheet_title <- content[content$tab_title == tab_title, "sheet_title"][[1]]
 
   if (sheet_type %in% c("cover", "contents", "notes")) {
-
     wb$add_data(
       sheet = tab_title,
       x = sheet_title,
@@ -210,11 +187,9 @@
       start_row = 1,
       na.strings = ""
     )
-
   }
 
   if (sheet_type == "tables") {
-
     wb$add_data(
       sheet = tab_title,
       x = sheet_title,
@@ -222,20 +197,16 @@
       start_row = 1,
       na.strings = ""
     )
-
   }
 
   wb
-
 }
 
 .insert_table_count <- function(wb, content, tab_title) {
-
   table_count <- nrow(content[content$tab_title == tab_title, ])
 
   if (table_count < 10) {
-    table_count <- switch(
-      as.character(table_count),
+    table_count <- switch(as.character(table_count),
       "1"  = "one",
       "2"  = "two",
       "3"  = "three",
@@ -257,20 +228,17 @@
     sheet = tab_title,
     x = text,
     start_col = 1,
-    start_row = 2,  # table count will always be the second row,
+    start_row = 2, # table count will always be the second row,
     na.strings = ""
   )
 
   wb
-
 }
 
 .insert_notes_statement <- function(wb, content, tab_title) {
-
   has_notes <- .has_notes(content, tab_title)
 
   if (has_notes) {
-
     text <-
       "This table contains notes, which can be found in the Notes worksheet."
 
@@ -278,22 +246,18 @@
       sheet = tab_title,
       x = text,
       start_col = 1,
-      start_row = 3,  # notes will always go in row 3 if they exist
+      start_row = 3, # notes will always go in row 3 if they exist
       na.strings = ""
     )
-
   }
 
   wb
-
 }
 
 .insert_blanks_message <- function(wb, content, tab_title) {
-
   has_blanks_message <- .has_blanks_message(content, tab_title)
 
   if (has_blanks_message) {
-
     blanks_text <- content[content$tab_title == tab_title, "blank_cells"][[1]]
     has_notes <- .has_notes(content, tab_title)
     start_row <- .get_start_row_blanks_message(has_notes)
@@ -305,19 +269,15 @@
       start_row = start_row,
       na.strings = ""
     )
-
   }
 
   wb
-
 }
 
 .insert_custom_rows <- function(wb, content, tab_title) {
-
   has_custom_rows <- .has_custom_rows(content, tab_title)
 
   if (has_custom_rows) {
-
     custom_rows_text <-
       content[content$tab_title == tab_title, "custom_rows"][[1]]
 
@@ -328,15 +288,15 @@
     start_row <- .get_start_row_custom_rows(has_notes, has_blanks)
 
     for (i in seq_along(custom_rows_text)) {
-
       has_hyperlink <- class(custom_rows_text[[i]]) == "hyperlink"
 
       if (has_hyperlink) {
-
         wb$add_formula(
           sheet = tab_title,
-          x = create_hyperlink(text = names(custom_rows_text[[i]]),
-                               file = custom_rows_text[[i]]),
+          x = create_hyperlink(
+            text = names(custom_rows_text[[i]]),
+            file = custom_rows_text[[i]]
+          ),
           dims = wb_dims(cols = 1, rows = start_row + (i - 1))
         )
       }
@@ -349,21 +309,16 @@
           na.strings = ""
         )
       }
-
     }
-
   }
 
   wb
-
 }
 
 .insert_source <- function(wb, content, tab_title) {
-
   has_source <- .has_source(content, tab_title)
 
   if (has_source) {
-
     source_text <- content[content$tab_title == tab_title, "source"][[1]]
     source_text <- paste("Source:", source_text)
     source_text <- .make_hyperlink(source_text)
@@ -378,14 +333,14 @@
 
     has_hyperlink <- class(source_text) == "hyperlink"
     if (has_hyperlink) {
-
       wb$add_formula(
         sheet = tab_title,
-        x = create_hyperlink(text = names(source_text)[[1]],
-                             file = source_text),
+        x = create_hyperlink(
+          text = names(source_text)[[1]],
+          file = source_text
+        ),
         dims = wb_dims(cols = 1, rows = start_row)
       )
-
     } else {
       wb$add_data(
         sheet = tab_title,
@@ -394,16 +349,13 @@
         start_row = start_row,
         na.strings = ""
       )
-
     }
   }
 
   wb
-
 }
 
 .insert_table <- function(wb, content, table_name) {
-
   table <- content[content$table_name == table_name, ][["table"]][[1]]
   sheet_type <- content[content$table_name == table_name, "sheet_type"][[1]]
   tab_title <- content[content$table_name == table_name, "tab_title"][[1]]
@@ -417,20 +369,7 @@
     .has_source(content, tab_title)
   )
 
-  # insert non-mixed columns
-  # check for numeric types when notes have been removed
-  numeric_columns <- lapply(table,
-                            gsub,
-                            pattern = "\\[[[:alnum:][:space:]]+\\]",
-                            replacement = "") # find numbers with regex to remove all notes
-
-  numeric_columns <- suppressWarnings(lapply(numeric_columns, as.numeric))  # coerce columns to numeric
-  numeric_columns <- sapply(numeric_columns, function(x) any(!is.na(x))) # at least one number after coercion?
-
-  # check for character types
-  character_columns <- sapply(table, function(x) any(is.character(x)))
-
-  mixed_columns <- numeric_columns & character_columns
+  mixed_columns <- .determine_mixed_columns(table)
 
   table_cleaned <- table
 
@@ -452,6 +391,84 @@
     # any cell with notes needs to be added to the sheet separately
     table_replacements <- table[mixed_columns]
 
+    cols_numeric <- .determine_numeric_columns(table_replacements)
+
+    cols_numeric <- names(Filter(isTRUE, cols_numeric))
+
+    cols_currency <- .determine_currency_columns(table_replacements)
+
+    cols_currency <- names(Filter(isTRUE, cols_currency))
+
+    if (length(cols_numeric) > 0) {
+      for (n in seq_along(cols_numeric)) {
+        col_precision <- .determine_decimal_places(table_replacements[, cols_numeric[n]], type = "numeric")
+
+        if (col_precision > 0) {
+          value <- gsub(pattern = "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$", replacement = "", x = table_replacements[a, cols_numeric[n]], perl = TRUE)
+          notes <- gsub(pattern = value, replacement = "", x = table_replacements[a, cols_numeric[n]], fixed = TRUE)
+
+          value <- scales::number(value, accuracy = as.numeric(paste0("0.", paste0(rep(0, col_precision - 1), "1", collapse = ""))))
+
+          table_replacements[a, cols_numeric[n]] <- paste0(value, " ", notes)
+        }
+      }
+    }
+
+    if (length(cols_currency) > 0) {
+      for (n in seq_along(cols_currency)) {
+        col_precision <- .determine_decimal_places(table_replacements[, cols_currency[n]], type = "currency")
+
+        if (col_precision > 0) {
+          numfmt_rows <- seq_len(nrow(table_replacements))
+
+          # detect rows with notes to apply nonstandard number formats
+          other_numfmt_rows <- numfmt_rows[grepl(
+            pattern = "^.+?(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
+            table_replacements[, cols_currency[n]],
+            perl = TRUE
+          )]
+
+          # remove rows with nonstandard number formats
+          numfmt_rows <- setdiff(numfmt_rows, other_numfmt_rows)
+
+          for (a in other_numfmt_rows) {
+            prefix <- gsub(pattern = "[^£|^$|^€]",
+                           replacement = "",
+                           x = table_replacements[a, cols_currency[n]],
+                           perl = TRUE)
+
+            value <- gsub(pattern = "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
+                          replacement = "", x =
+                            table_replacements[a, cols_currency[n]],
+                          perl = TRUE)
+
+            notes <- gsub(pattern = value,
+                          replacement = "",
+                          x = table_replacements[a, cols_currency[n]],
+                          fixed = TRUE)
+
+            value <- as.numeric(gsub(pattern = "[£|$|€]",
+                                     replacement = "",
+                                     x = value,
+                                     perl = TRUE))
+
+            value <- scales::number(value,
+                                    accuracy = as.numeric(paste0("0.",
+                                                                 paste0(rep(0, col_precision - 1),
+                                                                        "1", collapse = "")
+                                                                 )
+                                                          )
+                                    )
+
+            table_replacements[a, cols_currency[n]] <- paste0(prefix,
+                                                              value,
+                                                              " ",
+                                                              notes)
+          }
+        }
+      }
+    }
+
     # get table position on sheet
     table_info <- wb_get_tables(wb, sheet = tab_title)
     table_pos <- table_info$tab_ref[table_info$tab_name == table_name]
@@ -460,35 +477,73 @@
     # get anchor position of table
     first_value_cell <- dims_to_dataframe(table_pos, fill = TRUE)[1, 1]
     # get position to update: multiple columns selected
-    table_pos       <- wb_dims(x = table, from_dims = first_value_cell, cols = names(table_replacements))
+    table_pos <- wb_dims(x = table,
+                         from_dims =
+                           first_value_cell,
+                         cols = names(table_replacements))
 
     # get the entire table by cell references
     table_pos <- dims_to_rowcol(table_pos)
 
     table_pos <- t(outer(table_pos$col, table_pos$row, paste0))
 
-    # only non-numeric values (notes or values with notes) in the character columns need to be replaced
-    table_notes <- is.na(suppressWarnings(data.frame(lapply(table_replacements, as.numeric))))
-    table_values <- !is.na(suppressWarnings(data.frame(lapply(table_replacements, as.numeric))))
+    table_numbers_check <- unlist(.determine_currency(table_replacements),
+                                  use.names = FALSE)
+
+    table_currencies_check <- unlist(.determine_currency(table_replacements),
+                                     use.names = FALSE)
+
+    table_notes_check <- !(table_numbers_check | table_currencies_check)
 
     # split cells to be replaced into notes and values
-    notes_pos <- table_pos[table_notes]
-    values_pos <- table_pos[table_values]
+    numbers_pos <- table_pos[table_numbers_check]
+    currencies_pos <- table_pos[table_currencies_check]
+    notes_pos <- table_pos[table_notes_check]
 
-    table_notes <- table_replacements[sapply(table_replacements,
-                                             grepl,
-                                             pattern = "\\[[[:alnum:][:space:]]+\\]")]
 
-    table_values <- as.numeric(table_replacements[!sapply(table_replacements,
-                                                          grepl,
-                                                          pattern = "\\[[[:alnum:][:space:]]+\\]")])
+    table_numbers <- unlist(table_replacements,
+                            use.names = FALSE)[table_numbers_check]
+    table_currencies <- unlist(table_replacements,
+                               use.names = FALSE)[table_currencies_check]
+    table_notes <- unlist(table_replacements,
+                          use.names = FALSE)[table_notes_check]
 
-    values_to_insert <- data.frame(cell_text = table_values,
-                                   cell_pos = values_pos)
+    numbers_to_insert <- data.frame(
+      cell_text = table_numbers,
+      cell_pos = numbers_pos
+    )
 
-    values_to_insert |>
+    currencies_to_insert <- data.frame(
+      cell_text = table_currencies,
+      cell_pos = currencies_pos
+    )
+
+    notes_to_insert <- data.frame(
+      cell_text = table_notes,
+      cell_pos = notes_pos
+    )
+
+    numbers_to_insert |>
       pwalk(\(cell_text,
-              cell_pos) {
+        cell_pos) {
+        wb$add_data(
+          sheet = tab_title,
+          x = as.numeric(cell_text),
+          dims = cell_pos,
+          col_names = FALSE,
+          row_names = FALSE,
+          apply_cell_style = FALSE
+        )
+      })
+
+    currencies_to_insert$cell_text <-
+      as.numeric(gsub("[£|$|€]",
+                      "",
+                      currencies_to_insert$cell_text))
+
+    currencies_to_insert |>
+      pwalk(\(cell_text,
+        cell_pos) {
         wb$add_data(
           sheet = tab_title,
           x = cell_text,
@@ -498,9 +553,6 @@
           apply_cell_style = FALSE
         )
       })
-
-    notes_to_insert <- data.frame(cell_text = table_notes,
-                                  cell_pos = notes_pos)
 
     notes_to_insert |>
       pwalk(\(cell_text, cell_pos) {
@@ -516,13 +568,11 @@
   }
 
   wb
-
 }
 
 # Special case to insert cover-page info, depending on whether it's provided as
 # a df or list. All other tables in a workbook are provided as df only.
 .insert_cover_table <- function(wb, content, table_name) {
-
   table <- content[content$table_name == "cover", ][["table"]][[1]]
   tab_title <- content[content$table_name == "cover", "tab_title"][[1]]
 
@@ -540,15 +590,15 @@
   table_with_links <- lapply(table, .make_hyperlink)
 
   for (i in seq_along(table_with_links)) {
-
     has_hyperlink <- class(table_with_links[[i]]) == "hyperlink"
 
     if (has_hyperlink) {
-
       wb$add_formula(
         sheet = tab_title,
-        x = create_hyperlink(text = names(table_with_links[[i]]),
-                             file = table_with_links[[i]]),
+        x = create_hyperlink(
+          text = names(table_with_links[[i]]),
+          file = table_with_links[[i]]
+        ),
         dims = wb_dims(cols = 1, rows = i + 1)
       )
     }
@@ -561,9 +611,7 @@
         na.strings = ""
       )
     }
-
   }
-
 }
 
 
@@ -576,7 +624,6 @@
 }
 
 .detect_multi_hyperlink <- function(string) {
-
   md_rx <- "\\[(([[:graph:]]|[[:space:]])+?)\\]\\([[:graph:]]+?\\)"
   md_match <- gregexpr(md_rx, string, perl = TRUE)
   md_extract <- regmatches(string, md_match)[[1]]
@@ -590,7 +637,6 @@
   }
 
   invisible(has_multi_hyperlink)
-
 }
 
 .check_scheme <- function(string) {
@@ -599,7 +645,6 @@
 }
 
 .extract_hyperlink <- function(string, keep_full_string = TRUE) {
-
   md_rx <- "\\[(([[:graph:]]|[[:space:]])+?)\\]\\([[:graph:]]+?\\)"
   md_match <- regexpr(md_rx, string, perl = TRUE)
   md_extract <- regmatches(string, md_match)[[1]]
@@ -619,26 +664,21 @@
   named_hyperlink <- stats::setNames(url_extract, string_extract)
   class(named_hyperlink) <- "hyperlink"
   named_hyperlink
-
 }
 
 .make_hyperlink <- function(string) {
-
   has_hyperlink <- .detect_hyperlink(string)
 
   if (has_hyperlink) {
-
     .detect_multi_hyperlink(string)
     scheme_is_ok <- .check_scheme(string)
 
     if (scheme_is_ok) {
       string <- .extract_hyperlink(string)
     }
-
   }
 
   string
-
 }
 
 
@@ -646,7 +686,6 @@
 
 
 .add_tabs <- function(wb, content) {
-
   .stop_bad_input(wb, content)
 
   for (i in unique(content$tab_title)) {
@@ -654,32 +693,27 @@
   }
 
   wb
-
 }
 
 .add_cover <- function(wb, content) {
-
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "cover", "tab_title"][[1]]
   table_name <- content[content$sheet_type == "cover", "table_name"][[1]]
 
   .insert_title(wb, content, tab_title)
-  .insert_cover_table(wb, content, table_name)  # rather than .insert_table
+  .insert_cover_table(wb, content, table_name) # rather than .insert_table
 
   styles <- .style_paragraph()
   fonts <- .style_font()
   .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_cover(wb, content, styles, fonts)  # TODO: needs special handling if list provided
-
+  .style_cover(wb, content, styles, fonts)
+  # TODO: needs special handling if list provided
   wb
-
 }
 
 
-
 .add_contents <- function(wb, content) {
-
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "contents", "tab_title"][[1]]
@@ -697,12 +731,10 @@
   .style_contents(wb, content, styles)
 
   wb
-
 }
 
 
 .add_notes <- function(wb, content) {
-
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "notes", "tab_title"][[1]]
@@ -720,11 +752,9 @@
   .style_notes(wb, content, styles)
 
   wb
-
 }
 
 .add_tables <- function(wb, content, table_name) {
-
   .stop_bad_input(wb, content, table_name)
 
   tab_title <- content[content$table_name == table_name, "tab_title"][[1]]
@@ -743,5 +773,87 @@
   .style_table(wb, content, table_name, styles, fonts)
 
   wb
+}
 
+.determine_numeric_columns <- function(table) {
+  numeric_columns <- .determine_numeric(table)
+
+  numeric_columns <- sapply(numeric_columns, function(x) any(x))
+
+  numeric_columns
+}
+
+.extract_numeric_values <- function(values) {
+  numeric_values <- values[sapply(values,
+    grepl,
+    pattern = "^(?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*)$",
+    perl = TRUE
+  )]
+
+  numeric_values <- as.numeric(numeric_values)
+
+  numeric_values
+}
+
+.determine_numeric <- function(values) {
+
+  numeric_columns_values <- lapply(values,
+    grepl,
+    pattern = "^(?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*)$",
+    perl = TRUE
+   )
+
+  numeric_columns_values
+}
+
+.determine_currency_columns <- function(table) {
+  currency_columns <- .determine_currency(table)
+
+  currency_columns <- sapply(currency_columns, function(x) any(x))
+
+  currency_columns
+}
+
+.extract_currency_values <- function(table) {
+  currency_values <- table[sapply(table,
+    grepl,
+    pattern = "^(?:\\s*)(?:[$€£]\\s?(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?|(?:USD|EUR|GBP)\\s+(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?)(?:\\s*)$",
+    perl = TRUE
+  )]
+
+  currency_values <- sapply(currency_values,
+    gsub,
+    pattern = "[$|€|£]",
+    replacement = "",
+    perl = TRUE
+  )
+
+  currency_values <- as.numeric(currency_values)
+
+  currency_values
+}
+
+.determine_currency <- function(values) {
+
+  currency_values <- lapply(values,
+    grepl,
+    pattern = "^(?:\\s*)(?:[$€£]\\s?(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?|(?:USD|EUR|GBP)\\s+(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?)(?:\\s*)$",
+    perl = TRUE
+  )
+
+  currency_values
+}
+
+.determine_mixed_columns <- function(table) {
+  cols_numeric <- .determine_numeric_columns(table)
+
+  cols_currency <- .determine_currency_columns(table)
+
+  cols_numeric <- cols_numeric | cols_currency
+
+  cols_character <- sapply(table, function(x) any(is.character(x)))
+
+  mixed_columns <- cols_numeric & cols_character
+
+  mixed_columns
 }
