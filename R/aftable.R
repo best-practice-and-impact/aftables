@@ -1,4 +1,3 @@
-
 #' Create An 'aftable' Object
 #'
 #' Create a new aftable-class object, which is a special data.frame that
@@ -119,8 +118,10 @@
 #'   "Numeric thousands" = abs(round(rnorm(10), 4) * 1e5),
 #'   "Numeric decimal" = abs(round(rnorm(10), 5)),
 #'   "Long name that means that the column width needs to be widened" = 1:10,
-#'   Notes = c("[note 1]", rep(NA_character_, 4), "[note 2]",
-#'             rep(NA_character_, 4)),
+#'   Notes = c(
+#'     "[note 1]", rep(NA_character_, 4), "[note 2]",
+#'     rep(NA_character_, 4)
+#'   ),
 #'   check.names = FALSE
 #' )
 #'
@@ -148,16 +149,20 @@
 #'     NA_character_,
 #'     "A custom row.",
 #'     c(
-#'       paste0("First custom row [with a hyperlink.]",
-#'              "(https://best-practice-and-impact.github.io/aftables/)"),
+#'       paste0(
+#'         "First custom row [with a hyperlink.]",
+#'         "(https://best-practice-and-impact.github.io/aftables/)"
+#'       ),
 #'       "Second custom row."
 #'     ),
 #'     "A custom row."
 #'   ),
 #'   sources = c(
 #'     rep(NA_character_, 3),
-#'     paste0("[The Source Material, 2024.]",#
-#'            "(https://best-practice-and-impact.github.io/aftables/)"),
+#'     paste0(
+#'       "[The Source Material, 2024.]", #
+#'       "(https://best-practice-and-impact.github.io/aftables/)"
+#'     ),
 #'     "The Source Material, 2024."
 #'   ),
 #'   tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)
@@ -177,21 +182,19 @@ create_aftable <- function(tab_titles,
                            sources = NA_character_,
                            custom_rows = list(NA_character_),
                            tables) {
-
   x <- data.frame(
-    tab_title   = unlist(tab_titles),
-    sheet_type  = unlist(sheet_types),
+    tab_title = unlist(tab_titles),
+    sheet_type = unlist(sheet_types),
     sheet_title = unlist(sheet_titles),
     blank_cells = unlist(blank_cells),
-    source      = unlist(sources),
-    stringsAsFactors = FALSE  # because default is TRUE prior to R v4
+    source = unlist(sources),
+    stringsAsFactors = FALSE # because default is TRUE prior to R v4
   )
 
   x[["custom_rows"]] <- custom_rows
   x[["table"]] <- tables
 
   as_aftable(x)
-
 }
 
 #' Coerce To An 'aftable' Object
@@ -210,7 +213,6 @@ create_aftable <- function(tab_titles,
 #'
 #' @export
 as_aftable <- function(x) {
-
   if (any(names(x) %in% "tab_title")) {
     .check_tab_titles(x[["tab_title"]])
     x[["tab_title"]] <- .clean_tab_titles(x[["tab_title"]])
@@ -226,15 +228,12 @@ as_aftable <- function(x) {
   .warn_aftable(x)
 
   x
-
 }
 
 #' @rdname as_aftable
 #' @export
 is_aftable <- function(x) {
-
   inherits(x, "aftable")
-
 }
 
 #' Summarise An 'aftable' Object
@@ -257,30 +256,25 @@ is_aftable <- function(x) {
 #'
 #' @export
 summary.aftable <- function(object, ...) {
-
   tables <- object[["table"]]
 
   table_dims <- vector("list", length = length(tables))
 
   for (i in seq_along(tables)) {
-
     if (inherits(tables[[i]], "list")) {
-
-      list_length  <- length(tables[[i]])
+      list_length <- length(tables[[i]])
       list_lengths <- lengths(tables[[i]])
 
       table_dims[[i]] <- paste0(
         "list of length ", list_length,
         " (element lengths ", .vector_to_sentence(list_lengths), ")"
       )
-
     }
 
     if (is.data.frame(tables[[i]])) {
       table_dims[[i]] <-
         paste(paste(dim(tables[[i]]), collapse = " x "), "dataframe")
     }
-
   }
 
   summary_string <- paste0(
@@ -297,7 +291,6 @@ summary.aftable <- function(object, ...) {
   cat("# An aftable with", nrow(object), "sheets:", summary_string)
 
   invisible(object)
-
 }
 
 
@@ -319,7 +312,6 @@ summary.aftable <- function(object, ...) {
 #'
 #' @export
 tbl_sum.aftable <- function(x, ...) {
-
   header <- sprintf(
     "%s x %s",
     formatC(nrow(x), big.mark = ","),
@@ -327,5 +319,4 @@ tbl_sum.aftable <- function(x, ...) {
   )
 
   c("aftable" = header)
-
 }

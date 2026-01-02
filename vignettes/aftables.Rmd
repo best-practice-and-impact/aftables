@@ -23,7 +23,7 @@ This vignette demonstrates how to use {aftables} to generate a spreadsheet outpu
 Install the package [from GitHub](https://github.com/best-practice-and-impact/aftables) using [{remotes}](https://remotes.r-lib.org/).
 
 ```{r install, eval=FALSE}
-install.packages("remotes")  # if not already installed
+install.packages("remotes") # if not already installed
 remotes::install_github("best-practice-and-impact/aftables")
 ```
 
