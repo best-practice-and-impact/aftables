@@ -7,8 +7,8 @@
   }
 
   if (!is.null(table_name) &&
-    !inherits(table_name, "character") &&
-    length(table_name != 1)
+      !inherits(table_name, "character") &&
+      length(table_name != 1)
   ) {
     stop("'table_name' must be a string of length 1")
   }
@@ -105,7 +105,7 @@
     start_row <- start_row + 1
   }
 
-  return(start_row)
+  start_row
 }
 
 .get_start_row_custom_rows <- function(has_notes,
@@ -119,7 +119,7 @@
     start_row <- start_row + 1
   }
 
-  return(start_row)
+  start_row
 }
 
 .get_start_row_source <- function(content,
@@ -141,7 +141,7 @@
     start_row <- start_row + length(custom_rows)
   }
 
-  return(start_row)
+  start_row
 }
 
 .get_start_row_table <- function(content,
@@ -168,7 +168,7 @@
     start_row <- start_row + 1
   }
 
-  return(start_row)
+  start_row
 }
 
 
@@ -355,6 +355,8 @@
   wb
 }
 
+#' @importFrom scales number
+
 .insert_table <- function(wb, content, table_name) {
   table <- content[content$table_name == table_name, ][["table"]][[1]]
   sheet_type <- content[content$table_name == table_name, "sheet_type"][[1]]
@@ -377,7 +379,7 @@
 
   wb$add_data_table(
     sheet = tab_title,
-    x = table_cleaned,
+    x = table,
     table_name = table_name,
     start_col = 1,
     start_row = start_row,
@@ -387,185 +389,206 @@
     na.strings = ""
   )
 
-  if (any(mixed_columns)) {
-    # any cell with notes needs to be added to the sheet separately
-    table_replacements <- table[mixed_columns]
-
-    cols_numeric <- .determine_numeric_columns(table_replacements)
-
-    cols_numeric <- names(Filter(isTRUE, cols_numeric))
-
-    cols_currency <- .determine_currency_columns(table_replacements)
-
-    cols_currency <- names(Filter(isTRUE, cols_currency))
-
-    if (length(cols_numeric) > 0) {
-      for (n in seq_along(cols_numeric)) {
-        col_precision <- .determine_decimal_places(table_replacements[, cols_numeric[n]], type = "numeric")
-
-        if (col_precision > 0) {
-          value <- gsub(pattern = "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$", replacement = "", x = table_replacements[a, cols_numeric[n]], perl = TRUE)
-          notes <- gsub(pattern = value, replacement = "", x = table_replacements[a, cols_numeric[n]], fixed = TRUE)
-
-          value <- scales::number(value, accuracy = as.numeric(paste0("0.", paste0(rep(0, col_precision - 1), "1", collapse = ""))))
-
-          table_replacements[a, cols_numeric[n]] <- paste0(value, " ", notes)
-        }
-      }
-    }
-
-    if (length(cols_currency) > 0) {
-      for (n in seq_along(cols_currency)) {
-        col_precision <- .determine_decimal_places(table_replacements[, cols_currency[n]], type = "currency")
-
-        if (col_precision > 0) {
-          numfmt_rows <- seq_len(nrow(table_replacements))
-
-          # detect rows with notes to apply nonstandard number formats
-          other_numfmt_rows <- numfmt_rows[grepl(
-            pattern = "^.+?(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
-            table_replacements[, cols_currency[n]],
-            perl = TRUE
-          )]
-
-          # remove rows with nonstandard number formats
-          numfmt_rows <- setdiff(numfmt_rows, other_numfmt_rows)
-
-          for (a in other_numfmt_rows) {
-            prefix <- gsub(pattern = "[^£|^$|^€]",
-                           replacement = "",
-                           x = table_replacements[a, cols_currency[n]],
-                           perl = TRUE)
-
-            value <- gsub(pattern = "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
-                          replacement = "", x =
-                            table_replacements[a, cols_currency[n]],
-                          perl = TRUE)
-
-            notes <- gsub(pattern = value,
-                          replacement = "",
-                          x = table_replacements[a, cols_currency[n]],
-                          fixed = TRUE)
-
-            value <- as.numeric(gsub(pattern = "[£|$|€]",
-                                     replacement = "",
-                                     x = value,
-                                     perl = TRUE))
-
-            value <- scales::number(value,
-                                    accuracy = as.numeric(paste0("0.",
-                                                                 paste0(rep(0, col_precision - 1),
-                                                                        "1", collapse = "")
-                                                                 )
-                                                          )
-                                    )
-
-            table_replacements[a, cols_currency[n]] <- paste0(prefix,
-                                                              value,
-                                                              " ",
-                                                              notes)
-          }
-        }
-      }
-    }
-
-    # get table position on sheet
-    table_info <- wb_get_tables(wb, sheet = tab_title)
-    table_pos <- table_info$tab_ref[table_info$tab_name == table_name]
-
-
-    # get anchor position of table
-    first_value_cell <- dims_to_dataframe(table_pos, fill = TRUE)[1, 1]
-    # get position to update: multiple columns selected
-    table_pos <- wb_dims(x = table,
-                         from_dims =
-                           first_value_cell,
-                         cols = names(table_replacements))
-
-    # get the entire table by cell references
-    table_pos <- dims_to_rowcol(table_pos)
-
-    table_pos <- t(outer(table_pos$col, table_pos$row, paste0))
-
-    table_numbers_check <- unlist(.determine_currency(table_replacements),
-                                  use.names = FALSE)
-
-    table_currencies_check <- unlist(.determine_currency(table_replacements),
-                                     use.names = FALSE)
-
-    table_notes_check <- !(table_numbers_check | table_currencies_check)
-
-    # split cells to be replaced into notes and values
-    numbers_pos <- table_pos[table_numbers_check]
-    currencies_pos <- table_pos[table_currencies_check]
-    notes_pos <- table_pos[table_notes_check]
-
-
-    table_numbers <- unlist(table_replacements,
-                            use.names = FALSE)[table_numbers_check]
-    table_currencies <- unlist(table_replacements,
-                               use.names = FALSE)[table_currencies_check]
-    table_notes <- unlist(table_replacements,
-                          use.names = FALSE)[table_notes_check]
-
-    numbers_to_insert <- data.frame(
-      cell_text = table_numbers,
-      cell_pos = numbers_pos
-    )
-
-    currencies_to_insert <- data.frame(
-      cell_text = table_currencies,
-      cell_pos = currencies_pos
-    )
-
-    notes_to_insert <- data.frame(
-      cell_text = table_notes,
-      cell_pos = notes_pos
-    )
-
-    numbers_to_insert |>
-      pwalk(\(cell_text,
-        cell_pos) {
-        wb$add_data(
-          sheet = tab_title,
-          x = as.numeric(cell_text),
-          dims = cell_pos,
-          col_names = FALSE,
-          row_names = FALSE,
-          apply_cell_style = FALSE
-        )
-      })
-
-    currencies_to_insert$cell_text <-
-      as.numeric(gsub("[£|$|€]",
-                      "",
-                      currencies_to_insert$cell_text))
-
-    currencies_to_insert |>
-      pwalk(\(cell_text,
-        cell_pos) {
-        wb$add_data(
-          sheet = tab_title,
-          x = cell_text,
-          dims = cell_pos,
-          col_names = FALSE,
-          row_names = FALSE,
-          apply_cell_style = FALSE
-        )
-      })
-
-    notes_to_insert |>
-      pwalk(\(cell_text, cell_pos) {
-        wb$add_data(
-          sheet = tab_title,
-          x = cell_text,
-          dims = cell_pos,
-          col_names = FALSE,
-          row_names = FALSE,
-          apply_cell_style = FALSE
-        )
-      })
-  }
+  # if (any(mixed_columns)) {
+  #   # any cell with notes needs to be added to the sheet separately
+  #   table_replacements <- table[mixed_columns]
+  #
+  #   cols_numeric <- .determine_numeric_columns(table_replacements)
+  #
+  #   cols_numeric <- names(Filter(isTRUE, cols_numeric))
+  #
+  #   cols_currency <- .determine_currency_columns(table_replacements)
+  #
+  #   cols_currency <- names(Filter(isTRUE, cols_currency))
+  #
+  #   if (length(cols_numeric) > 0) {
+  #     for (n in seq_along(cols_numeric)) {
+  #       col_precision <- .determine_decimal_places(table_replacements[, cols_numeric[n]], type = "numeric")
+  #
+  #       if (col_precision > 0) {
+  #         value <- gsub(pattern = "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$", replacement = "", x = table_replacements[a, cols_numeric[n]], perl = TRUE)
+  #         notes <- gsub(pattern = value, replacement = "", x = table_replacements[a, cols_numeric[n]], fixed = TRUE)
+  #
+  #         value <- number(value, accuracy = as.numeric(paste0("0.", paste0(rep(0, col_precision - 1), "1", collapse = ""))))
+  #
+  #         table_replacements[a, cols_numeric[n]] <- paste0(value, " ", notes)
+  #       }
+  #     }
+  #   }
+  #
+  #   if (length(cols_currency) > 0) {
+  #     for (n in seq_along(cols_currency)) {
+  #       col_precision <- .determine_decimal_places(table_replacements[, cols_currency[n]], type = "currency")
+  #
+  #       if (col_precision > 0) {
+  #         numfmt_rows <- seq_len(nrow(table_replacements))
+  #
+  #         # detect rows with notes to apply nonstandard number formats
+  #         other_numfmt_rows <- numfmt_rows[grepl(
+  #           pattern = "^.+?(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
+  #           table_replacements[, cols_currency[n]],
+  #           perl = TRUE
+  #         )]
+  #
+  #         # remove rows with nonstandard number formats
+  #         numfmt_rows <- setdiff(numfmt_rows, other_numfmt_rows)
+  #
+  #         for (a in other_numfmt_rows) {
+  #           prefix <- gsub(
+  #             pattern = "[^\u00A3|^$|^\u20AC]",
+  #             replacement = "",
+  #             x = table_replacements[a, cols_currency[n]],
+  #             perl = TRUE
+  #           )
+  #
+  #           value <- gsub(
+  #             pattern = "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
+  #             replacement = "", x =
+  #               table_replacements[a, cols_currency[n]],
+  #             perl = TRUE
+  #           )
+  #
+  #           notes <- gsub(
+  #             pattern = value,
+  #             replacement = "",
+  #             x = table_replacements[a, cols_currency[n]],
+  #             fixed = TRUE
+  #           )
+  #
+  #           value <- as.numeric(gsub(
+  #             pattern = "[\u00A3|$|\u20AC]",
+  #             replacement = "",
+  #             x = value,
+  #             perl = TRUE
+  #           ))
+  #
+  #           value <- number(value,
+  #             accuracy = as.numeric(paste0(
+  #               "0.",
+  #               paste0(rep(0, col_precision - 1),
+  #                 "1",
+  #                 collapse = ""
+  #               )
+  #             ))
+  #           )
+  #
+  #           table_replacements[a, cols_currency[n]] <- paste0(
+  #             prefix,
+  #             value,
+  #             " ",
+  #             notes
+  #           )
+  #         }
+  #       }
+  #     }
+  #   }
+  #
+  #   # get table position on sheet
+  #   table_info <- wb_get_tables(wb, sheet = tab_title)
+  #   table_pos <- table_info$tab_ref[table_info$tab_name == table_name]
+  #
+  #
+  #   # get anchor position of table
+  #   first_value_cell <- dims_to_dataframe(table_pos, fill = TRUE)[1, 1]
+  #   # get position to update: multiple columns selected
+  #   table_pos <- wb_dims(
+  #     x = table,
+  #     from_dims =
+  #       first_value_cell,
+  #     cols = names(table_replacements)
+  #   )
+  #
+  #   # get the entire table by cell references
+  #   table_pos <- dims_to_rowcol(table_pos)
+  #
+  #   table_pos <- t(outer(table_pos$col, table_pos$row, paste0))
+  #
+  #   table_numbers_check <- unlist(.determine_numeric(table_replacements),
+  #     use.names = FALSE
+  #   )
+  #
+  #   table_currencies_check <- unlist(.determine_currency(table_replacements),
+  #     use.names = FALSE
+  #   )
+  #
+  #   table_notes_check <- !(table_numbers_check | table_currencies_check)
+  #
+  #   # split cells to be replaced into notes and values
+  #   numbers_pos <- table_pos[table_numbers_check]
+  #   currencies_pos <- table_pos[table_currencies_check]
+  #   notes_pos <- table_pos[table_notes_check]
+  #
+  #
+  #   table_numbers <- unlist(table_replacements,
+  #     use.names = FALSE
+  #   )[table_numbers_check]
+  #   table_currencies <- unlist(table_replacements,
+  #     use.names = FALSE
+  #   )[table_currencies_check]
+  #   table_notes <- unlist(table_replacements,
+  #     use.names = FALSE
+  #   )[table_notes_check]
+  #
+  #   numbers_to_insert <- data.frame(
+  #     cell_text = table_numbers,
+  #     cell_pos = numbers_pos
+  #   )
+  #
+  #   currencies_to_insert <- data.frame(
+  #     cell_text = table_currencies,
+  #     cell_pos = currencies_pos
+  #   )
+  #
+  #   notes_to_insert <- data.frame(
+  #     cell_text = table_notes,
+  #     cell_pos = notes_pos
+  #   )
+  #
+  #   numbers_to_insert |>
+  #     pwalk(\(cell_text,
+  #             cell_pos) {
+  #       wb$add_data(
+  #         sheet = tab_title,
+  #         x = as.numeric(cell_text),
+  #         dims = cell_pos,
+  #         col_names = FALSE,
+  #         row_names = FALSE,
+  #         apply_cell_style = FALSE
+  #       )
+  #     })
+  #
+  #   currencies_to_insert$cell_text <-
+  #     as.numeric(gsub(
+  #       "[\u00A3|$|\u20AC]",
+  #       "",
+  #       currencies_to_insert$cell_text
+  #     ))
+  #
+  #   currencies_to_insert |>
+  #     pwalk(\(cell_text,
+  #             cell_pos) {
+  #       wb$add_data(
+  #         sheet = tab_title,
+  #         x = cell_text,
+  #         dims = cell_pos,
+  #         col_names = FALSE,
+  #         row_names = FALSE,
+  #         apply_cell_style = FALSE
+  #       )
+  #     })
+  #
+  #   notes_to_insert |>
+  #     pwalk(\(cell_text, cell_pos) {
+  #       wb$add_data(
+  #         sheet = tab_title,
+  #         x = cell_text,
+  #         dims = cell_pos,
+  #         col_names = FALSE,
+  #         row_names = FALSE,
+  #         apply_cell_style = FALSE
+  #       )
+  #     })
+  # }
 
   wb
 }
@@ -796,12 +819,11 @@
 }
 
 .determine_numeric <- function(values) {
-
   numeric_columns_values <- lapply(values,
     grepl,
     pattern = "^(?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*)$",
     perl = TRUE
-   )
+  )
 
   numeric_columns_values
 }
@@ -817,13 +839,13 @@
 .extract_currency_values <- function(table) {
   currency_values <- table[sapply(table,
     grepl,
-    pattern = "^(?:\\s*)(?:[$€£]\\s?(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?|(?:USD|EUR|GBP)\\s+(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?)(?:\\s*)$",
+    pattern = "^(?:\\s*)(?:[$\u20AC\u00A3]\\s?(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?|(?:USD|EUR|GBP)\\s+(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?)(?:\\s*)$",
     perl = TRUE
   )]
 
   currency_values <- sapply(currency_values,
     gsub,
-    pattern = "[$|€|£]",
+    pattern = "[$|\u20AC|\u00A3]",
     replacement = "",
     perl = TRUE
   )
@@ -834,10 +856,9 @@
 }
 
 .determine_currency <- function(values) {
-
   currency_values <- lapply(values,
     grepl,
-    pattern = "^(?:\\s*)(?:[$€£]\\s?(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?|(?:USD|EUR|GBP)\\s+(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?)(?:\\s*)$",
+    pattern = "^(?:\\s*)(?:[$\u20AC\u00A3]\\s?(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?|(?:USD|EUR|GBP)\\s+(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?)(?:\\s*)$",
     perl = TRUE
   )
 

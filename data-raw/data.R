@@ -6,6 +6,20 @@
 
 set.seed(1066)
 
+properties_list <- list(
+  creator = "Analysis Function",
+  title = "demo workbook",
+  subject = "demo workbook subject",
+  category = "demo",
+  datetime_created = Sys.time(),
+  datetime_modified = Sys.time(),
+  modifier = "demo",
+  keywords = c("test","demo"),
+  comments = "test",
+  manager = "test manager",
+  company = "Analysis Function"
+)
+
 cover_list <- list(
   "Section 1" = c("First row of Section 1.", "Second row of Section 1."),
   "Section 2" = "The only row of Section 2.",
@@ -45,6 +59,7 @@ table_1_df <- data.frame(
 table_2_df <- data.frame(Category = LETTERS[1:10], Numeric = 1:10)
 
 demo_aftable <- create_aftable(
+  document_properties = properties_list,
   tab_titles = c("Cover", "Contents", "Notes", "Table_1", "Table_2"),
   sheet_types = c("cover", "contents", "notes", "tables", "tables"),
   sheet_titles = c(
@@ -77,11 +92,11 @@ demo_aftable <- create_aftable(
   tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)
 )
 
-demo_df <- as.data.frame(demo_aftable)
+demo_list <- as.list(demo_aftable)
 
 demo_workbook <- generate_workbook(demo_aftable)
 
 # Write to data/
-usethis::use_data(demo_df, overwrite = TRUE)
+usethis::use_data(demo_list, overwrite = TRUE)
 usethis::use_data(demo_aftable, overwrite = TRUE)
 usethis::use_data(demo_workbook, overwrite = TRUE)

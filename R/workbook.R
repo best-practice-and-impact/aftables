@@ -1,4 +1,3 @@
-
 #' Generate A Workbook Object From An 'aftable'
 #'
 #' Populate an 'openxlsx2' wbWorkbook-class object with content from an
@@ -55,5 +54,4 @@ generate_workbook <- function(aftable) {
   }
 
   wb
-
 }

@@ -1,4 +1,4 @@
-#' Set Up a List of Common Styles
+#' Set up a list of common paragraph styles
 #' @noRd
 .style_paragraph <- function() {
   list(
@@ -8,6 +8,8 @@
   )
 }
 
+#' Set up a list of common font styles
+#' @noRd
 .style_font <- function() {
   list(
     bold =  1,
@@ -122,22 +124,27 @@
 
   wb$add_cell_style(
     sheet = tab_title,
-    dims = wb_dims(rows = seq(start_row, start_row + table_height),
-                   cols = seq(table_width)),
+    dims = wb_dims(
+      rows = seq(start_row, start_row + table_height),
+      cols = seq(table_width)
+    ),
     wrap_text = style_ref[["wrap_text"]]
   )
 
   if (length(num_cols_index[!is.na(num_cols_index)])) { # only run if needed
     wb$add_cell_style(
       sheet = tab_title,
-      dims = wb_dims(rows = seq(start_row, start_row + table_height),
-                     cols = num_cols_index),
+      dims = wb_dims(
+        rows = seq(start_row, start_row + table_height),
+        cols = num_cols_index
+      ),
       horizontal = style_ref[["ralign"]]
     )
 
     for (c in seq_along(num_cols_index)) {
       col_precision <- .determine_decimal_places(table[, num_cols_index[c]],
-                                                 type = "numeric")
+        type = "numeric"
+      )
 
       numfmt_rows <- seq_len(nrow(table))
 
@@ -153,9 +160,11 @@
 
       wb$add_numfmt(
         sheet = tab_title,
-        dims = wb_dims(rows = numfmt_rows, cols = num_cols_index[c]),
-        numfmt = paste0(ifelse(col_precision > 0, "#,##0.", "#,##0"),
-                        paste0(rep(0, col_precision), collapse = ""))
+        dims = wb_dims(rows = start_row + numfmt_rows, cols = num_cols_index[c]),
+        numfmt = paste0(
+          ifelse(col_precision > 0, "#,##0.", "#,##0"),
+          paste0(rep(0, col_precision), collapse = "")
+        )
       )
 
       for (r in other_numfmt_rows) {
@@ -204,9 +213,9 @@
 
       wb$add_numfmt(
         sheet = tab_title,
-        dims = wb_dims(rows = seq(start_row, start_row + table_height), cols = currency_cols_index[c]),
+        dims = wb_dims(rows = start_row + numfmt_rows, cols = num_cols_index[c]),
         numfmt = paste0(
-          unique(gsub("[^£|^$|^€]", "", table[, currency_cols_index[c]])),
+          unique(gsub("[^\u00A3|^$|^\u20AC]", "", table[, currency_cols_index[c]])),
           ifelse(col_precision > 0, paste0("#,##0.", paste0(rep(0, col_precision), collapse = "")), "#,##0")
         )
       )
@@ -227,7 +236,7 @@
           sheet = tab_title,
           dims = wb_dims(rows = start_row + r, cols = currency_cols_index[c]),
           numfmt = paste0(
-            unique(gsub("[^£|^$|^€]", "", table[, currency_cols_index[c]])),
+            unique(gsub("[^\u00A3|^$|^\u20AC]", "", table[, currency_cols_index[c]])),
             ifelse(col_precision > 0, paste0("#,##0.", paste0(rep(0, col_precision), collapse = ""), "&quot; "), "#,##0&quot;"), " ", extra_text_format, "&quot;"
           )
         )
