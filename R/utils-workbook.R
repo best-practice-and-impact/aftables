@@ -503,7 +503,7 @@
 
     table_pos <- t(outer(table_pos$col, table_pos$row, paste0))
 
-    table_numbers_check <- unlist(.determine_currency(table_replacements),
+    table_numbers_check <- unlist(.determine_numeric(table_replacements),
       use.names = FALSE
     )
 

@@ -160,7 +160,7 @@
 
       wb$add_numfmt(
         sheet = tab_title,
-        dims = wb_dims(rows = numfmt_rows, cols = num_cols_index[c]),
+        dims = wb_dims(rows = start_row + numfmt_rows, cols = num_cols_index[c]),
         numfmt = paste0(
           ifelse(col_precision > 0, "#,##0.", "#,##0"),
           paste0(rep(0, col_precision), collapse = "")
@@ -213,7 +213,7 @@
 
       wb$add_numfmt(
         sheet = tab_title,
-        dims = wb_dims(rows = seq(start_row, start_row + table_height), cols = currency_cols_index[c]),
+        dims = wb_dims(rows = start_row + numfmt_rows, cols = currency_cols_index[c]),
         numfmt = paste0(
           unique(gsub("[^\u00A3|^$|^\u20AC]", "", table[, currency_cols_index[c]])),
           ifelse(col_precision > 0, paste0("#,##0.", paste0(rep(0, col_precision), collapse = "")), "#,##0")
