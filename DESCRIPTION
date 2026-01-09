@@ -23,7 +23,10 @@ Imports:
     openxlsx2,
     pillar,
     purrr,
-    scales
+    scales,
+    dplyr,
+    stringr,
+    tidyr
 Suggests: 
     covr,
     knitr,
