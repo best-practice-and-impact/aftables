@@ -12,6 +12,6 @@
 #' @importFrom stringr str_extract str_replace str_detect
 #' @importFrom scales number
 #' @importFrom utils file.edit
-#' @import configr
+#' @importFrom yaml read_yaml
 ## usethis namespace: end
 NULL

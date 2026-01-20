@@ -28,7 +28,7 @@ Imports:
     stringr,
     tidyr,
     utils,
-    configr
+    yaml
 Suggests: 
     covr,
     knitr,

@@ -8,7 +8,7 @@ default:
     keywords:
       keyword1: "example"
       keyword2: "demonstration"
-      keyword3: "config.yml"
+      keyword3: "config.yaml"
     comments: "example"
     manager: "Analysis Function manager"
     company: "Analysis Function"
@@ -28,7 +28,7 @@ minimum:
     keywords:
       keyword1: "example"
       keyword2: "demonstration"
-      keyword3: "config.yml"
+      keyword3: "config.yaml"
 empty:
   workbook_properties:
     creator: "Analysis Function"
@@ -39,7 +39,7 @@ empty:
     keywords:
       keyword1: "example"
       keyword2: "demonstration"
-      keyword3: "config.yml"
+      keyword3: "config.yaml"
     comments:
     manager:
     company:

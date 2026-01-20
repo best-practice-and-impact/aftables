@@ -13,7 +13,7 @@
 #' Default NULL.
 #' @param keywords character vector containing keywords to add to workbook.
 #' Default NULL.
-#' @param config_path character string containing path to config.yml.
+#' @param config_path character string containing path to config.yaml.
 #' Default NULL.
 #' @param config_name character string specifying which configuration to use.
 #' Default NULL.
@@ -22,7 +22,7 @@
 #'
 #' @details
 #'
-#' See \code{\link[aftables]{get_config_yml}} for details of the config.yml
+#' See \code{\link[aftables]{get_config_yml}} for details of the config.yaml
 #' file, including how to add and edit configurations.
 #'
 #' Analysis Function guidance advises workbooks should have the author, title,
@@ -40,27 +40,27 @@
 #'   as_aftable() |>
 #'   generate_workbook()
 #'
-#' # Using config.yml file to set workbook properties and edit text and cell formatting
+#' # Using config.yaml file to set workbook properties and edit text and cell formatting
 #' example_workbook <- generate_workbook(demo_aftable,
 #'                                       config_path = system.file("ext-data",
-#'                                                                 "config.yml",
+#'                                                                 "config.yaml",
 #'                                                                 package = "aftables"),
 #'                                       config_name = "default")
 #
 #' # Use openxlsx2::wb_get_properties to view properties that have been applied
 #' openxlsx2::wb_get_properties(example_workbook)
 #'
-#' # Using config.yml file to set minimum workbook properties and edit text and cell formatting
+#' # Using config.yaml file to set minimum workbook properties and edit text and cell formatting
 #' example_workbook <- generate_workbook(demo_aftable,
 #'                                       config_path = system.file("ext-data",
-#'                                                                 "config.yml",
+#'                                                                 "config.yaml",
 #'                                                                 package = "aftables"),
 #'                                       config_name = "minimum")
 #
 #' # Use openxlsx2::wb_get_properties to view properties that have been applied
 #' openxlsx2::wb_get_properties(example_workbook)
 #'
-#' # Setting the minimum workbook properties without using a config.yml file
+#' # Setting the minimum workbook properties without using a config.yaml file
 #' example_workbook <- generate_workbook(demo_aftable,
 #'                                       creator = "Example author",
 #'                                       title = "example workbook",
@@ -84,9 +84,9 @@ generate_workbook <- function(aftable, creator = NULL, title = NULL,
     stop("The object passed to argument 'content' must have class 'aftable'.")
   }
 
-  # get parameters from config.yml
+  # get parameters from config.yaml
   if (!is.null(config_path) && !is.null(config_name)) {
-    wb_config <- fetch.config(links = config_path)
+    wb_config <- read_yaml(file = config_path)
     # fetch.config gets the entire file, need to get only the user's desired config
     wb_config <- wb_config[[config_name]]
 

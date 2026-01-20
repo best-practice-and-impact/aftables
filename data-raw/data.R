@@ -78,7 +78,7 @@ demo_aftable <- create_aftable(
 
 demo_df <- as.data.frame(demo_aftable)
 
-demo_workbook <- generate_workbook(demo_aftable, config_path = "int/extdata/config.yml", config_name = "minimal")
+demo_workbook <- generate_workbook(demo_aftable, config_path = "int/extdata/config.yaml", config_name = "minimal")
 
 # Write to data/
 usethis::use_data(demo_df, overwrite = TRUE)

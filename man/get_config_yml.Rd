@@ -2,29 +2,29 @@
 % Please edit documentation in R/get_config_yml.R
 \name{get_config_yml}
 \alias{get_config_yml}
-\title{Function to export config.yml file included with aftables}
+\title{Function to export  file included with aftables}
 \usage{
 get_config_yml(path = NULL, open_config = FALSE)
 }
 \arguments{
 \item{path}{optional character string containing directory to copy the
-config.yml file. Defaults to current working directory.}
+config.yaml file. Defaults to current working directory.}
 
-\item{open_config}{optional logical whether to open the copy of config.yml
+\item{open_config}{optional logical whether to open the copy of config.yaml
 for editing in the current R session. Default FALSE.}
 }
 \description{
-Copy the example config.yml file included with aftables to a directory of
-the users choice, and optionally open the file for editing. The config.yml
+Copy the example config.yaml file included with aftables to a directory of
+the users choice, and optionally open the file for editing. The config.yaml
 file can be passed to the aftables function
 \code{\link[aftables]{generate_workbook}}.
 }
 \details{
-If there is an existing config.yml file in the destination directory this
+If there is an existing config.yaml file in the destination directory this
 function will not overwrite it. If open_config is set to TRUE in this
-situation the existing config.yml file will be opened.
+situation the existing config.yaml file will be opened.
 
-Contents of example config.yml:
+Contents of example config.yaml:
 
 \if{html}{\out{<div class="sourceCode xml">}}\preformatted{default:
   workbook_properties:
@@ -36,7 +36,7 @@ Contents of example config.yml:
     keywords:
       keyword1: "example"
       keyword2: "demonstration"
-      keyword3: "config.yml"
+      keyword3: "config.yaml"
     comments: "example"
     manager: "Analysis Function manager"
     company: "Analysis Function"
@@ -56,7 +56,7 @@ minimum:
     keywords:
       keyword1: "example"
       keyword2: "demonstration"
-      keyword3: "config.yml"
+      keyword3: "config.yaml"
 
 }\if{html}{\out{</div>}}
 
@@ -65,12 +65,12 @@ entry. Copy the default entry, paste it below the minimum entry and replace
 \code{default} with a new name. The name of an entry is used in the \code{config_name}
 argument in the aftables \code{generate_workbook} function.
 
-The aftables \code{generate_workbook} function requires config.yml to include a
+The aftables \code{generate_workbook} function requires config.yaml to include a
 default configuration, and will result in an error if it is removed.
 }
 \examples{
 
-# Copy default aftables config.yml file to user's home directory, and open
+# Copy default aftables config.yaml file to user's home directory, and open
 # the copied file for editing.
 \dontrun{
 get_config_yml(path = "~", open_config = TRUE)

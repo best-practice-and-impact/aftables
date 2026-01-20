@@ -71,7 +71,8 @@
 #' @noRd
 .style_sheet_title <- function(wb, tab_title, style_ref, font_ref) {
   # Sheet titles are BOLD and 16PT by default
-  # .style_font() checks the config.yml file for user preferences
+  # .style_font() checks the config.yaml file for user preferences
+  # which are then included here in font_ref
   wb$add_font(
     sheet = tab_title,
     dims = "A1",
@@ -191,6 +192,9 @@
     ),
     wrap_text = style_ref[["wrap_text"]]
   )
+
+  # .style_font() checks the config.yaml file for user preferences
+  # which are then included here in font_ref
 
   # Table headers are also BOLD
   wb$add_font(
