@@ -7,5 +7,11 @@
 #' @importFrom pillar tbl_sum
 #' @import openxlsx2
 #' @importFrom purrr pwalk
+#' @importFrom dplyr across mutate as_tibble everything
+#' @importFrom tidyr replace_na
+#' @importFrom stringr str_extract str_replace str_detect
+#' @importFrom scales number
+#' @importFrom utils file.edit
+#' @import configr
 ## usethis namespace: end
 NULL

@@ -175,8 +175,7 @@
 #' str(x, max.level = 2)
 #'
 #' @export
-create_aftable <- function(document_properties,
-                           tab_titles,
+create_aftable <- function(tab_titles,
                            sheet_types = c("cover", "contents", "notes", "tables"),
                            sheet_titles,
                            blank_cells = NA_character_,
@@ -184,20 +183,17 @@ create_aftable <- function(document_properties,
                            custom_rows = list(NA_character_),
                            tables) {
 
-  x <- list()
-
-  x$tabs <- data.frame(
-    tab_title   = unlist(tab_titles),
-    sheet_type  = unlist(sheet_types),
+  x <- data.frame(
+    tab_title = unlist(tab_titles),
+    sheet_type = unlist(sheet_types),
     sheet_title = unlist(sheet_titles),
     blank_cells = unlist(blank_cells),
     source = unlist(sources),
     stringsAsFactors = FALSE # because default is TRUE prior to R v4
   )
 
-  x$tabs[["custom_rows"]] <- custom_rows
-  x$tabs[["table"]] <- tables
-  x$properties <- document_properties
+  x[["custom_rows"]] <- custom_rows
+  x[["table"]] <- tables
 
   as_aftable(x)
 }
@@ -218,20 +214,19 @@ create_aftable <- function(document_properties,
 #'
 #' @export
 as_aftable <- function(x) {
-  if (any(names(x$tabs) %in% "tab_title")) {
-    .check_tab_titles(x$tabs[["tab_title"]])
-    x$tabs[["tab_title"]] <- .clean_tab_titles(x$tabs[["tab_title"]])
+  if (any(names(x) %in% "tab_title")) {
+    .check_tab_titles(x[["tab_title"]])
+    x[["tab_title"]] <- .clean_tab_titles(x[["tab_title"]])
   }
 
-  if (any(names(x$tabs) %in% "blank_cells")) {
-    x$tabs[["blank_cells"]] <- .append_period(x$tabs[["blank_cells"]])
+  if (any(names(x) %in% "blank_cells")) {
+    x[["blank_cells"]] <- .append_period(x[["blank_cells"]])
   }
 
-  class(x$tabs) <- c("aftable", "tbl", "data.frame")
-  class(x) <- c("aftable","list")
+  class(x) <- c("aftable", "tbl", "data.frame")
 
-  .validate_aftable(x$tabs)
-  .warn_aftable(x$tabs)
+  .validate_aftable(x)
+  .warn_aftable(x)
 
   x
 }

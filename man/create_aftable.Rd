@@ -5,7 +5,6 @@
 \title{Create An 'aftable' Object}
 \usage{
 create_aftable(
-  document_properties,
   tab_titles,
   sheet_types = c("cover", "contents", "notes", "tables"),
   sheet_titles,

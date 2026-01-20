@@ -10,13 +10,33 @@
 
 #' Set up a list of common font styles
 #' @noRd
-.style_font <- function() {
+.style_font <- function(wb_config) {
+
+  base_font_size <-
+    ifelse(!is.null(wb_config$workbook_format$base_font_size),
+           wb_config$workbook_format$base_font_size,
+           12)
+
+  table_header_size <-
+    ifelse(!is.null(wb_config$workbook_format$table_header_size),
+           wb_config$workbook_format$table_header_size,
+           14)
+
+  sheet_header_size <-
+    ifelse(!is.null(wb_config$workbook_format$sheet_header_size),
+           wb_config$workbook_format$sheet_header_size,
+           16)
+
+  base_font_name <- ifelse(!is.null(wb_config$workbook_format$base_font_name),
+                           wb_config$workbook_format$base_font_name,
+                           "Arial")
+
   list(
     bold =  1,
-    pt12 = 12,
-    pt14 = 14,
-    pt16 = 16,
-    name = "Arial"
+    base_font_size = base_font_size,
+    table_header_size = table_header_size,
+    sheet_header_size = sheet_header_size,
+    name = base_font_name
   )
 }
 
@@ -24,10 +44,20 @@
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @noRd
 
-.style_workbook <- function(wb) {
+.style_workbook <- function(wb, wb_config) {
+
+  base_font_size <-
+    ifelse(!is.null(wb_config$workbook_format$base_font_size),
+           wb_config$workbook_format$base_font_size,
+           12)
+
+  base_font_name <- ifelse(!is.null(wb_config$workbook_format$base_font_name),
+                           wb_config$workbook_format$base_font_name,
+                           "Arial")
+
   wb$set_base_font(
-    font_size = 12,
-    font_name = "Arial"
+    font_size = base_font_size,
+    font_name = base_font_name
   )
 
   wb
@@ -36,16 +66,16 @@
 #' Apply Styles to a Sheet Title
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
-#' @param style_ref List. The style-reference object made with [.style_paragraph()].
-#' @param font_ref List. The font-reference object made with [.style_font()].
+#' @param style_ref List. The style-reference object made with .style_paragraph().
+#' @param font_ref List. The font-reference object made with .style_font().
 #' @noRd
 .style_sheet_title <- function(wb, tab_title, style_ref, font_ref) {
-  # Sheet titles are BOLD and 16PT
-
+  # Sheet titles are BOLD and 16PT by default
+  # .style_font() checks the config.yml file for user preferences
   wb$add_font(
     sheet = tab_title,
     dims = "A1",
-    size = font_ref[["pt16"]],
+    size = font_ref[["sheet_header_size"]],
     bold = font_ref[["bold"]],
     name = font_ref[["name"]]
   )
@@ -62,14 +92,38 @@
 #' Apply Styles to a Table
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param table_name Character. The table to which styles should be applied.
-#' @param style_ref List. The style-reference object made with [.style_paragraph()].
-#' @param font_ref List. The font-reference object made with [.style_font()].
+#' @param style_ref List. The style-reference object made with .style_paragraph().
+#' @param font_ref List. The font-reference object made with .style_font().
 #' @noRd
-.style_table <- function(wb, content, table_name, style_ref, font_ref) {
+.style_table <- function(wb, content, table_name, style_ref, font_ref, wb_config) {
   content_row <- content[content[["table_name"]] == table_name, ]
   table <- content_row[, "table"][[1]]
   tab_title <- content_row[, "tab_title"][[1]]
   sheet_type <- content_row[, "sheet_type"][[1]]
+
+  if (!is.null(wb_config$workbook_format$decimal_places)) {
+    decimal_places = wb_config$workbook_format$decimal_places
+  } else {
+    decimal_places = NULL
+  }
+
+  if (!is.null(wb_config$workbook_format$cellwidth_default)) {
+    cellwidth_default <- wb_config$workbook_format$cellwidth_default
+  } else {
+    cellwidth_default <- 16
+  }
+
+  if (!is.null(wb_config$workbook_format$cellwidth_wider)) {
+    cellwidth_wider <- wb_config$workbook_format$cellwidth_wider
+  } else {
+    cellwidth_wider <- 32
+  }
+
+  if (!is.null(wb_config$workbook_format$nchar_break)) {
+    nchar_break <- wb_config$workbook_format$nchar_break
+  } else {
+    nchar_break <- 50
+  }
 
   start_row <- .get_start_row_table(
     content,
@@ -82,10 +136,6 @@
 
   table_height <- nrow(table)
   table_width <- ncol(table)
-
-  cellwidth_default <- 16
-  cellwidth_wider <- 32
-  nchar_break <- 50
 
   # Some columns may contain numbers but have suppression text in them, e.g.
   # '[c]', which makes the column character class. Find the likely numeric cols.
@@ -122,15 +172,6 @@
     )
   }
 
-  wb$add_cell_style(
-    sheet = tab_title,
-    dims = wb_dims(
-      rows = seq(start_row, start_row + table_height),
-      cols = seq(table_width)
-    ),
-    wrap_text = style_ref[["wrap_text"]]
-  )
-
   if (length(num_cols_index[!is.na(num_cols_index)])) { # only run if needed
     wb$add_cell_style(
       sheet = tab_title,
@@ -140,119 +181,164 @@
       ),
       horizontal = style_ref[["ralign"]]
     )
-
-    for (c in seq_along(num_cols_index)) {
-      col_precision <- .determine_decimal_places(table[, num_cols_index[c]],
-        type = "numeric"
-      )
-
-      numfmt_rows <- seq_len(nrow(table))
-
-      # detect rows with notes to apply nonstandard number formats
-      other_numfmt_rows <- numfmt_rows[grepl(
-        pattern = "^.+?(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
-        table[, num_cols_index[c]],
-        perl = TRUE
-      )]
-
-      # remove rows with nonstandard number formats
-      numfmt_rows <- setdiff(numfmt_rows, other_numfmt_rows)
-
-      wb$add_numfmt(
-        sheet = tab_title,
-        dims = wb_dims(rows = start_row + numfmt_rows, cols = num_cols_index[c]),
-        numfmt = paste0(
-          ifelse(col_precision > 0, "#,##0.", "#,##0"),
-          paste0(rep(0, col_precision), collapse = "")
-        )
-      )
-
-      for (r in other_numfmt_rows) {
-        extra_text_format <- regmatches(
-          table[
-            r,
-            num_cols_index[c]
-          ],
-          regexpr("(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
-            table[r, num_cols_index[c]],
-            perl = TRUE
-          )
-        )
-
-        wb$add_numfmt(
-          sheet = tab_title,
-          dims = wb_dims(rows = start_row + r, cols = num_cols_index[c]),
-          numfmt = paste0(ifelse(col_precision > 0, paste0("#,##0.&quot;", rep(0, col_precision), collapse = ""), "#,##0&quot;"), " ", extra_text_format, "&quot;")
-        )
-      }
-    }
   }
 
-  if (length(currency_cols_index[!is.na(currency_cols_index)])) { # only run if needed
-    wb$add_cell_style(
-      sheet = tab_title,
-      dims = wb_dims(rows = seq(start_row, start_row + table_height), cols = currency_cols_index),
-      horizontal = style_ref[["ralign"]]
-    )
-
-    for (c in seq_along(currency_cols_index)) { # allows for different currency units in different columns
-
-      col_precision <- .determine_decimal_places(table[, currency_cols_index[c]], type = "currency")
-
-      numfmt_rows <- seq_len(nrow(table))
-
-      # detect rows with notes to apply nonstandard number formats
-      other_numfmt_rows <- numfmt_rows[grepl(
-        pattern = "^.+?(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
-        table[, currency_cols_index[c]],
-        perl = TRUE
-      )]
-
-      # remove rows with nonstandard number formats
-      numfmt_rows <- setdiff(numfmt_rows, other_numfmt_rows)
-
-      wb$add_numfmt(
-        sheet = tab_title,
-        dims = wb_dims(rows = start_row + numfmt_rows, cols = currency_cols_index[c]),
-        numfmt = paste0(
-          unique(gsub("[^\u00A3|^$|^\u20AC]", "", table[, currency_cols_index[c]])),
-          ifelse(col_precision > 0, paste0("#,##0.", paste0(rep(0, col_precision), collapse = "")), "#,##0")
-        )
-      )
-
-      for (r in other_numfmt_rows) {
-        extra_text_format <- regmatches(
-          table[
-            r,
-            currency_cols_index[c]
-          ],
-          regexpr("\\[[^\\]]*\\](?:\\[[^\\]]*\\])*",
-            table[r, currency_cols_index[c]],
-            perl = TRUE
-          )
-        )
-
-        wb$add_numfmt(
-          sheet = tab_title,
-          dims = wb_dims(rows = start_row + r, cols = currency_cols_index[c]),
-          numfmt = paste0(
-            unique(gsub("[^\u00A3|^$|^\u20AC]", "", table[, currency_cols_index[c]])),
-            ifelse(col_precision > 0, paste0("#,##0.", paste0(rep(0, col_precision), collapse = ""), "&quot; "), "#,##0&quot;"), " ", extra_text_format, "&quot;"
-          )
-        )
-      }
-    }
-  }
+  wb$add_cell_style(
+    sheet = tab_title,
+    dims = wb_dims(
+      rows = seq(start_row, start_row + table_height),
+      cols = seq(table_width)
+    ),
+    wrap_text = style_ref[["wrap_text"]]
+  )
 
   # Table headers are also BOLD
-
   wb$add_font(
     sheet = tab_title,
     dims = wb_dims(rows = start_row, cols = seq(table_width)),
     bold = font_ref[["bold"]],
-    size = font_ref[["pt12"]],
+    size = font_ref[["base_font_size"]],
     name = font_ref[["name"]]
   )
+
+  table_currencies_check <-
+    !is.na(table[sort(c(num_cols_index, currency_cols_index))] |>
+             mutate(across(everything(), \(x) str_extract(x, "^[\u00A3|$|\u20AC]")))) |>
+    as.vector()
+
+  tables_notes_check <-
+    !is.na(table[sort(c(num_cols_index, currency_cols_index))] |>
+             mutate(across(everything(), \(x) str_extract(x, "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$")))) |>
+    as.vector()
+
+  tables_numbers_check <-
+    !is.na(
+      table[sort(c(num_cols_index, currency_cols_index))] |>
+        mutate(
+          across(everything(), \(x) str_replace(x, "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$", "")),
+          across(everything(), \(x) str_replace(x, "^[\u00A3|$|\u20AC]", "")),
+          across(everything(), \(x) as.numeric(x))
+        )
+    ) |>
+    as.vector()
+
+  # custom format if the cell is numeric and has currency/note symbol
+  custom_format <- (table_currencies_check | tables_notes_check) & tables_numbers_check
+
+  # standard format if the cell is numeric without currency and notes
+  standard_format <- tables_numbers_check & !table_currencies_check & !tables_notes_check
+
+  # get table position on sheet
+  table_info <- wb_get_tables(wb, sheet = tab_title)
+  table_pos <- table_info$tab_ref[table_info$tab_name == table_name]
+
+  # get anchor position of table
+  first_value_cell <- dims_to_dataframe(table_pos, fill = TRUE)[1, 1]
+  # get position to update: multiple columns selected
+  table_pos <- wb_dims(
+    x = table,
+    from_dims =
+      first_value_cell,
+    cols = names(table[sort(c(num_cols_index, currency_cols_index))])
+  )
+
+  # get the entire table by cell references
+  table_pos <- dims_to_rowcol(table_pos)
+
+  table_pos <- c(t(outer(table_pos$col, table_pos$row, paste0)))
+
+  if (any(custom_format)) {
+    custom_format_values <-
+      unlist(table[sort(c(num_cols_index, currency_cols_index))],
+        use.names = FALSE
+      )[custom_format]
+
+    # replacing all custom format values with just their numeric values
+    numbers_pos <- table_pos[custom_format]
+    table_numbers <- str_replace(custom_format_values, "[\u00A3|$|\u20AC]", "") |>
+      str_replace("(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$", "")
+
+    numbers_to_insert <- data.frame(
+      cell_text = table_numbers,
+      cell_pos = numbers_pos
+    )
+
+    numbers_to_insert |>
+      pwalk(\(cell_text, cell_pos) {
+        wb$add_data(
+          sheet = tab_title,
+          x = as.numeric(cell_text),
+          dims = cell_pos,
+          col_names = FALSE,
+          row_names = FALSE,
+          apply_cell_style = FALSE
+        )
+      })
+
+    # custom number formats to apply
+    new_formats <- data.frame(
+      dims = table_pos[custom_format],
+      numfmt = paste0(
+        replace_na(str_extract(custom_format_values, "[\u00A3|$|\u20AC]"), ""),
+        "#,##0.00", # TODO replace with decimal places calculation
+        ifelse(str_detect(custom_format_values, "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$"), " &quot;", ""),
+        replace_na(str_extract(custom_format_values, "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$"), ""),
+        ifelse(str_detect(custom_format_values, "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$"), "&quot;", "")
+      )
+    )
+
+    new_formats |>
+      pwalk(\(dims, numfmt) {
+        wb$add_numfmt(
+          sheet = tab_title,
+          dims = dims,
+          numfmt = numfmt
+        )
+      })
+  }
+
+  if (any(standard_format)) {
+
+    standard_format_values <-
+      unlist(table[sort(c(num_cols_index, currency_cols_index))],
+        use.names = FALSE
+      )[standard_format]
+
+    numbers_pos <- table_pos[standard_format]
+    table_numbers <- as.numeric(standard_format_values)
+
+    numbers_to_insert <- data.frame(
+      cell_text = table_numbers,
+      cell_pos = numbers_pos
+    )
+
+    numbers_to_insert |>
+      pwalk(\(cell_text, cell_pos) {
+        wb$add_data(
+          sheet = tab_title,
+          x = as.numeric(cell_text),
+          dims = cell_pos,
+          col_names = FALSE,
+          row_names = FALSE,
+          apply_cell_style = FALSE
+        )
+      })
+
+    # standard number formats to apply
+    new_formats <- data.frame(
+      dims = table_pos[standard_format],
+      numfmt = "#,##0.00" # TODO replace with decimal places calculation
+    )
+
+    new_formats |>
+      pwalk(\(dims, numfmt) {
+        wb$add_numfmt(
+          sheet = tab_title,
+          dims = dims,
+          numfmt = numfmt
+        )
+      })
+  }
 
   wb
 }
@@ -260,8 +346,8 @@
 #' Apply Styles to the Cover Sheet
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
-#' @param style_ref List. The style-reference object made with [.style_paragraph()].
-#' @param font_ref List. The font-reference object made with [.style_font()].
+#' @param style_ref List. The style-reference object made with .style_paragraph().
+#' @param font_ref List. The font-reference object made with .style_font().
 #' @noRd
 .style_cover <- function(wb, content, style_ref, font_ref) {
   content_row <- content[content[["sheet_type"]] == "cover", ]
@@ -312,7 +398,7 @@
     subheader_rows <- seq(2, table_height * 2, 2)
   }
 
-  # Section header rows also have LARGER ROW HEIGHT, are BOLD and 14PT
+  # Section header rows also have LARGER ROW HEIGHT, are BOLD and 14PT by default
 
   wb$set_row_heights(
     sheet = tab_name,
@@ -324,7 +410,7 @@
     sheet = tab_name,
     dims = wb_dims(rows = subheader_rows, cols = 1),
     bold = font_ref[["bold"]],
-    size = font_ref[["pt14"]],
+    size = font_ref[["table_header_size"]],
     name = font_ref[["name"]]
   )
 
@@ -334,7 +420,7 @@
 #' Apply Styles to the Contents Sheet
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
-#' @param style_ref List. The style-reference object made with [.style_paragraph()].
+#' @param style_ref List. The style-reference object made with .style_paragraph().
 #' @noRd
 .style_contents <- function(wb, content, style_ref) {
   tab_title <- content[content[["sheet_type"]] == "contents", "tab_title"][[1]]
@@ -377,7 +463,7 @@
 #' Apply Styles to the Notes Sheet
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
-#' @param style_ref List. The style-reference object made with [.style_paragraph()].
+#' @param style_ref List. The style-reference object made with .style_paragraph().
 #' @noRd
 .style_notes <- function(wb, content, style_ref) {
   tab_title <- content[content[["sheet_type"]] == "notes", "tab_title"][[1]]

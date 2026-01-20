@@ -4,20 +4,51 @@
 \alias{generate_workbook}
 \title{Generate A Workbook Object From An 'aftable'}
 \usage{
-generate_workbook(aftable)
+generate_workbook(
+  aftable,
+  creator = NULL,
+  title = NULL,
+  keywords = NULL,
+  config_path = NULL,
+  config_name = NULL
+)
 }
 \arguments{
 \item{aftable}{An aftable-class object created using
 \code{\link{create_aftable}} (or \code{\link{as_aftable}}), which
 contains the data and information needed to create a workbook.}
+
+\item{creator}{character string containing creator to add to workbook.
+Default NULL.}
+
+\item{title}{character string containing title to add to workbook.
+Default NULL.}
+
+\item{keywords}{character vector containing keywords to add to workbook.
+Default NULL.}
+
+\item{config_path}{character string containing path to config.yml.
+Default NULL.}
+
+\item{config_name}{character string specifying which configuration to use.
+Default NULL.}
 }
 \value{
-An openxlsx2 Workbook-class object.
+An openxlsx2 wbWorkbook-class object.
 }
 \description{
 Populate an 'openxlsx2' wbWorkbook-class object with content from an
 aftable-class object. In turn, the output can be passed to
 \code{\link[openxlsx2]{wb_save}} from 'openxlsx2'
+}
+\details{
+See \code{\link[aftables]{get_config_yml}} for details of the config.yml
+file, including how to add and edit configurations.
+
+Analysis Function guidance advises workbooks should have the author, title,
+keywords and language fields completed. aftables provides functionality to
+set author, title and keywords fields for workbooks. See \href{https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/#section-15}{Releasing statistics in spreadsheets}
+for more information including how to set language for workbooks.
 }
 \examples{
 # Convert an aftable to an openxlsx2 wbWorkbook-class object
@@ -29,4 +60,36 @@ y <- demo_df |>
   as_aftable() |>
   generate_workbook()
 
+# Using config.yml file to set workbook properties and edit text and cell formatting
+example_workbook <- generate_workbook(demo_aftable,
+                                      config_path = system.file("ext-data",
+                                                                "config.yml",
+                                                                package = "aftables"),
+                                      config_name = "default")
+# Use openxlsx2::wb_get_properties to view properties that have been applied
+openxlsx2::wb_get_properties(example_workbook)
+
+# Using config.yml file to set minimum workbook properties and edit text and cell formatting
+example_workbook <- generate_workbook(demo_aftable,
+                                      config_path = system.file("ext-data",
+                                                                "config.yml",
+                                                                package = "aftables"),
+                                      config_name = "minimum")
+# Use openxlsx2::wb_get_properties to view properties that have been applied
+openxlsx2::wb_get_properties(example_workbook)
+
+# Setting the minimum workbook properties without using a config.yml file
+example_workbook <- generate_workbook(demo_aftable,
+                                      creator = "Example author",
+                                      title = "example workbook",
+                                      keywords = c("keyword1",
+                                                   "keyword2",
+                                                   "keyword3"))
+
+# Use openxlsx2::wb_get_properties to view properties that have been applied
+openxlsx2::wb_get_properties(example_workbook)
+
+# Save the workbook with openxlsx2::wb_save
+\dontrun{
+openxlsx2::wb_save(example_workbook, "example_workbook.xlsx")}
 }

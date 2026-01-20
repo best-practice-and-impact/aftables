@@ -1,0 +1,31 @@
+default:
+  workbook_properties:
+    creator: "Analysis Function"
+    title: "example workbook"
+    subject: "example subject"
+    category: "example"
+    modifier: "Analysis Function"
+    keywords:
+      keyword1: "example"
+      keyword2: "demonstration"
+      keyword3: "config.yml"
+    comments: "example"
+    manager: "Analysis Function manager"
+    company: "Analysis Function"
+  workbook_format:
+    base_font_name: "Arial"
+    base_font_size: 12
+    table_header_size: 14
+    sheet_header_size: 16
+    cellwidth_default: 16
+    cellwidth_wider: 32
+    nchar_break: 50
+    decimal_places: 2
+minimum:
+  workbook_properties:
+    creator: "Analysis Function"
+    title: "example workbook"
+    keywords:
+      keyword1: "example"
+      keyword2: "demonstration"
+      keyword3: "config.yml"

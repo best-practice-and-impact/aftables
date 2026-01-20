@@ -355,12 +355,16 @@
   wb
 }
 
-#' @importFrom scales number
-
-.insert_table <- function(wb, content, table_name) {
+.insert_table <- function(wb, content, table_name, wb_config) {
   table <- content[content$table_name == table_name, ][["table"]][[1]]
   sheet_type <- content[content$table_name == table_name, "sheet_type"][[1]]
   tab_title <- content[content$table_name == table_name, "tab_title"][[1]]
+
+  if (!is.null(wb_config$workbook_format$decimal_places)) {
+    decimal_places = wb_config$workbook_format$decimal_places
+  } else {
+    decimal_places = NULL
+  }
 
   start_row <- .get_start_row_table(
     content,
@@ -390,103 +394,50 @@
   )
 
   if (any(mixed_columns)) {
-    # any cell with notes needs to be added to the sheet separately
-    table_replacements <- table[mixed_columns]
+    # notes
+    notes_table <-
+      table[mixed_columns] |>
+      mutate(
+        across(everything(), \(x) str_extract(x, "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$")),
+        across(everything(), \(x) replace_na(x, replace = ""))
+      )
 
-    cols_numeric <- .determine_numeric_columns(table_replacements)
+    # currency units
+    units_table <-
+      table[mixed_columns] |>
+      mutate(
+        across(everything(), \(x) str_extract(x, "^[\u00A3|$|\u20AC]")),
+        across(everything(), \(x) replace_na(x, replace = ""))
+      )
 
-    cols_numeric <- names(Filter(isTRUE, cols_numeric))
+    # numbers
+    numbers_table <-
+      table[mixed_columns] |>
+      mutate(
+        across(everything(), \(x) str_replace(x, "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$", "")),
+        across(everything(), \(x) str_replace(x, "^[\u00A3|$|\u20AC]", "")),
+        across(everything(), \(x) as.numeric(x)),
+        across(everything(), ~ number(x = ., accuracy = as.numeric(ifelse((is.null(decimal_places) | decimal_places == 0), "1", paste0("0.", paste0(rep("0", times = decimal_places - 1), collapse = ""), "1"))))),
+        across(everything(), \(x) replace_na(x, replace = ""))
+      )
 
-    cols_currency <- .determine_currency_columns(table_replacements)
+    table_replacements <-
+      as_tibble(matrix(
+        paste0(
+          as.matrix(units_table),
+          as.matrix(numbers_table),
+          as.matrix(notes_table)
+        ),
+        ncol = ncol(table[mixed_columns]),
+        nrow = nrow(table[mixed_columns])
+      ),
+      .name_repair = "unique_quiet")
 
-    cols_currency <- names(Filter(isTRUE, cols_currency))
-
-    if (length(cols_numeric) > 0) {
-      for (n in seq_along(cols_numeric)) {
-        col_precision <- .determine_decimal_places(table_replacements[, cols_numeric[n]], type = "numeric")
-
-        if (col_precision > 0) {
-          value <- gsub(pattern = "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$", replacement = "", x = table_replacements[a, cols_numeric[n]], perl = TRUE)
-          notes <- gsub(pattern = value, replacement = "", x = table_replacements[a, cols_numeric[n]], fixed = TRUE)
-
-          value <- number(value, accuracy = as.numeric(paste0("0.", paste0(rep(0, col_precision - 1), "1", collapse = ""))))
-
-          table_replacements[a, cols_numeric[n]] <- paste0(value, " ", notes)
-        }
-      }
-    }
-
-    if (length(cols_currency) > 0) {
-      for (n in seq_along(cols_currency)) {
-        col_precision <- .determine_decimal_places(table_replacements[, cols_currency[n]], type = "currency")
-
-        if (col_precision > 0) {
-          numfmt_rows <- seq_len(nrow(table_replacements))
-
-          # detect rows with notes to apply nonstandard number formats
-          other_numfmt_rows <- numfmt_rows[grepl(
-            pattern = "^.+?(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
-            table_replacements[, cols_currency[n]],
-            perl = TRUE
-          )]
-
-          # remove rows with nonstandard number formats
-          numfmt_rows <- setdiff(numfmt_rows, other_numfmt_rows)
-
-          for (a in other_numfmt_rows) {
-            prefix <- gsub(
-              pattern = "[^\u00A3|^$|^\u20AC]",
-              replacement = "",
-              x = table_replacements[a, cols_currency[n]],
-              perl = TRUE
-            )
-
-            value <- gsub(
-              pattern = "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
-              replacement = "", x =
-                table_replacements[a, cols_currency[n]],
-              perl = TRUE
-            )
-
-            notes <- gsub(
-              pattern = value,
-              replacement = "",
-              x = table_replacements[a, cols_currency[n]],
-              fixed = TRUE
-            )
-
-            value <- as.numeric(gsub(
-              pattern = "[\u00A3|$|\u20AC]",
-              replacement = "",
-              x = value,
-              perl = TRUE
-            ))
-
-            value <- number(value,
-              accuracy = as.numeric(paste0(
-                "0.",
-                paste0(rep(0, col_precision - 1),
-                  "1",
-                  collapse = ""
-                )
-              ))
-            )
-
-            table_replacements[a, cols_currency[n]] <- paste0(
-              prefix,
-              value,
-              " ",
-              notes
-            )
-          }
-        }
-      }
-    }
+    names(table_replacements) <- names(table[mixed_columns])
 
     # get table position on sheet
     table_info <- wb_get_tables(wb, sheet = tab_title)
     table_pos <- table_info$tab_ref[table_info$tab_name == table_name]
-
 
     # get anchor position of table
     first_value_cell <- dims_to_dataframe(table_pos, fill = TRUE)[1, 1]
@@ -517,7 +468,6 @@
     numbers_pos <- table_pos[table_numbers_check]
     currencies_pos <- table_pos[table_currencies_check]
     notes_pos <- table_pos[table_notes_check]
-
 
     table_numbers <- unlist(table_replacements,
       use.names = FALSE
@@ -718,7 +668,7 @@
   wb
 }
 
-.add_cover <- function(wb, content) {
+.add_cover <- function(wb, content, wb_config) {
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "cover", "tab_title"][[1]]
@@ -728,7 +678,7 @@
   .insert_cover_table(wb, content, table_name) # rather than .insert_table
 
   styles <- .style_paragraph()
-  fonts <- .style_font()
+  fonts <- .style_font(wb_config)
   .style_sheet_title(wb, tab_title, styles, fonts)
   .style_cover(wb, content, styles, fonts)
   # TODO: needs special handling if list provided
@@ -736,7 +686,7 @@
 }
 
 
-.add_contents <- function(wb, content) {
+.add_contents <- function(wb, content, wb_config) {
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "contents", "tab_title"][[1]]
@@ -745,19 +695,19 @@
   .insert_title(wb, content, tab_title)
   .insert_table_count(wb, content, tab_title)
   .insert_custom_rows(wb, content, tab_title)
-  .insert_table(wb, content, table_name)
+  .insert_table(wb, content, table_name, wb_config)
 
   styles <- .style_paragraph()
-  fonts <- .style_font()
+  fonts <- .style_font(wb_config)
   .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts)
+  .style_table(wb, content, table_name, styles, fonts, wb_config)
   .style_contents(wb, content, styles)
 
   wb
 }
 
 
-.add_notes <- function(wb, content) {
+.add_notes <- function(wb, content, wb_config) {
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "notes", "tab_title"][[1]]
@@ -766,18 +716,18 @@
   .insert_title(wb, content, tab_title)
   .insert_table_count(wb, content, tab_title)
   .insert_custom_rows(wb, content, tab_title)
-  .insert_table(wb, content, table_name)
+  .insert_table(wb, content, table_name, wb_config)
 
   styles <- .style_paragraph()
-  fonts <- .style_font()
+  fonts <- .style_font(wb_config)
   .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts)
+  .style_table(wb, content, table_name, styles, fonts, wb_config)
   .style_notes(wb, content, styles)
 
   wb
 }
 
-.add_tables <- function(wb, content, table_name) {
+.add_tables <- function(wb, content, table_name, wb_config) {
   .stop_bad_input(wb, content, table_name)
 
   tab_title <- content[content$table_name == table_name, "tab_title"][[1]]
@@ -788,12 +738,12 @@
   .insert_notes_statement(wb, content, tab_title)
   .insert_blanks_message(wb, content, tab_title)
   .insert_custom_rows(wb, content, tab_title)
-  .insert_table(wb, content, table_name)
+  .insert_table(wb, content, table_name, wb_config)
 
   styles <- .style_paragraph()
-  fonts <- .style_font()
+  fonts <- .style_font(wb_config)
   .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts)
+  .style_table(wb, content, table_name, styles, fonts, wb_config)
 
   wb
 }
