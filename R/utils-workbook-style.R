@@ -174,9 +174,11 @@
     cell_text <- table[format_cols_index] |> unlist(use.names = FALSE)
     cell_pos <- table_pos
 
-    # filter the currencies to avoid valid note cells
+    # filter the cell_text to avoid valid note cells and NAs
     cell_pos <- cell_pos[!str_detect(cell_text, pattern = "^(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$")]
     cell_text <- cell_text[!str_detect(cell_text, pattern = "^(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$")]
+    cell_pos <- cell_pos[!is.na(cell_text)]
+    cell_text <- cell_text[!is.na(cell_text)]
 
     formats_to_apply <- data.frame(
       dims = cell_pos,
