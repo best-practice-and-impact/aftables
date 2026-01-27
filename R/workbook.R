@@ -22,7 +22,7 @@
 #'
 #' @details
 #'
-#' See \code{\link[aftables]{get_config_yml}} for details of the config.yaml
+#' See \code{\link[aftables]{get_config_yaml}} for details of the config.yaml
 #' file, including how to add and edit configurations.
 #'
 #' Analysis Function guidance advises workbooks should have the author, title,

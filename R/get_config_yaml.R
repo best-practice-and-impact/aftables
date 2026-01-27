@@ -38,11 +38,11 @@
 #' # Copy default aftables config.yaml file to user's home directory, and open
 #' # the copied file for editing.
 #' \dontrun{
-#' get_config_yml(path = "~", open_config = TRUE)
+#' get_config_yaml(path = "~", open_config = TRUE)
 #' }
 #'
 #' @export
-get_config_yml <- function(path = NULL, open_config = FALSE) {
+get_config_yaml <- function(path = NULL, open_config = FALSE) {
 
   if (is.null(path)) path <- getwd()
 
