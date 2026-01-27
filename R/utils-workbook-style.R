@@ -138,15 +138,18 @@
   table_height <- nrow(table)
   table_width <- ncol(table)
 
-  # Some columns may contain numbers but have suppression text in them, e.g.
-  # '[c]', which makes the column character class. Find the likely numeric cols.
-  cols_numeric <- .determine_numeric_columns(table)
-  likely_num_cols <- names(Filter(isTRUE, cols_numeric)) # return names of columns that are most likely numeric
-  num_cols_index <- which(names(table) %in% likely_num_cols) # get the index of columns that are likely numeric, so styles can be applied
+  cellwidth_default <- 16
+  cellwidth_wider <- 32
+  nchar_break <- 50
 
-  cols_currency <- .determine_currency_columns(table)
-  likely_currency_cols <- names(Filter(isTRUE, cols_currency)) # return names of columns that are most likely numeric currencies
-  currency_cols_index <- which(names(table) %in% likely_currency_cols) # get the index of columns that are likely numeric currencies, so styles can be applied
+  mixed_cols <- .determine_mixed_columns(table)
+  mixed_cols_names <- names(Filter(isTRUE, mixed_cols)) # return names of columns that are most likely numeric
+  mixed_cols_index <- which(names(table) %in% mixed_cols_names) # get the index of columns that are likely numeric, so styles can be applied
+
+  # mixed columns and numeric columns need to have formatting applied
+  format_cols <- (mixed_cols | .determine_numeric_columns(table))
+  format_cols_names <- names(Filter(isTRUE, format_cols)) # return names of columns that are most likely numeric currencies
+  format_cols_index <- which(names(table) %in% format_cols_names) # get the index of columns that are likely numeric currencies, so styles can be applied
 
   # Find indices of columns that should be wider than default
   is_factor_column <- sapply(table, is.factor) # nchar (below) fails on factors
@@ -173,12 +176,12 @@
     )
   }
 
-  if (length(num_cols_index[!is.na(num_cols_index)])) { # only run if needed
+  if (length(mixed_cols_index[!is.na(mixed_cols_index)])) { # only run if needed
     wb$add_cell_style(
       sheet = tab_title,
       dims = wb_dims(
         rows = seq(start_row, start_row + table_height),
-        cols = num_cols_index
+        cols = mixed_cols_index
       ),
       horizontal = style_ref[["ralign"]]
     )
@@ -205,136 +208,45 @@
     name = font_ref[["name"]]
   )
 
-  table_currencies_check <-
-    !is.na(table[sort(c(num_cols_index, currency_cols_index))] |>
-             mutate(across(everything(), \(x) str_extract(x, "^[\u00A3|$|\u20AC]")))) |>
-    as.vector()
+  if (length(format_cols_index) > 0) {
+    # get table position on sheet
+    table_info <- wb_get_tables(wb, sheet = tab_title)
+    table_pos <- table_info$tab_ref[table_info$tab_name == table_name]
 
-  tables_notes_check <-
-    !is.na(table[sort(c(num_cols_index, currency_cols_index))] |>
-             mutate(across(everything(), \(x) str_extract(x, "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$")))) |>
-    as.vector()
-
-  tables_numbers_check <-
-    !is.na(
-      table[sort(c(num_cols_index, currency_cols_index))] |>
-        mutate(
-          across(everything(), \(x) str_replace(x, "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$", "")),
-          across(everything(), \(x) str_replace(x, "^[\u00A3|$|\u20AC]", "")),
-          across(everything(), \(x) as.numeric(x))
-        )
-    ) |>
-    as.vector()
-
-  # custom format if the cell is numeric and has currency/note symbol
-  custom_format <- (table_currencies_check | tables_notes_check) & tables_numbers_check
-
-  # standard format if the cell is numeric without currency and notes
-  standard_format <- tables_numbers_check & !table_currencies_check & !tables_notes_check
-
-  # get table position on sheet
-  table_info <- wb_get_tables(wb, sheet = tab_title)
-  table_pos <- table_info$tab_ref[table_info$tab_name == table_name]
-
-  # get anchor position of table
-  first_value_cell <- dims_to_dataframe(table_pos, fill = TRUE)[1, 1]
-  # get position to update: multiple columns selected
-  table_pos <- wb_dims(
-    x = table,
-    from_dims =
-      first_value_cell,
-    cols = names(table[sort(c(num_cols_index, currency_cols_index))])
-  )
-
-  # get the entire table by cell references
-  table_pos <- dims_to_rowcol(table_pos)
-
-  table_pos <- c(t(outer(table_pos$col, table_pos$row, paste0)))
-
-  if (any(custom_format)) {
-    custom_format_values <-
-      unlist(table[sort(c(num_cols_index, currency_cols_index))],
-        use.names = FALSE
-      )[custom_format]
-
-    # replacing all custom format values with just their numeric values
-    numbers_pos <- table_pos[custom_format]
-    table_numbers <- str_replace(custom_format_values, "[\u00A3|$|\u20AC]", "") |>
-      str_replace("(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$", "")
-
-    numbers_to_insert <- data.frame(
-      cell_text = table_numbers,
-      cell_pos = numbers_pos
+    # get anchor position of table
+    first_value_cell <- dims_to_dataframe(table_pos, fill = TRUE)[1, 1]
+    # get position to update: multiple columns selected
+    table_pos <- wb_dims(
+      x = table,
+      from_dims =
+        first_value_cell,
+      cols = names(table[format_cols_index])
     )
 
-    numbers_to_insert |>
-      pwalk(\(cell_text, cell_pos) {
-        wb$add_data(
-          sheet = tab_title,
-          x = as.numeric(cell_text),
-          dims = cell_pos,
-          col_names = FALSE,
-          row_names = FALSE,
-          apply_cell_style = FALSE
-        )
-      })
+    # get the entire table by cell references
+    table_pos <- dims_to_rowcol(table_pos)
 
-    # custom number formats to apply
-    new_formats <- data.frame(
-      dims = table_pos[custom_format],
+    table_pos <- c(t(outer(table_pos$col, table_pos$row, paste0)))
+
+    # create the columns to be inserted
+    cell_text <- table[format_cols_index] |> unlist(use.names = FALSE)
+    cell_pos <- table_pos
+
+    # filter the cell_text to avoid valid note cells and NAs
+    cell_pos <- cell_pos[!str_detect(cell_text, pattern = "^(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$")]
+    cell_text <- cell_text[!str_detect(cell_text, pattern = "^(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$")]
+    cell_pos <- cell_pos[!is.na(cell_text)]
+    cell_text <- cell_text[!is.na(cell_text)]
+
+    formats_to_apply <- data.frame(
+      dims = cell_pos,
       numfmt = paste0(
-        replace_na(str_extract(custom_format_values, "[\u00A3|$|\u20AC]"), ""),
-        "#,##0.00", # TODO replace with decimal places calculation
-        ifelse(str_detect(custom_format_values, "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$"), " &quot;", ""),
-        replace_na(str_extract(custom_format_values, "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$"), ""),
-        ifelse(str_detect(custom_format_values, "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$"), "&quot;", "")
+        replace_na(str_extract(cell_text, "[\u00A3|\u0024|\u20AC|\u00A5]"), ""),
+        "#,##0.00"
       )
     )
 
-    new_formats |>
-      pwalk(\(dims, numfmt) {
-        wb$add_numfmt(
-          sheet = tab_title,
-          dims = dims,
-          numfmt = numfmt
-        )
-      })
-  }
-
-  if (any(standard_format)) {
-
-    standard_format_values <-
-      unlist(table[sort(c(num_cols_index, currency_cols_index))],
-        use.names = FALSE
-      )[standard_format]
-
-    numbers_pos <- table_pos[standard_format]
-    table_numbers <- as.numeric(standard_format_values)
-
-    numbers_to_insert <- data.frame(
-      cell_text = table_numbers,
-      cell_pos = numbers_pos
-    )
-
-    numbers_to_insert |>
-      pwalk(\(cell_text, cell_pos) {
-        wb$add_data(
-          sheet = tab_title,
-          x = as.numeric(cell_text),
-          dims = cell_pos,
-          col_names = FALSE,
-          row_names = FALSE,
-          apply_cell_style = FALSE
-        )
-      })
-
-    # standard number formats to apply
-    new_formats <- data.frame(
-      dims = table_pos[standard_format],
-      numfmt = "#,##0.00" # TODO replace with decimal places calculation
-    )
-
-    new_formats |>
+    formats_to_apply |>
       pwalk(\(dims, numfmt) {
         wb$add_numfmt(
           sheet = tab_title,
@@ -513,15 +425,8 @@
     return(numeric())
   }
 
-  if (type == "numeric") {
-    x <- x |>
-      .extract_numeric_values()
-  }
-
-  if (type == "currency") {
-    x <- x |>
-      .extract_currency_values()
-  }
+  x <- x |>
+    .extract_numeric_values()
 
   # count decimals
   x_nchr <- x |>

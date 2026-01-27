@@ -379,7 +379,10 @@
 
   table_cleaned <- table
 
-  table_cleaned[mixed_columns] <- 0
+  table_cleaned[mixed_columns] <-
+    table_cleaned[mixed_columns] |>
+    mutate(across(where(is.numeric), function(x) x <- 0),
+           across(where(is.character), function(x) x <- ""))
 
   wb$add_data_table(
     sheet = tab_title,
@@ -398,7 +401,8 @@
     notes_table <-
       table[mixed_columns] |>
       mutate(
-        across(everything(), \(x) str_extract(x, "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$")),
+        across(everything(), \(x) trimws(x)),
+        across(everything(), \(x) str_extract(x, "^(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$")),
         across(everything(), \(x) replace_na(x, replace = ""))
       )
 
@@ -406,27 +410,36 @@
     units_table <-
       table[mixed_columns] |>
       mutate(
-        across(everything(), \(x) str_extract(x, "^[\u00A3|$|\u20AC]")),
+        across(everything(), \(x) trimws(x)),
+        across(everything(), \(x) str_extract(x, "^[\u00A3|\u0024|\u20AC|\u00A5]")),
         across(everything(), \(x) replace_na(x, replace = ""))
       )
 
     # numbers
     numbers_table <-
       table[mixed_columns] |>
-      mutate(
-        across(everything(), \(x) str_replace(x, "(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$", "")),
-        across(everything(), \(x) str_replace(x, "^[\u00A3|$|\u20AC]", "")),
-        across(everything(), \(x) as.numeric(x)),
-        across(everything(), ~ number(x = ., accuracy = as.numeric(ifelse((is.null(decimal_places) | decimal_places == 0), "1", paste0("0.", paste0(rep("0", times = decimal_places - 1), collapse = ""), "1"))))),
-        across(everything(), \(x) replace_na(x, replace = ""))
-      )
+      mutate(across(everything(), \(x) trimws(x)),
+             across(everything(), \(x) str_replace(x, "^[\u00A3|\u0024|\u20AC|\u00A5]", "")),
+             across(everything(), \(x) str_replace_all(x, ",", "")),
+             across(everything(), \(x) {
+               ifelse(str_detect(string = x,
+                                 pattern = "^(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$"),
+                      x,
+                      number(x = suppressWarnings(as.numeric(x)),
+                             accuracy = as.numeric(ifelse(.determine_decimal_places(x) == 0,
+                                                          "1",
+                                                          paste0("0.",
+                                                                 paste0(rep("0",
+                                                                            times = .determine_decimal_places(x) - 1),
+                                                                        collapse = ""), "1"))),
+                             big.mark = ""))
+             }))
 
     table_replacements <-
       as_tibble(matrix(
         paste0(
           as.matrix(units_table),
-          as.matrix(numbers_table),
-          as.matrix(notes_table)
+          as.matrix(numbers_table)
         ),
         ncol = ncol(table[mixed_columns]),
         nrow = nrow(table[mixed_columns])
@@ -454,15 +467,14 @@
 
     table_pos <- t(outer(table_pos$col, table_pos$row, paste0))
 
-    table_numbers_check <- unlist(.determine_numeric(table_replacements),
-      use.names = FALSE
-    )
+    table_numbers_check <- .determine_numeric(table_replacements) |>
+      unlist(use.names = FALSE)
 
-    table_currencies_check <- unlist(.determine_currency(table_replacements),
-      use.names = FALSE
-    )
+    table_currencies_check <- .determine_currency(table_replacements) |>
+      unlist(use.names = FALSE)
 
-    table_notes_check <- !(table_numbers_check | table_currencies_check)
+    table_notes_check <- .determine_notes_with_na(table_replacements) |>
+      unlist(use.names = FALSE)
 
     # split cells to be replaced into notes and values
     numbers_pos <- table_pos[table_numbers_check]
@@ -509,7 +521,7 @@
 
     currencies_to_insert$cell_text <-
       as.numeric(gsub(
-        "[\u00A3|$|\u20AC]",
+        "[\u00A3|\u0024|\u20AC|\u00A5]",
         "",
         currencies_to_insert$cell_text
       ))
@@ -748,13 +760,26 @@
   wb
 }
 
-.determine_numeric_columns <- function(table) {
-  numeric_columns <- .determine_numeric(table)
+.determine_currency <- function(values) {
+  currency_columns_values <-
+    lapply(
+      values,
+      grepl,
+      pattern = "^(?:\\s*)(?:[$\u20AC\u00A3|\u00A5]\\s?(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?|(?:USD|EUR|GBP|YEN)\\s+(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?)(?:\\s*)$",
+      perl = TRUE
+    )
 
-  numeric_columns <- sapply(numeric_columns, function(x) any(x))
+  currency_columns_values
+}
+
+.determine_numeric_columns <- function(values) {
+  numeric_columns <- .determine_numeric(values)
+
+  numeric_columns <- sapply(numeric_columns, function(x) all(x))
 
   numeric_columns
 }
+
 
 .extract_numeric_values <- function(values) {
   numeric_values <- values[sapply(values,
@@ -763,68 +788,95 @@
     perl = TRUE
   )]
 
+  numeric_values <- str_replace_all(numeric_values, ",", "")
+
   numeric_values <- as.numeric(numeric_values)
 
   numeric_values
 }
 
 .determine_numeric <- function(values) {
-  numeric_columns_values <- lapply(values,
-    grepl,
-    pattern = "^(?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*)$",
-    perl = TRUE
-  )
+  numeric_columns_values <-
+    lapply(
+      values,
+      grepl,
+      pattern = "^((?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*))$",
+      perl = TRUE
+    )
 
   numeric_columns_values
 }
 
-.determine_currency_columns <- function(table) {
-  currency_columns <- .determine_currency(table)
+.determine_notes_with_na <- function(values) {
+  notes_columns_values <-
+    map2(lapply(values,
+                grepl,
+                pattern = "^(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
+                perl = TRUE),
+         lapply(values,
+                is.na),
+         function(x, y) x | y)
 
-  currency_columns <- sapply(currency_columns, function(x) any(x))
+  notes_columns_values
+}
+
+.determine_notes <- function(values) {
+  notes_columns_values <-
+    lapply(values,
+           grepl,
+           pattern = "^(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
+           perl = TRUE)
+
+  notes_columns_values
+}
+
+.determine_currency_columns <- function(values) {
+
+  currency_cells <- .determine_currency(values)
+
+  currency_columns <- sapply(currency_cells, function(x) all(x))
 
   currency_columns
+
 }
 
-.extract_currency_values <- function(table) {
-  currency_values <- table[sapply(table,
-    grepl,
-    pattern = "^(?:\\s*)(?:[$\u20AC\u00A3]\\s?(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?|(?:USD|EUR|GBP)\\s+(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?)(?:\\s*)$",
-    perl = TRUE
-  )]
+# every cell must be a numeric/currency or a note/NA
+.determine_mixed_columns <- function(values) {
 
-  currency_values <- sapply(currency_values,
-    gsub,
-    pattern = "[$|\u20AC|\u00A3]",
-    replacement = "",
-    perl = TRUE
-  )
+  currency_cells <- .determine_currency(values)
 
-  currency_values <- as.numeric(currency_values)
+  numeric_cells <- .determine_numeric(values)
 
-  currency_values
-}
+  combined_cells <- map2(currency_cells, numeric_cells, function(x, y) x | y)
 
-.determine_currency <- function(values) {
-  currency_values <- lapply(values,
-    grepl,
-    pattern = "^(?:\\s*)(?:[$\u20AC\u00A3]\\s?(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?|(?:USD|EUR|GBP)\\s+(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?)(?:\\s*)$",
-    perl = TRUE
-  )
+  empty_cells <- values |> mutate(across(where(is.character), function(x) replace_na(x, "")),
+                                  across(where(is.character), function(x) x == ""),
+                                  across(where(is.numeric), function(x) is.na(x)))
 
-  currency_values
-}
+  note_cells <- lapply(values,
+                       grepl,
+                       pattern = "^(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
+                       perl = TRUE)
 
-.determine_mixed_columns <- function(table) {
-  cols_numeric <- .determine_numeric_columns(table)
+  currency_cells_count <- sapply(currency_cells, function(x) sum(x))
+  note_cells_count <- sapply(note_cells, function(x) sum(x))
+  empty_cells_count <- sapply(empty_cells, function(x) sum(x))
+  numeric_cells_count <- sapply(numeric_cells, function(x) sum(x))
 
-  cols_currency <- .determine_currency_columns(table)
-
-  cols_numeric <- cols_numeric | cols_currency
-
-  cols_character <- sapply(table, function(x) any(is.character(x)))
-
-  mixed_columns <- cols_numeric & cols_character
+  mixed_columns <-
+    (
+      currency_cells_count >= 1 & # at least 1 currency cell
+      (currency_cells_count +
+       note_cells_count +
+       empty_cells_count) == nrow(values)
+    ) | # every cell is currency/note/empty
+    (
+      numeric_cells_count >= 1 & # at least 1 numeric cell
+      note_cells_count >= 1 & # at least 1 note cell
+      (numeric_cells_count +
+       note_cells_count +
+       empty_cells_count) == nrow(values) # every cell is numeric/note/empty
+    )
 
   mixed_columns
 }
