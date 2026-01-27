@@ -9,7 +9,7 @@
 #' @importFrom purrr pwalk map2
 #' @importFrom dplyr across mutate as_tibble everything where
 #' @importFrom tidyr replace_na
-#' @importFrom stringr str_extract str_replace str_detect
+#' @importFrom stringr str_extract str_replace str_replace_all  str_detect
 #' @importFrom scales number
 ## usethis namespace: end
 NULL
