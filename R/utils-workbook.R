@@ -756,12 +756,13 @@
 
 .determine_currency <- function(values) {
   currency_columns_values <-
-    lapply(
-      values,
-      grepl,
-      pattern = "^(?:\\s*)(?:[$\u20AC\u00A3|\u00A5]\\s?(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?|(?:USD|EUR|GBP|YEN)\\s+(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?)(?:\\s*)$",
-      perl = TRUE
-    )
+    map2(lapply(values,
+                grepl,
+                pattern = "^(?:\\s*)(?:[$\u20AC\u00A3|\u00A5]\\s?(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?|(?:USD|EUR|GBP|YEN)\\s+(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?)(?:\\s*)$",
+                perl = TRUE),
+         lapply(values,
+                is.na),
+         function(x, y) x | y)
 
   currency_columns_values
 }
@@ -791,12 +792,13 @@
 
 .determine_numeric <- function(values) {
   numeric_columns_values <-
-    lapply(
-      values,
-      grepl,
-      pattern = "^((?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*))$",
-      perl = TRUE
-    )
+    map2(lapply(values,
+                grepl,
+                pattern = "^((?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*))$",
+                perl = TRUE),
+         lapply(values,
+                is.na),
+         function(x, y) x | y)
 
   numeric_columns_values
 }
@@ -843,10 +845,6 @@
 
   combined_cells <- map2(currency_cells, numeric_cells, function(x, y) x | y)
 
-  empty_cells <- values |> mutate(across(where(is.character), function(x) replace_na(x, "")),
-                                  across(where(is.character), function(x) x == ""),
-                                  across(where(is.numeric), function(x) is.na(x)))
-
   note_cells <- lapply(values,
                        grepl,
                        pattern = "^(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$",
@@ -854,22 +852,19 @@
 
   currency_cells_count <- sapply(currency_cells, function(x) sum(x))
   note_cells_count <- sapply(note_cells, function(x) sum(x))
-  empty_cells_count <- sapply(empty_cells, function(x) sum(x))
   numeric_cells_count <- sapply(numeric_cells, function(x) sum(x))
 
   mixed_columns <-
     (
       currency_cells_count >= 1 & # at least 1 currency cell
       (currency_cells_count +
-       note_cells_count +
-       empty_cells_count) == nrow(values)
+       note_cells_count) == nrow(values)
     ) | # every cell is currency/note/empty
     (
       numeric_cells_count >= 1 & # at least 1 numeric cell
       note_cells_count >= 1 & # at least 1 note cell
       (numeric_cells_count +
-       note_cells_count +
-       empty_cells_count) == nrow(values) # every cell is numeric/note/empty
+       note_cells_count) == nrow(values) # every cell is numeric/note/empty
     )
 
   mixed_columns
