@@ -3,6 +3,7 @@
  Major update of package back-end to use openxlsx2 functions to build and format workbook (#70).
  Bug fix: ensured columns containing both numbers/currencies and notes have apply numeric formatting to prevent Excel warning of numbers formatted as characters. This numeric formatting applies thousand separators by default. (#93, #51)
  Added new feature to set document properties and text formatting in a config.yaml file. The new function `get_config_yaml()` exports an example `config.yaml` file for users to amend. New arguments `config_path` and `config_name` in `generate_workbook()` are available to users to specify configurations. Alternative arguments `creator`, `title` and `keywords` are available to set minimum recommended workbook properties without using a `config.yaml` file. (#55, #138)
+ The `config.yaml` file can also be used to specify decimal places by sheet and by column. (#69)
 
 # aftables 1.0.2
 

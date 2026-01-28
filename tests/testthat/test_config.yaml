@@ -20,7 +20,18 @@ default:
     cellwidth_default: 16
     cellwidth_wider: 32
     nchar_break: 50
-    decimal_places: 2
+    decimal_places:
+      Contents:
+        default: 0
+      Notes:
+        default: 0
+      Table_1:
+        default: 0
+        column3: 2
+        column4: 2
+        column5: 4
+      Table_2:
+        default: 0
 minimum:
   workbook_properties:
     creator: "Analysis Function"
@@ -43,12 +54,123 @@ empty:
     comments:
     manager:
     company:
+level_1_errors:
+  workbook_properties: "error, should be list" # error
+  workbook_format: "error, should be list" # error
+level_2_errors:
+  workbook_properties:
+    creator: 0 # error, should be character
+    title: 0 # error, should be character
+    subject: 0 # error, should be character
+    category: 0 # error, should be character
+    modifier: 0 # error, should be character
+    keywords: "error, should be list"
+    comments: 0 # error, should be character
+    manager: 0 # error, should be character
+    company: 0 # error, should be character
   workbook_format:
-    base_font_name:
-    base_font_size:
-    table_header_size:
-    sheet_header_size:
-    cellwidth_default:
-    cellwidth_wider:
-    nchar_break:
+    base_font_name: 0 # error, should be character
+    base_font_size: "12" # error, should be numeric
+    table_header_size: "14" # error, should be numeric
+    sheet_header_size: "16" # error, should be numeric
+    cellwidth_default: "16" # error, should be numeric
+    cellwidth_wider: "32" # error, should be numeric
+    nchar_break: "50" # error, should be numeric
+level_3_errors:
+  workbook_properties:
+    creator: "Analysis Function"
+    title: "example workbook"
+    subject: "example subject"
+    category: "example"
+    modifier: "Analysis Function"
+    keywords:
+      keyword1: 0 # error, should be character
+      keyword2: 0 # error, should be character
+      keyword3: 0 # error, should be character
+    comments: "example"
+    manager: "Analysis Function manager"
+    company: "Analysis Function"
+  workbook_format:
+    base_font_name: "Arial"
+    base_font_size: 12
+    table_header_size: 14
+    sheet_header_size: 16
+    cellwidth_default: 16
+    cellwidth_wider: 32
+    nchar_break: 50
     decimal_places:
+      Contents: 0 # error, should be list
+      Notes: 0 # error, should be list
+      Table_1: 0 # error, should be list
+      Table_2: 0 # error, should be list
+level_3_errors_2:
+  workbook_properties:
+    creator: "Analysis Function"
+    title: "example workbook"
+    subject: "example subject"
+    category: "example"
+    modifier: "Analysis Function"
+    keywords:
+      keyword1: "example"
+      keyword2: "demonstration"
+      keyword3: "config.yaml"
+    comments: "example"
+    manager: "Analysis Function manager"
+    company: "Analysis Function"
+  workbook_format:
+    base_font_name: "Arial"
+    base_font_size: 12
+    table_header_size: 14
+    sheet_header_size: 16
+    cellwidth_default: 16
+    cellwidth_wider: 32
+    nchar_break: 50
+    decimal_places:
+      Content: # error, data frame doesn't exist
+        default: 0
+      Note: # error, data frame doesn't exist
+        default: 0
+      Table_3: # error, data frame doesn't exist
+        default: 0
+        column3: 2
+        column4: 2
+        column5: 4
+      Table_4: # error, data frame doesn't exist
+        default: 0
+level_4_errors:
+  workbook_properties:
+    creator: "Analysis Function"
+    title: "example workbook"
+    subject: "example subject"
+    category: "example"
+    modifier: "Analysis Function"
+    keywords:
+      keyword1: "example"
+      keyword2: "demonstration"
+      keyword3: "config.yaml"
+    comments: "example"
+    manager: "Analysis Function manager"
+    company: "Analysis Function"
+  workbook_format:
+    base_font_name: "Arial"
+    base_font_size: 12
+    table_header_size: 14
+    sheet_header_size: 16
+    cellwidth_default: 16
+    cellwidth_wider: 32
+    nchar_break: 50
+    decimal_places:
+      Contents:
+        default: 0
+      Notes:
+        default: 0
+      Table_1:
+        default: 0
+        column10: 2 # error, column doesn't exist in data frame
+        column11: 2 # error, column doesn't exist in data frame
+        column12: 4 # error, column doesn't exist in data frame
+      Table_2:
+        default: 0
+        column10: 2 # error, column doesn't exist in data frame
+        column11: 2 # error, column doesn't exist in data frame
+        column12: 4 # error, column doesn't exist in data frame

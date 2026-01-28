@@ -48,7 +48,18 @@ Contents of example config.yaml:
     cellwidth_default: 16
     cellwidth_wider: 32
     nchar_break: 50
-    decimal_places: 2
+    decimal_places:
+      Contents:
+        default: 0
+      Notes:
+        default: 0
+      Table_1:
+        default: 0
+        column2: 2
+        column3: 2
+        column4: 4
+      Table_2:
+        default: 0
 minimum:
   workbook_properties:
     creator: "Analysis Function"

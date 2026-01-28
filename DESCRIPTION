@@ -28,7 +28,8 @@ Imports:
     stringr,
     tidyr,
     utils,
-    yaml
+    yaml,
+    methods
 Suggests: 
     covr,
     knitr,

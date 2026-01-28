@@ -102,10 +102,40 @@
   tab_title <- content_row[, "tab_title"][[1]]
   sheet_type <- content_row[, "sheet_type"][[1]]
 
-  if (!is.null(wb_config$workbook_format$decimal_places)) {
-    decimal_places = wb_config$workbook_format$decimal_places
+  # get user set decimal places
+  if (!is.null(wb_config$workbook_format$decimal_places[[tab_title]])) {
+    decimal_places = wb_config$workbook_format$decimal_places[[tab_title]]
+
+    # apply default to all columns
+    if (!is.null(decimal_places$default)) {
+
+      default_dp <- decimal_places$default
+
+      decimal_places <- decimal_places[names(decimal_places) != "default"]
+
+      names(decimal_places) <- as.numeric(str_replace_all(names(decimal_places),
+                                                          "column", ""))
+
+      names(decimal_places) <- names(table[as.numeric(names(decimal_places))])
+
+      custom_dp <- as.list(rep(default_dp,
+                               ncol(table)))
+
+      names(custom_dp) <- names(table)
+
+      # if individual columns set, override defaults
+      if (length(decimal_places) > 1) {
+        custom_dp[names(decimal_places)] <- decimal_places
+      }
+
+      columns_custom_dp <- names(custom_dp)
+    }
   } else {
     decimal_places = NULL
+
+    custom_dp <- .determine_decimal_places(table)
+
+    columns_custom_dp <- names(custom_dp)
   }
 
   if (!is.null(wb_config$workbook_format$cellwidth_default)) {
@@ -137,10 +167,6 @@
 
   table_height <- nrow(table)
   table_width <- ncol(table)
-
-  cellwidth_default <- 16
-  cellwidth_wider <- 32
-  nchar_break <- 50
 
   mixed_cols <- .determine_mixed_columns(table)
   mixed_cols_names <- names(Filter(isTRUE, mixed_cols)) # return names of columns that are most likely numeric
@@ -208,6 +234,7 @@
     name = font_ref[["name"]]
   )
 
+  # <<<<<<< Updated upstream
   if (length(format_cols_index) > 0) {
     # get table position on sheet
     table_info <- wb_get_tables(wb, sheet = tab_title)
@@ -228,23 +255,43 @@
 
     table_pos <- c(t(outer(table_pos$col, table_pos$row, paste0)))
 
+    # <<<<<<< Updated upstream
     # create the columns to be inserted
     cell_text <- table[format_cols_index] |> unlist(use.names = FALSE)
     cell_pos <- table_pos
 
     # filter the cell_text to avoid valid note cells and NAs
-    cell_pos <- cell_pos[!str_detect(cell_text, pattern = "^(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$")]
-    cell_text <- cell_text[!str_detect(cell_text, pattern = "^(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$")]
+    cell_pos <- cell_pos[!str_detect(cell_text, pattern = notes_regex)]
+    cell_text <- cell_text[!str_detect(cell_text, pattern = notes_regex)]
     cell_pos <- cell_pos[!is.na(cell_text)]
     cell_text <- cell_text[!is.na(cell_text)]
 
-    formats_to_apply <- data.frame(
-      dims = cell_pos,
-      numfmt = paste0(
-        replace_na(str_extract(cell_text, "[\u00A3|\u0024|\u20AC|\u00A5]"), ""),
-        "#,##0.00"
-      )
+    formats_to_apply <- bind_cols(
+      table[format_cols_index] |>
+        mutate(across(everything(),
+                      \(x) {
+                            paste0(replace_na(str_extract(x,
+                                                          currency_regex), ""),
+                                   ifelse(cur_column() %in% columns_custom_dp,
+                                          ifelse(custom_dp[cur_column()] == 0,
+                                                 "#,##0",
+                                                 paste0("#,##0.", paste0(
+                                                   rep("0",
+                                                       times = as.numeric(custom_dp[cur_column()])),
+                                                   collapse = ""
+                                                 )
+                                                 )),
+                                          "#,##0.00")) })) |>
+        pivot_longer(
+          cols = everything(),
+          cols_vary = "slowest",
+          names_to = NULL
+        ),
+      table_pos,
+      .name_repair = "unique_quiet"
     )
+
+    names(formats_to_apply) <- c("numfmt", "dims")
 
     formats_to_apply |>
       pwalk(\(dims, numfmt) {
@@ -419,26 +466,74 @@
   )
 }
 
-.determine_decimal_places <- function(x, type) {
-  # length zero input
-  if (length(x) == 0) {
-    return(numeric())
+.determine_decimal_places <- function(x) {
+
+  dp_cols <- (.determine_numeric_columns(x) | .determine_currency_columns(x))
+
+  if (any(dp_cols)) {
+
+    if (is(x, "character")) {
+      x_nchr <-
+        str_replace(x, notes_regex, "") |>
+        str_replace(currency_regex, "") |>
+        as.numeric() |>
+        abs() |>
+        as.character() |>
+        nchar() |>
+        as.numeric()
+
+      x_int <-
+        str_replace(x, notes_regex, "") |>
+        str_replace(currency_regex, "") |>
+        as.numeric() |>
+        floor() |>
+        abs() |>
+        nchar()
+
+      x_nchr <- x_nchr - 1 - x_int
+      x_nchr[x_nchr < 0] <- 0
+
+      output <-
+        x_nchr |>
+        max(x, na.rm = TRUE) |>
+        unique()
+
+    } else if (is(x, "data.frame")) {
+      x_nchr <-
+        x[dp_cols] |>
+        mutate(across(everything(), \(x) str_replace(x, notes_regex, "")),
+               across(everything(), \(x) str_replace(x, currency_regex, "")),
+               across(everything(), \(x) str_replace(x, ",", "")),
+               across(everything(), \(x) trimws(x)),
+               across(everything(), \(x) as.numeric(x)),
+               across(everything(), \(x) abs(x)),
+               across(everything(), \(x) as.character(x)),
+               across(everything(), \(x) nchar(x)),
+               across(everything(), \(x) as.numeric(x)))
+
+      x_int <-
+        x[dp_cols] |>
+        mutate(across(everything(), \(x) str_replace(x, notes_regex, "")),
+               across(everything(), \(x) str_replace(x, currency_regex, "")),
+               across(everything(), \(x) str_replace(x, ",", "")),
+               across(everything(), \(x) trimws(x)),
+               across(everything(), \(x) as.numeric(x)),
+               across(everything(), \(x) floor(x)),
+               across(everything(), \(x) abs(x)),
+               across(everything(), \(x) nchar(x)))
+
+      x_nchr <- x_nchr - 1 - x_int
+      x_nchr[x_nchr < 0] <- 0
+
+      output <- x_nchr |>
+        mutate(across(everything(), \(x) max(x, na.rm = TRUE))) |>
+        unique()
+    }
+
+  } else {
+    output <- list()
   }
 
-  x <- x |>
-    .extract_numeric_values()
+  output
 
-  # count decimals
-  x_nchr <- x |>
-    abs() |>
-    as.character() |>
-    nchar() |>
-    as.numeric()
-  x_int <- floor(x) |>
-    abs() |>
-    nchar()
-  x_nchr <- x_nchr - 1 - x_int
-  x_nchr[x_nchr < 0] <- 0
-
-  max(x_nchr, na.rm = TRUE)
 }

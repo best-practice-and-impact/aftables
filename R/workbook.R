@@ -87,16 +87,24 @@ generate_workbook <- function(aftable, creator = NULL, title = NULL,
   # get parameters from config.yaml
   if (!is.null(config_path) && !is.null(config_name)) {
     wb_config <- read_yaml(file = config_path)
-    # fetch.config gets the entire file, need to get only the user's desired config
+    # read_yaml gets the entire file, need to get only the user's desired config
     wb_config <- wb_config[[config_name]]
+
+    # sanitise the wb_config
+    wb_config_errors <- .check_config_yaml(config_to_check = wb_config,
+                                           aftable = aftable)
+
+    if (length(wb_config_errors) > 0) {
+      stop(paste("there were the following errors: ",
+                 paste(paste(seq_along(wb_config_errors), ".", sep = ""),
+                       wb_config_errors, collapse = " "), sep = ""))
+    }
 
     parameters <- list(
       creator = wb_config$workbook_properties$creator,
       title =  wb_config$workbook_properties$title,
       subject =  wb_config$workbook_properties$subject,
       category = wb_config$workbook_properties$category,
-      datetime_created = Sys.time(),
-      datetime_modified = Sys.time(),
       modifier = wb_config$workbook_properties$modifier,
       keywords = paste(wb_config$workbook_properties$keywords, collapse = ", "),
       comments = wb_config$workbook_properties$comments,
@@ -104,6 +112,9 @@ generate_workbook <- function(aftable, creator = NULL, title = NULL,
       company = wb_config$workbook_properties$company,
       custom = wb_config$workbook_properties$custom
     )
+
+    parameters <- parameters[!sapply(parameters, is.null)]
+
   } else {
     wb_config <- NULL
     parameters <- list()

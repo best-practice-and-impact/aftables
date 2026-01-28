@@ -1,5 +1,7 @@
 # This file generates and writes demo datasets
 
+currency_regex <- "^[[:space:]]*[\u00A3|\u0024|\u20AC|\u00A5][[:space:]]*"
+notes_regex <- "^(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$"
 
 # demo_df and demo_aftable (as of v0.3) ---------------------------------
 
@@ -78,9 +80,13 @@ demo_aftable <- create_aftable(
 
 demo_df <- as.data.frame(demo_aftable)
 
-demo_workbook <- generate_workbook(demo_aftable, config_path = "int/extdata/config.yaml", config_name = "minimal")
+demo_workbook <- generate_workbook(demo_aftable)
 
 # Write to data/
 usethis::use_data(demo_df, overwrite = TRUE)
 usethis::use_data(demo_aftable, overwrite = TRUE)
 usethis::use_data(demo_workbook, overwrite = TRUE)
+usethis::use_data(currency_regex,
+                  notes_regex,
+                  overwrite = TRUE,
+                  internal = TRUE)
