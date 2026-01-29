@@ -405,19 +405,29 @@
       table[mixed_columns] |>
       mutate(
         across(everything(), \(x) trimws(x)),
-        across(everything(), \(x) str_extract(x, "^[\u00A3|\u0024|\u20AC|\u00A5]")),
+        across(everything(), \(x) str_extract(x, "[\u00A3|\u0024|\u20AC|\u00A5]")),
         across(everything(), \(x) replace_na(x, replace = ""))
       )
+
+    # signs
+    signs_table <-
+    table[mixed_columns] |>
+      mutate(across(everything(), \(x) trimws(x)),
+             across(everything(), \(x) str_replace(x, "[\u00A3|\u0024|\u20AC|\u00A5]", "")),
+             across(everything(), \(x) str_replace_all(x, ",", "")),
+             across(everything(), \(x) str_extract(x, "-")),
+             across(everything(), \(x) replace_na(x, replace = "")))
 
     # numbers
     numbers_table <-
       table[mixed_columns] |>
       mutate(across(everything(), \(x) trimws(x)),
-             across(everything(), \(x) str_replace(x, "^[\u00A3|\u0024|\u20AC|\u00A5]", "")),
+             across(everything(), \(x) str_replace(x, "[\u00A3|\u0024|\u20AC|\u00A5]", "")),
+             across(everything(), \(x) str_replace(x, "-", "")),
              across(everything(), \(x) str_replace_all(x, ",", "")),
              across(everything(), \(x) {
                ifelse(str_detect(string = x,
-                                 pattern = "^[[:space:]]*[-]?[[:space:]]*(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])[[:space:]]*$"),
+                                 pattern = "^[[:space:]]*(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])[[:space:]]*$"),
                       x,
                       number(x = suppressWarnings(as.numeric(x)),
                              accuracy = as.numeric(ifelse(.determine_decimal_places(x) == 0,
@@ -432,6 +442,7 @@
     table_replacements <-
       as_tibble(matrix(
         paste0(
+          as.matrix(signs_table),
           as.matrix(units_table),
           as.matrix(numbers_table)
         ),
@@ -778,11 +789,11 @@
 .extract_numeric_values <- function(values) {
   numeric_values <- values[sapply(values,
     grepl,
-    pattern = "^[-]?(?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*)$",
+    pattern = "^[[:space:]]*[-]?[[:space:]]*(?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*)$",
     perl = TRUE
   )]
 
-  numeric_values <- str_replace_all(numeric_values, ",", "")
+  numeric_values <- str_replace_all(numeric_values, "[,[[:space:]]]", "")
 
   numeric_values <- as.numeric(numeric_values)
 
