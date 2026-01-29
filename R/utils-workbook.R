@@ -769,7 +769,7 @@
   currency_cells <-
     sapply(values,
            grepl,
-           pattern = "^[-]?(?:\\s*)(?:[$\u20AC\u00A3|\u00A5]\\s?(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?|(?:USD|EUR|GBP|YEN)\\s+(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?)(?:\\s*)$",
+           pattern = "^[[:space:]]*[-]?[[:space:]]*(?:\\s*)(?:[$\u20AC\u00A3|\u00A5]\\s?(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?|(?:USD|EUR|GBP|YEN)\\s+(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?)(?:\\s*)$",
            perl = TRUE,
            USE.NAMES = FALSE)
 
@@ -804,7 +804,7 @@
   numeric_cells <-
     sapply(values,
            grepl,
-           pattern = "^[-]?((?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*))$",
+           pattern = "^[[:space:]]*[-]?[[:space:]]*((?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*))$",
            perl = TRUE,
            USE.NAMES = FALSE)
 
