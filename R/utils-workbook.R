@@ -440,8 +440,8 @@
         across(everything(), \(x) str_extract(x, notes_regex)),
         across(everything(), \(x) replace_na(x, replace = ""))
       )
-    #
-    #     # currency units
+
+    # currency units
     units_table <-
       table[mixed_columns] |>
       mutate(
@@ -470,6 +470,19 @@
              }),
              across(everything(), \(x) as.character(x)),
              across(everything(), \(x) replace_na(x, replace = "")))
+
+    table_replacements <-
+      as_tibble(matrix(
+        paste0(
+          as.matrix(units_table),
+          as.matrix(numbers_table)
+        ),
+        ncol = ncol(table[mixed_columns]),
+        nrow = nrow(table[mixed_columns])
+      ),
+      .name_repair = "unique_quiet")
+
+    names(table_replacements) <- names(table[mixed_columns])
 
     # get table position on sheet
     table_info <- wb_get_tables(wb, sheet = tab_title)
@@ -763,92 +776,142 @@
   wb
 }
 
-.determine_currency <- function(values) {
-  currency_columns_values <-
-    map2(lapply(values,
-                grepl,
-                pattern = "^(?:\\s*)(?:[$\u20AC\u00A3|\u00A5]\\s?(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?|(?:USD|EUR|GBP|YEN)\\s+(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?)(?:\\s*)$",
-                perl = TRUE),
-         lapply(values,
-                is.na),
-         function(x, y) x | y)
+.determine_currency_cells <- function(values) {
+  currency_cells <-
+    sapply(values,
+           grepl,
+           pattern = currency_regex,
+           perl = TRUE,
+           USE.NAMES = FALSE)
 
-  currency_columns_values
+  currency_cells
 }
 
-.determine_numeric_columns <- function(values) {
-  numeric_columns <- .determine_numeric(values)
+.determine_empty_cells <- function(values) {
 
-  numeric_columns <- sapply(numeric_columns, function(x) all(x))
+  empty_cells <-
+    map2_vec(is.na(values),
+             values == "",
+             function(x, y) x | y)
 
-  numeric_columns
+  empty_cells
 }
 
-.determine_numeric <- function(values) {
-  numeric_columns_values <-
-    map2(lapply(values,
-                grepl,
-                pattern = "^((?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*))$",
-                perl = TRUE),
-         lapply(values,
-                is.na),
-         function(x, y) x | y)
+.extract_numeric_values <- function(values) {
+  numeric_values <- values[sapply(values,
+    grepl,
+    pattern = "^(?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*)$",
+    perl = TRUE
+  )]
 
-  numeric_columns_values
+  numeric_values <- str_replace_all(numeric_values, ",", "")
+
+  numeric_values <- as.numeric(numeric_values)
+
+  numeric_values
 }
 
-.determine_notes <- function(values) {
-  notes_columns_values <-
-    lapply(values,
+.determine_numeric_cells <- function(values) {
+  numeric_cells <-
+    sapply(values,
+           grepl,
+           pattern = "^((?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*))$",
+           perl = TRUE,
+           USE.NAMES = FALSE)
+
+  numeric_cells
+}
+
+.determine_note_cells <- function(values) {
+  note_cells <-
+    sapply(values,
            grepl,
            pattern = notes_regex,
-           perl = TRUE)
+           perl = TRUE,
+           USE.NAMES = FALSE)
 
-  notes_columns_values
+  note_cells
 }
 
-.determine_currency_columns <- function(values) {
-
-  currency_cells <- .determine_currency(values)
-
-  currency_columns <- sapply(currency_cells, function(x) all(x))
-
-  currency_columns
-
-}
-
-# every cell must be a numeric/currency or a note/NA
 .determine_mixed_columns <- function(values) {
 
-  currency_cells <- .determine_currency(values)
+  currency_cells <- lapply(values, .determine_currency_cells)
 
-  numeric_cells <- .determine_numeric(values)
+  numeric_cells <- lapply(values, .determine_numeric_cells)
 
-  combined_cells <- map2(currency_cells, numeric_cells, function(x, y) x | y)
+  empty_cells <- lapply(values, .determine_empty_cells)
 
-  note_cells <- lapply(values,
-                       grepl,
-                       pattern = notes_regex,
-                       perl = TRUE)
+  note_cells <-  lapply(values, .determine_note_cells)
 
   currency_cells_count <- sapply(currency_cells, function(x) sum(x))
   note_cells_count <- sapply(note_cells, function(x) sum(x))
+  empty_cells_count <- sapply(empty_cells, function(x) sum(x))
   numeric_cells_count <- sapply(numeric_cells, function(x) sum(x))
 
   mixed_columns <-
     (
-      currency_cells_count >= 1 & # at least 1 currency cell
+      (currency_cells_count >= 1 | note_cells_count >= 1) &
+      (note_cells_count + empty_cells_count) != nrow(values) &
       (currency_cells_count +
+       numeric_cells_count +
+       empty_cells_count +
        note_cells_count) == nrow(values)
-    ) | # every cell is currency/note/empty
-    (
-      numeric_cells_count >= 1 & # at least 1 numeric cell
-      note_cells_count >= 1 & # at least 1 note cell
-      (numeric_cells_count +
-       note_cells_count) == nrow(values) # every cell is numeric/note/empty
     )
 
   mixed_columns
+
+}
+
+.determine_numeric_columns <- function(values) {
+
+  numeric_cells <- lapply(values, .determine_numeric_cells)
+
+  empty_cells <- lapply(values, .determine_empty_cells)
+
+  note_cells <-  lapply(values, .determine_note_cells)
+
+  numeric_cells_count <- sapply(numeric_cells, function(x) sum(x))
+  note_cells_count <- sapply(note_cells, function(x) sum(x))
+  empty_cells_count <- sapply(empty_cells, function(x) sum(x))
+
+  numeric_columns <-
+    (
+      (numeric_cells_count >= 1 | note_cells_count >= 1) &
+      (note_cells_count + empty_cells_count) != nrow(values) &
+      (numeric_cells_count +
+       note_cells_count +
+       empty_cells_count) == nrow(values)
+    )
+
+  numeric_columns
+}
+
+.determine_currency_columns <- function(values) {
+
+  currency_cells <- lapply(values, .determine_currency_cells)
+
+  numeric_cells <- lapply(values, .determine_numeric_cells)
+
+  empty_cells <- lapply(values, .determine_empty_cells)
+
+  note_cells <-  lapply(values, .determine_note_cells)
+
+  currency_cells_count <- sapply(currency_cells, function(x) sum(x))
+  numeric_cells_count <- sapply(numeric_cells, function(x) sum(x))
+  note_cells_count <- sapply(note_cells, function(x) sum(x))
+  empty_cells_count <- sapply(empty_cells, function(x) sum(x))
+
+  currency_columns <-
+    (
+      (currency_cells_count >= 1 | note_cells_count >= 1) &
+      (note_cells_count + empty_cells_count) != nrow(values) &
+      (currency_cells_count +
+       numeric_cells_count +
+       note_cells_count +
+       empty_cells_count) == nrow(values)
+    )
+
+  currency_columns
 }
 
 .set_workbook_parameters <- function(wb, content) {

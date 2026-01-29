@@ -234,7 +234,6 @@
     name = font_ref[["name"]]
   )
 
-  # <<<<<<< Updated upstream
   if (length(format_cols_index) > 0) {
     # get table position on sheet
     table_info <- wb_get_tables(wb, sheet = tab_title)
@@ -255,7 +254,6 @@
 
     table_pos <- c(t(outer(table_pos$col, table_pos$row, paste0)))
 
-    # <<<<<<< Updated upstream
     # create the columns to be inserted
     cell_text <- table[format_cols_index] |> unlist(use.names = FALSE)
     cell_pos <- table_pos

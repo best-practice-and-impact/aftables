@@ -1,7 +1,7 @@
 # This file generates and writes demo datasets
 
 currency_regex <- "^[[:space:]]*[\u00A3|\u0024|\u20AC|\u00A5][[:space:]]*"
-notes_regex <- "^(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$"
+notes_regex <- "^[[:space:]]*(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])[[:space:]]*$"
 
 # demo_df and demo_aftable (as of v0.3) ---------------------------------
 

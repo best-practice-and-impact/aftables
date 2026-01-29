@@ -7,7 +7,7 @@
 #' @importFrom pillar tbl_sum
 #' @import openxlsx2
 #' @import dplyr
-#' @importFrom purrr pwalk map2
+#' @importFrom purrr pwalk map2 map2_vec
 #' @importFrom tidyr replace_na pivot_longer
 #' @importFrom stringr str_extract str_replace str_replace_all str_detect
 #' @importFrom scales number
