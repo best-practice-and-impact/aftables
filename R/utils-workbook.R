@@ -395,7 +395,6 @@
     notes_table <-
       table[mixed_columns] |>
       mutate(
-        across(everything(), \(x) trimws(x)),
         across(everything(), \(x) str_extract(x, "^[[:space:]]*(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])[[:space:]]*$")),
         across(everything(), \(x) replace_na(x, replace = ""))
       )
@@ -404,15 +403,15 @@
     units_table <-
       table[mixed_columns] |>
       mutate(
-        across(everything(), \(x) trimws(x)),
+        across(everything(), \(x) trimws(x, which = "both")),
         across(everything(), \(x) str_extract(x, "[\u00A3|\u0024|\u20AC|\u00A5]")),
         across(everything(), \(x) replace_na(x, replace = ""))
       )
 
     # signs
     signs_table <-
-    table[mixed_columns] |>
-      mutate(across(everything(), \(x) trimws(x)),
+      table[mixed_columns] |>
+      mutate(across(everything(), \(x) trimws(x, which = "both")),
              across(everything(), \(x) str_replace(x, "[\u00A3|\u0024|\u20AC|\u00A5]", "")),
              across(everything(), \(x) str_replace_all(x, ",", "")),
              across(everything(), \(x) str_extract(x, "-")),
@@ -421,35 +420,38 @@
     # numbers
     numbers_table <-
       table[mixed_columns] |>
-      mutate(across(everything(), \(x) trimws(x)),
+      mutate(across(everything(), \(x) trimws(x, which = "both")),
              across(everything(), \(x) str_replace(x, "[\u00A3|\u0024|\u20AC|\u00A5]", "")),
+             across(everything(), \(x) str_replace(x, "^[[:space:]]*(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])[[:space:]]*$", "")),
              across(everything(), \(x) str_replace(x, "-", "")),
              across(everything(), \(x) str_replace_all(x, ",", "")),
              across(everything(), \(x) {
-               ifelse(str_detect(string = x,
-                                 pattern = "^[[:space:]]*(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])[[:space:]]*$"),
-                      x,
-                      number(x = suppressWarnings(as.numeric(x)),
-                             accuracy = as.numeric(ifelse(.determine_decimal_places(x) == 0,
-                                                          "1",
-                                                          paste0("0.",
-                                                                 paste0(rep("0",
-                                                                            times = .determine_decimal_places(x) - 1),
-                                                                        collapse = ""), "1"))),
-                             big.mark = ""))
-             }))
+
+               number(x = suppressWarnings(as.numeric(x)),
+                      accuracy = as.numeric(ifelse(.determine_decimal_places(x) == 0,
+                                                   "1",
+                                                   paste0("0.",
+                                                          paste0(rep("0",
+                                                                     times = .determine_decimal_places(x) - 1),
+                                                                 collapse = ""), "1"))),
+                      big.mark = "")
+             }),
+             across(everything(), \(x) replace_na(x, replace = "")))
 
     table_replacements <-
       as_tibble(matrix(
         paste0(
-          as.matrix(signs_table),
-          as.matrix(units_table),
-          as.matrix(numbers_table)
-        ),
+               paste0(
+                 as.matrix(signs_table),
+                 as.matrix(units_table),
+                 as.matrix(numbers_table)
+               ),
+               as.matrix(notes_table)),
         ncol = ncol(table[mixed_columns]),
         nrow = nrow(table[mixed_columns])
       ),
       .name_repair = "unique_quiet")
+
 
     names(table_replacements) <- names(table[mixed_columns])
 
@@ -840,7 +842,7 @@
   mixed_columns <-
     (
       (currency_cells_count >= 1 | note_cells_count >= 1) &
-      note_cells_count != nrow(values) &
+      (note_cells_count + empty_cells_count) != nrow(values) &
       (currency_cells_count +
        numeric_cells_count +
        empty_cells_count +
@@ -866,7 +868,7 @@
   numeric_columns <-
     (
       (numeric_cells_count >= 1 | note_cells_count >= 1) &
-      note_cells_count != nrow(values) &
+      (note_cells_count + empty_cells_count) != nrow(values) &
       (numeric_cells_count +
        note_cells_count +
        empty_cells_count) == nrow(values)
