@@ -233,8 +233,8 @@
     cell_pos <- table_pos
 
     # filter the cell_text to avoid valid note cells and NAs
-    cell_pos <- cell_pos[!str_detect(cell_text, pattern = "^(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$")]
-    cell_text <- cell_text[!str_detect(cell_text, pattern = "^(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])$")]
+    cell_pos <- cell_pos[!str_detect(cell_text, pattern = "^[[:space:]]*(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])[[:space:]]*$")]
+    cell_text <- cell_text[!str_detect(cell_text, pattern = "^[[:space:]]*(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])[[:space:]]*$")]
     cell_pos <- cell_pos[!is.na(cell_text)]
     cell_text <- cell_text[!is.na(cell_text)]
 
@@ -419,7 +419,7 @@
   )
 }
 
-.determine_decimal_places <- function(x, type) {
+.determine_decimal_places <- function(x) {
   # length zero input
   if (length(x) == 0) {
     return(numeric())

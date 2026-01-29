@@ -6,7 +6,7 @@
 ## usethis namespace: start
 #' @importFrom pillar tbl_sum
 #' @import openxlsx2
-#' @importFrom purrr pwalk map2
+#' @importFrom purrr pwalk map2 map2_vec
 #' @importFrom dplyr across mutate as_tibble everything where
 #' @importFrom tidyr replace_na
 #' @importFrom stringr str_extract str_replace str_replace_all  str_detect
