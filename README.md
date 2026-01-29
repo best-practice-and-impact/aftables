@@ -69,12 +69,12 @@ GitHub](https://github.com/best-practice-and-impact/aftables) using
 [{remotes}](https://remotes.r-lib.org/).
 
 ``` r
-install.packages("remotes")  # if not already installed
+install.packages("remotes") # if not already installed
 
 remotes::install_github(
-  repo = "best-practice-and-impact/aftables",  # GitHub user/repository
-  dependencies = TRUE,              # install required/suggested packages
-  build_vignettes = TRUE            # generate vignette documentation
+  repo = "best-practice-and-impact/aftables", # GitHub user/repository
+  dependencies = TRUE, # install required/suggested packages
+  build_vignettes = TRUE # generate vignette documentation
 )
 ```
 
@@ -87,16 +87,16 @@ function names were updated when the package was renamed. If you need to
 install a11ytables for a legacy project, the following code can be used.
 
 ``` r
-install.packages("remotes")  # if not already installed
+install.packages("remotes") # if not already installed
 
 remotes::install_github(
-  repo = "best-practice-and-impact/aftables",  # GitHub user/repository
+  repo = "best-practice-and-impact/aftables", # GitHub user/repository
   ref = "v0.3.2", # this installs the final version of a11ytables. Change if you need an earlier version.
-  dependencies = TRUE,              # install required/suggested packages
-  build_vignettes = TRUE            # generate vignette documentation
+  dependencies = TRUE, # install required/suggested packages
+  build_vignettes = TRUE # generate vignette documentation
 )
 
-library(a11ytables)  # attach package
+library(a11ytables) # attach package
 ```
 
 ## Use
