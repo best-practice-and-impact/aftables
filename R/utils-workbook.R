@@ -417,7 +417,7 @@
              across(everything(), \(x) str_replace_all(x, ",", "")),
              across(everything(), \(x) {
                ifelse(str_detect(string = x,
-                                 pattern = "^[[:space:]]*(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])[[:space:]]*$"),
+                                 pattern = "^[[:space:]]*[-]?[[:space:]]*(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])[[:space:]]*$"),
                       x,
                       number(x = suppressWarnings(as.numeric(x)),
                              accuracy = as.numeric(ifelse(.determine_decimal_places(x) == 0,
@@ -753,12 +753,12 @@
 
   wb
 }
-# TODO WIP tidy up cells vs columns and remove redundant functions
+
 .determine_currency_cells <- function(values) {
   currency_cells <-
     sapply(values,
            grepl,
-           pattern = "^(?:\\s*)(?:[$\u20AC\u00A3|\u00A5]\\s?(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?|(?:USD|EUR|GBP|YEN)\\s+(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?)(?:\\s*)$",
+           pattern = "^[-]?(?:\\s*)(?:[$\u20AC\u00A3|\u00A5]\\s?(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?|(?:USD|EUR|GBP|YEN)\\s+(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?)(?:\\s*)$",
            perl = TRUE,
            USE.NAMES = FALSE)
 
@@ -778,7 +778,7 @@
 .extract_numeric_values <- function(values) {
   numeric_values <- values[sapply(values,
     grepl,
-    pattern = "^(?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*)$",
+    pattern = "^[-]?(?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*)$",
     perl = TRUE
   )]
 
@@ -793,7 +793,7 @@
   numeric_cells <-
     sapply(values,
            grepl,
-           pattern = "^((?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*))$",
+           pattern = "^[-]?((?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*))$",
            perl = TRUE,
            USE.NAMES = FALSE)
 
