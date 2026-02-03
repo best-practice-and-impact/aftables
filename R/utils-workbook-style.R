@@ -65,7 +65,7 @@
 #' @param style_ref List. The style-reference object made with [.style_paragraph()].
 #' @param font_ref List. The font-reference object made with [.style_font()].
 #' @noRd
-.style_table <- function(wb, content, table_name, style_ref, font_ref) {
+.style_table <- function(wb, content, table_name, style_ref, font_ref, table_formats) {
   content_row <- content[content[["table_name"]] == table_name, ]
   table <- content_row[, "table"][[1]]
   tab_title <- content_row[, "tab_title"][[1]]
@@ -87,14 +87,9 @@
   cellwidth_wider <- 32
   nchar_break <- 50
 
-  mixed_cols <- .determine_mixed_columns(table)
-  mixed_cols_names <- names(Filter(isTRUE, mixed_cols)) # return names of columns that are most likely numeric
-  mixed_cols_index <- which(names(table) %in% mixed_cols_names) # get the index of columns that are likely numeric, so styles can be applied
-
-  # mixed columns and numeric columns need to have formatting applied
-  format_cols <- (mixed_cols | .determine_numeric_columns(table))
-  format_cols_names <- names(Filter(isTRUE, format_cols)) # return names of columns that are most likely numeric currencies
-  format_cols_index <- which(names(table) %in% format_cols_names) # get the index of columns that are likely numeric currencies, so styles can be applied
+  numeric_cols <- table_formats$numeric_columns
+  numeric_cols_names <- names(Filter(isTRUE, numeric_cols)) # return names of columns that are most likely numeric
+  numeric_cols_index <- which(names(table) %in% numeric_cols_names) # get the index of columns that are likely numeric, so styles can be applied
 
   # Find indices of columns that should be wider than default
   is_factor_column <- sapply(table, is.factor) # nchar (below) fails on factors
@@ -121,12 +116,12 @@
     )
   }
 
-  if (length(mixed_cols_index[!is.na(mixed_cols_index)])) { # only run if needed
+  if (length(numeric_cols_index[!is.na(numeric_cols_index)])) { # only run if needed
     wb$add_cell_style(
       sheet = tab_title,
       dims = wb_dims(
         rows = seq(start_row, start_row + table_height),
-        cols = mixed_cols_index
+        cols = numeric_cols_index
       ),
       horizontal = style_ref[["ralign"]]
     )
@@ -150,43 +145,22 @@
     name = font_ref[["name"]]
   )
 
-  if (length(format_cols_index) > 0) {
-    # get table position on sheet
-    table_info <- wb_get_tables(wb, sheet = tab_title)
-    table_pos <- table_info$tab_ref[table_info$tab_name == table_name]
+  if (any(table_formats$currency_units != "")) {
 
-    # get anchor position of table
-    first_value_cell <- dims_to_dataframe(table_pos, fill = TRUE)[1, 1]
-    # get position to update: multiple columns selected
-    table_pos <- wb_dims(
-      x = table,
-      from_dims =
-        first_value_cell,
-      cols = names(table[format_cols_index])
-    )
+    currencies_pos <-
+      wb_dims(rows = seq(start_row + 1, start_row + table_height), cols = seq(table_width))
 
-    # get the entire table by cell references
-    table_pos <- dims_to_rowcol(table_pos)
+    currencies_pos <- dims_to_rowcol(currencies_pos)
 
-    table_pos <- c(t(outer(table_pos$col, table_pos$row, paste0)))
+    currencies_pos <- t(outer(currencies_pos$col, currencies_pos$row, paste0)) |> as.vector()
 
-    # create the columns to be inserted
-    cell_text <- table[format_cols_index] |> unlist(use.names = FALSE)
-    cell_pos <- table_pos
-
-    # filter the cell_text to avoid valid note cells and NAs
-    cell_pos <- cell_pos[!str_detect(cell_text, pattern = "^[[:space:]]*(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])[[:space:]]*$")]
-    cell_text <- cell_text[!str_detect(cell_text, pattern = "^[[:space:]]*(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])[[:space:]]*$")]
-    cell_pos <- cell_pos[!is.na(cell_text)]
-    cell_text <- cell_text[!is.na(cell_text)]
-
-    formats_to_apply <- data.frame(
-      dims = cell_pos,
-      numfmt = paste0(
-        replace_na(str_extract(cell_text, "[\u00A3|\u0024|\u20AC|\u00A5]"), ""),
-        "#,##0.00"
-      )
-    )
+    formats_to_apply <-
+      data.frame(
+        numfmt = table_formats$currency_units |> unlist(use.names = FALSE),
+        dims = currencies_pos
+      ) |>
+      filter(.data$numfmt != "") |>
+      mutate(numfmt = paste0(.data$numfmt, "#,##0.00"))
 
     formats_to_apply |>
       pwalk(\(dims, numfmt) {
@@ -196,6 +170,7 @@
           numfmt = numfmt
         )
       })
+
   }
 
   wb
