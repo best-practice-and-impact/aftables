@@ -87,9 +87,10 @@
   cellwidth_wider <- 32
   nchar_break <- 50
 
-  numeric_cols <- table_formats$numeric_columns
-  numeric_cols_names <- names(Filter(isTRUE, numeric_cols)) # return names of columns that are most likely numeric
+  numeric_cols_names <- table_formats$numeric_columns
   numeric_cols_index <- which(names(table) %in% numeric_cols_names) # get the index of columns that are likely numeric, so styles can be applied
+
+  numeric_cells <- table_formats$numeric_cells
 
   # Find indices of columns that should be wider than default
   is_factor_column <- sapply(table, is.factor) # nchar (below) fails on factors
@@ -116,6 +117,10 @@
     )
   }
 
+  #=============================================================================
+  # format numeric columns and apply numeric formatting cells in mixed columns
+  #=============================================================================
+
   if (length(numeric_cols_index[!is.na(numeric_cols_index)])) { # only run if needed
     wb$add_cell_style(
       sheet = tab_title,
@@ -125,6 +130,23 @@
       ),
       horizontal = style_ref[["ralign"]]
     )
+
+    # apply numeric formatting to numeric cells
+    formats_to_apply <-
+      data.frame(
+        numfmt = "#,##0.00",
+        dims = numeric_cells
+      )
+
+    formats_to_apply |>
+      pwalk(\(dims, numfmt) {
+        wb$add_numfmt(
+          sheet = tab_title,
+          dims = dims,
+          numfmt = numfmt
+        )
+      })
+
   }
 
   wb$add_cell_style(
@@ -145,29 +167,19 @@
     name = font_ref[["name"]]
   )
 
-  if (any(table_formats$currency_units != "")) {
+  #=============================================================================
+  # insert currency symbols as number format
+  #=============================================================================
 
-    currencies_pos <-
-      wb_dims(rows = seq(start_row + 1, start_row + table_height), cols = seq(table_width))
+  if (!is.null(table_formats$currency_units)) {
 
-    currencies_pos <- dims_to_rowcol(currencies_pos)
-
-    currencies_pos <- t(outer(currencies_pos$col, currencies_pos$row, paste0)) |> as.vector()
-
-    formats_to_apply <-
-      data.frame(
-        numfmt = table_formats$currency_units |> unlist(use.names = FALSE),
-        dims = currencies_pos
-      ) |>
-      filter(.data$numfmt != "") |>
-      mutate(numfmt = paste0(.data$numfmt, "#,##0.00"))
-
-    formats_to_apply |>
-      pwalk(\(dims, numfmt) {
+    table_formats$currency_units |>
+      mutate(cell_text = paste0(.data$cell_text, "#,##0.00")) |>
+      pwalk(\(cell_pos, cell_text) {
         wb$add_numfmt(
           sheet = tab_title,
-          dims = dims,
-          numfmt = numfmt
+          dims = cell_pos,
+          numfmt = cell_text
         )
       })
 

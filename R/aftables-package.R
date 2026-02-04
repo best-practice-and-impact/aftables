@@ -7,7 +7,7 @@
 #' @importFrom pillar tbl_sum
 #' @import openxlsx2
 #' @importFrom purrr pwalk
-#' @importFrom dplyr across mutate everything filter
+#' @importFrom dplyr across mutate everything filter all_of
 #' @importFrom tidyr replace_na
 #' @importFrom stringr str_replace_all str_detect
 #' @importFrom scales number
