@@ -403,13 +403,13 @@
                # extract currency symbols from cells
                regmatches(
                  x,
-                 replace_na(regexpr("\\[[^\\]]*\\](*SKIP)(*F)|[[:space:]]*[\u00A3|\u0024|\u20AC|\u00A5]",
-                                    x,
-                                    perl = TRUE),
-                            0)
+                 gregexpr("\\[[^\\]]*\\](*SKIP)(*F)|[[:space:]]*[\u00A3|\u0024|\u20AC|\u00A5]",
+                          x,
+                          perl = TRUE)
                ),
                NA_character_)
       }),
+      across(everything(), \(x) trimws(x, which = "both")),
       across(everything(), \(x) replace_na(as.character(x), "")))
 
     currencies_pos <-
@@ -539,6 +539,10 @@
                              numeric_cells$row,
                              paste0)) |>
       as.vector()
+
+    # don't format numeric cells that are going to be formatted as currencies
+    numeric_cells <-
+      numeric_cells[!numeric_cells %in% currency_units$cell_pos]
 
     #===========================================================================
     # create output to pass to .style_table
