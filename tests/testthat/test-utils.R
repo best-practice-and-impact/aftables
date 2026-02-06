@@ -20,7 +20,28 @@ test_that(".determine functions correctly identify cells", {
   expect_equal(.determine_mixed_columns(determine_functions_df),
                c(FALSE, FALSE, FALSE, FALSE, TRUE))
 
-  expect_equal(.determine_numeric_columns(determine_functions_df),
+  expect_equal(.determine_table_datatypes(determine_functions_df)$note_cells,
+               as.matrix(data.frame(notes = rep(TRUE, 4),
+                                    numbers = rep(FALSE, 4),
+                                    currencies = rep(FALSE, 4),
+                                    empty = rep(FALSE, 4),
+                                    mixed = c(rep(FALSE, 3), TRUE))))
+
+  expect_equal(.determine_table_datatypes(determine_functions_df)$numeric_cells,
+               as.matrix(data.frame(notes = rep(FALSE, 4),
+                                    numbers = rep(TRUE, 4),
+                                    currencies = rep(FALSE, 4),
+                                    empty = rep(FALSE, 4),
+                                    mixed = c(rep(TRUE, 3), FALSE))))
+
+  expect_equal(.determine_table_datatypes(determine_functions_df)$currency_cells,
+               as.matrix(data.frame(notes = rep(FALSE, 4),
+                                    numbers = rep(FALSE, 4),
+                                    currencies = rep(TRUE, 4),
+                                    empty = rep(FALSE, 4),
+                                    mixed = rep(FALSE, 4))))
+
+  expect_equal(.determine_table_datatypes(determine_functions_df)$numeric_columns,
                c("numbers", "currencies", "mixed"))
 
 })

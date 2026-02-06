@@ -121,7 +121,7 @@
   # format numeric columns and apply numeric formatting cells in mixed columns
   #=============================================================================
 
-  if (length(numeric_cols_index[!is.na(numeric_cols_index)])) { # only run if needed
+  if (length(numeric_cols_index > 0)) { # only run if needed
     wb$add_cell_style(
       sheet = tab_title,
       dims = wb_dims(
@@ -130,23 +130,6 @@
       ),
       horizontal = style_ref[["ralign"]]
     )
-
-    # apply numeric formatting to numeric cells
-    formats_to_apply <-
-      data.frame(
-        numfmt = "#,##0.00",
-        dims = numeric_cells
-      )
-
-    formats_to_apply |>
-      pwalk(\(dims, numfmt) {
-        wb$add_numfmt(
-          sheet = tab_title,
-          dims = dims,
-          numfmt = numfmt
-        )
-      })
-
   }
 
   wb$add_cell_style(
@@ -171,18 +154,28 @@
   # insert currency symbols as number format
   #=============================================================================
 
-  if (!is.null(table_formats$currency_units)) {
-
-    table_formats$currency_units |>
-      mutate(cell_text = paste0(.data$cell_text, "#,##0.00")) |>
-      pwalk(\(cell_pos, cell_text) {
+  if (!is.null(table_formats$numeric_formats)) {
+    # apply numeric formatting to numeric cells
+    table_formats$numeric_formats |>
+      pwalk(\(cell_reference, cell_format) {
         wb$add_numfmt(
           sheet = tab_title,
-          dims = cell_pos,
-          numfmt = cell_text
+          dims = cell_reference,
+          numfmt = cell_format
         )
       })
+  }
 
+  if (!is.null(table_formats$currency_formats)) {
+    # apply numeric formatting to numeric cells
+    table_formats$currency_formats |>
+      pwalk(\(cell_reference, cell_format) {
+        wb$add_numfmt(
+          sheet = tab_title,
+          dims = cell_reference,
+          numfmt = cell_format
+        )
+      })
   }
 
   wb

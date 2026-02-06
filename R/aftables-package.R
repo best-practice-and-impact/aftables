@@ -12,5 +12,6 @@
 #' @importFrom stringr str_replace_all str_detect
 #' @importFrom scales number
 #' @importFrom rlang .data
+#' @importFrom utils type.convert
 ## usethis namespace: end
 NULL
