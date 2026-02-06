@@ -27,6 +27,7 @@ Imports:
     dplyr,
     stringr,
     tidyr,
+    rlang,
     utils,
     yaml
 Suggests: 
