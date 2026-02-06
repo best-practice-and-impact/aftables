@@ -441,6 +441,7 @@
   } else {
     currency_formats <- NULL
     numeric_formats <- NULL
+    currency_formats <- NULL
   }
 
   if (!any(.determine_mixed_columns(table))) {
