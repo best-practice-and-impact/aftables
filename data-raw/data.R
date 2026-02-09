@@ -81,10 +81,10 @@ demo_df <- as.data.frame(demo_aftable)
 
 demo_workbook <- generate_workbook(demo_aftable)
 
-detect_currency_regex <- "^\\s*(?:[-\u2212]?\\s*[\u00A3\u0024\u20AC\u00A5]\\s*[-\u2212]?\\s*(?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d+)?|[-\u2212]?\\s*(?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d+)?\\s*[\u00A3\u0024\u20AC\u00A5]\\s*[-\u2212]?)\\s*$"
+detect_currency_regex <- "^\\s*(([-\u2212]?\\s*[\u00A3\u0024\u20AC\u00A5]|[\u00A3\u0024\u20AC\u00A5]\\s*[-\u2212]?)\\s*(\\d{1,3}(,\\d{3})+|\\d+)(\\.\\d+)?|[-\u2212]?\\s*(\\d{1,3}(,\\d{3})+|\\d+)(\\.\\d+)?\\s*[\u00A3\u0024\u20AC\u00A5])\\s*$"
 extract_currency_symbol_regex <- "\\[[^\\]]*\\](*SKIP)(*F)|[[:space:]]*[\u00A3|\u0024|\u20AC|\u00A5]"
-numeric_regex <- "^[[:space:]]*[-]?[[:space:]]*(?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*)$"
-notes_regex <- "^[[:space:]]*(\\[[^\\]]*\\].*\\[[^\\]]*\\]|\\[[^\\]]*\\])[[:space:]]*$"
+numeric_regex <- "^\\s*[-\u2212]?\\s*(\\d{1,3}(,\\d{3})+|\\d+)(\\.\\d+)?\\s*$"
+notes_regex <- "^\\s*(\\[[^\\]]+\\]\\s*)+\\s*$"
 
 # Write to data/
 usethis::use_data(demo_df, overwrite = TRUE)

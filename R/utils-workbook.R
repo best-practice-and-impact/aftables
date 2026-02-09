@@ -179,25 +179,13 @@
   sheet_type <- content[content$tab_title == tab_title, "sheet_type"][[1]]
   sheet_title <- content[content$tab_title == tab_title, "sheet_title"][[1]]
 
-  if (sheet_type %in% c("cover", "contents", "notes")) {
-    wb$add_data(
-      sheet = tab_title,
-      x = sheet_title,
-      start_col = 1,
-      start_row = 1,
-      na.strings = ""
-    )
-  }
-
-  if (sheet_type == "tables") {
-    wb$add_data(
-      sheet = tab_title,
-      x = sheet_title,
-      start_col = 1,
-      start_row = 1,
-      na.strings = ""
-    )
-  }
+  wb$add_data(
+    sheet = tab_title,
+    x = sheet_title,
+    start_col = 1,
+    start_row = 1,
+    na.strings = ""
+  )
 
   wb
 }
