@@ -102,42 +102,6 @@
   tab_title <- content_row[, "tab_title"][[1]]
   sheet_type <- content_row[, "sheet_type"][[1]]
 
-  # get user set decimal places
-  if (!is.null(wb_config$workbook_format$decimal_places[[tab_title]])) {
-    decimal_places = wb_config$workbook_format$decimal_places[[tab_title]]
-
-    # apply default to all columns
-    if (!is.null(decimal_places$default)) {
-
-      default_dp <- decimal_places$default
-
-      decimal_places <- decimal_places[names(decimal_places) != "default"]
-
-      names(decimal_places) <- as.numeric(str_replace_all(names(decimal_places),
-                                                          "column", ""))
-
-      names(decimal_places) <- names(table[as.numeric(names(decimal_places))])
-
-      custom_dp <- as.list(rep(default_dp,
-                               ncol(table)))
-
-      names(custom_dp) <- names(table)
-
-      # if individual columns set, override defaults
-      if (length(decimal_places) > 1) {
-        custom_dp[names(decimal_places)] <- decimal_places
-      }
-
-      columns_custom_dp <- names(custom_dp)
-    }
-  } else {
-    decimal_places = NULL
-
-    custom_dp <- .determine_decimal_places(table)
-
-    columns_custom_dp <- names(custom_dp)
-  }
-
   if (!is.null(wb_config$workbook_format$cellwidth_default)) {
     cellwidth_default <- wb_config$workbook_format$cellwidth_default
   } else {
@@ -173,7 +137,8 @@
   nchar_break <- 50
 
   numeric_cols_names <- table_formats$numeric_columns
-  numeric_cols_index <- which(names(table) %in% numeric_cols_names) # get the index of columns that are likely numeric, so styles can be applied
+  # get the index of columns that are likely numeric, so styles can be applied
+  numeric_cols_index <- which(names(table) %in% numeric_cols_names)
 
   numeric_cells <- table_formats$numeric_cells
 
@@ -217,6 +182,34 @@
     )
   }
 
+  if (!is.null(table_formats$numeric_formats)) {
+    # apply numeric formatting to numeric cells
+    table_formats$numeric_formats |>
+      pwalk(\(cell_reference, cell_format) {
+        wb$add_numfmt(
+          sheet = tab_title,
+          dims = cell_reference,
+          numfmt = cell_format
+        )
+      })
+  }
+
+  #=============================================================================
+  # insert currency symbols as number format
+  #=============================================================================
+
+  if (!is.null(table_formats$currency_formats)) {
+    # apply numeric formatting to numeric cells
+    table_formats$currency_formats |>
+      pwalk(\(cell_reference, cell_format) {
+        wb$add_numfmt(
+          sheet = tab_title,
+          dims = cell_reference,
+          numfmt = cell_format
+        )
+      })
+  }
+
   wb$add_cell_style(
     sheet = tab_title,
     dims = wb_dims(
@@ -237,33 +230,6 @@
     size = font_ref[["base_font_size"]],
     name = font_ref[["name"]]
   )
-
-  #=============================================================================
-  # insert currency symbols as number format
-  #=============================================================================
-  if (!is.null(table_formats$numeric_formats)) {
-    # apply numeric formatting to numeric cells
-    table_formats$numeric_formats |>
-      pwalk(\(cell_reference, cell_format) {
-        wb$add_numfmt(
-          sheet = tab_title,
-          dims = cell_reference,
-          numfmt = cell_format
-        )
-      })
-  }
-
-  if (!is.null(table_formats$currency_formats)) {
-    # apply numeric formatting to numeric cells
-    table_formats$currency_formats |>
-      pwalk(\(cell_reference, cell_format) {
-        wb$add_numfmt(
-          sheet = tab_title,
-          dims = cell_reference,
-          numfmt = cell_format
-        )
-      })
-  }
 
   wb
 }
@@ -426,76 +392,4 @@
     wrap_text = style_ref[["wrap_text"]],
     horizontal = style_ref[["lalign"]]
   )
-}
-
-.determine_decimal_places <- function(x) {
-
-  dp_cols <- (.determine_numeric_columns(x) | .determine_currency_columns(x))
-
-  if (any(dp_cols)) {
-
-    if (is(x, "character")) {
-      x_nchr <-
-        str_replace(x, notes_regex, "") |>
-        str_replace(currency_regex, "") |>
-        as.numeric() |>
-        abs() |>
-        as.character() |>
-        nchar() |>
-        as.numeric()
-
-      x_int <-
-        str_replace(x, notes_regex, "") |>
-        str_replace(currency_regex, "") |>
-        as.numeric() |>
-        floor() |>
-        abs() |>
-        nchar()
-
-      x_nchr <- x_nchr - 1 - x_int
-      x_nchr[x_nchr < 0] <- 0
-
-      output <-
-        x_nchr |>
-        max(x, na.rm = TRUE) |>
-        unique()
-
-    } else if (is(x, "data.frame")) {
-      x_nchr <-
-        x[dp_cols] |>
-        mutate(across(everything(), \(x) str_replace(x, notes_regex, "")),
-               across(everything(), \(x) str_replace(x, currency_regex, "")),
-               across(everything(), \(x) str_replace(x, ",", "")),
-               across(everything(), \(x) trimws(x)),
-               across(everything(), \(x) as.numeric(x)),
-               across(everything(), \(x) abs(x)),
-               across(everything(), \(x) as.character(x)),
-               across(everything(), \(x) nchar(x)),
-               across(everything(), \(x) as.numeric(x)))
-
-      x_int <-
-        x[dp_cols] |>
-        mutate(across(everything(), \(x) str_replace(x, notes_regex, "")),
-               across(everything(), \(x) str_replace(x, currency_regex, "")),
-               across(everything(), \(x) str_replace(x, ",", "")),
-               across(everything(), \(x) trimws(x)),
-               across(everything(), \(x) as.numeric(x)),
-               across(everything(), \(x) floor(x)),
-               across(everything(), \(x) abs(x)),
-               across(everything(), \(x) nchar(x)))
-
-      x_nchr <- x_nchr - 1 - x_int
-      x_nchr[x_nchr < 0] <- 0
-
-      output <- x_nchr |>
-        mutate(across(everything(), \(x) max(x, na.rm = TRUE))) |>
-        unique()
-    }
-
-  } else {
-    output <- list()
-  }
-
-  output
-
 }

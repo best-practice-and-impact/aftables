@@ -362,6 +362,12 @@
   sheet_type <- content[content$table_name == table_name, "sheet_type"][[1]]
   tab_title <- content[content$table_name == table_name, "tab_title"][[1]]
 
+  if (!is.null(wb_config$workbook_format$decimal_places)) {
+    decimal_places = wb_config$workbook_format$decimal_places
+  } else {
+    decimal_places = NULL
+  }
+
   start_row <- .get_start_row_table(
     content,
     tab_title,
@@ -420,11 +426,19 @@
                                               currency_cells = currency_cells)
 
     currencies_cell_references <- table_cell_references[currency_cells]
+    currency_cell_formats <-
+      .determine_cell_formats(table = table,
+                              table_name = tab_title,
+                              decimal_places = decimal_places,
+                              numeric_columns = numeric_columns,
+                              value_cells = currency_cells,
+                              note_cells = note_cells,
+                              currency_units = currency_units)
 
     currency_formats <-
       data.frame(
         cell_reference = currencies_cell_references,
-        cell_format = paste0(currency_units, "#,##0.00")
+        cell_format = currency_cell_formats
       )
 
     #===========================================================================
@@ -445,11 +459,19 @@
     #===========================================================================
     numeric_cell_references <- table_cell_references[numeric_cells]
 
+    numeric_cell_formats <-
+      .determine_cell_formats(table = table,
+                              table_name = tab_title,
+                              decimal_places = decimal_places,
+                              numeric_columns = numeric_columns,
+                              value_cells = numeric_cells,
+                              note_cells = note_cells)
     numeric_formats <-
       data.frame(
         cell_reference = numeric_cell_references,
-        cell_format = "#,##0.00"
+        cell_format = numeric_cell_formats
       )
+
     # convert cells and columns to numeric once currency symbols have been removed
     table <- .clean_numeric_data(table, numeric_cells)
 
@@ -802,6 +824,7 @@
                  numeric_cells = as.matrix(numeric_cells),
                  note_cells = as.matrix(note_cells))
 
+
   # restore scientific notation
   options(scipen = scipen_orig)
 
@@ -839,6 +862,7 @@
 }
 
 .replace_currency_units <- function(table, currency_cells) {
+
   output <-
     sapply(
            regmatches(
@@ -857,7 +881,6 @@
                                ""))
 
   output
-
 }
 
 .clean_numeric_data <- function(table, numeric_cells) {
@@ -912,4 +935,93 @@
                     manager = content$manager,
                     company = content$company)
   wb
+}
+
+.determine_cell_formats <- function(table,
+                                    table_name,
+                                    decimal_places = NULL,
+                                    numeric_columns = NULL,
+                                    value_cells = NULL,
+                                    note_cells = NULL,
+                                    currency_units = NULL) {
+
+  if (!is.null(decimal_places[[table_name]])) { # dp set per column by user from config
+
+    decimal_places <- decimal_places[[table_name]]
+
+    default_dp <- decimal_places$default
+
+    decimal_places <- decimal_places[names(decimal_places) != "default"]
+
+    names(decimal_places) <- as.numeric(str_replace_all(names(decimal_places),
+                                                        "column", ""))
+
+    names(decimal_places) <- names(table[as.numeric(names(decimal_places))])
+
+    dp_table <- data.frame(t(rep(default_dp,
+                                 ncol(table))))
+
+    names(dp_table) <- names(table)
+
+    # if individual columns set, override defaults
+    if (length(decimal_places) != 0) {
+      dp_table[names(decimal_places)] <- decimal_places
+    }
+
+    x_nchr <-
+      dp_table |>
+      slice(rep(seq_len(n()),
+                each = nrow(table)))
+
+  } else { # dp determined from data in table
+    dp_table <- table
+    dp_table[note_cells] <- ""
+
+    # determine currency column decimal places
+    if (!is.null(currency_units)) {
+      dp_table[value_cells] <- .replace_currency_units(dp_table, value_cells)
+    }
+
+    x_nchr <-
+      dp_table |> mutate(across(everything(), \(x) str_replace(x, ",", "")),
+                         across(everything(), \(x) trimws(x)),
+                         across(everything(), \(x) suppressWarnings(as.numeric(x))),
+                         across(everything(), \(x) abs(x)),
+                         across(everything(), \(x) as.character(x)),
+                         across(everything(), \(x) nchar(x)),
+                         across(everything(), \(x) as.numeric(x)))
+
+    x_int <-
+      dp_table |> mutate(across(everything(), \(x) str_replace(x, ",", "")),
+                         across(everything(), \(x) trimws(x)),
+                         across(everything(), \(x) suppressWarnings(as.numeric(x))),
+                         across(everything(), \(x) floor(x)),
+                         across(everything(), \(x) abs(x)),
+                         across(everything(), \(x) nchar(x)))
+
+    x_nchr <- x_nchr - 1 - x_int
+    x_nchr[x_nchr < 0] <- 0
+
+  }
+
+  dp <-
+    data.frame(dp = x_nchr[value_cells]) |>
+    rowwise() |>
+    mutate(dp = ifelse(dp == 0,
+                       "",
+                       paste0(".",
+                              paste0(rep("0",
+                                         dp),
+                                     collapse = "")))) |>
+    ungroup() |>
+    select(dp) |>
+    unlist(use.names = FALSE)
+
+  if (!is.null(currency_units)) {
+    output <- paste0(currency_units, "#,##0", dp)
+  } else {
+    output <- paste0("#,##0", dp)
+  }
+
+  output
 }

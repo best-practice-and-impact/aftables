@@ -12,7 +12,6 @@
 #' @importFrom stringr str_extract str_replace str_replace_all str_detect
 #' @importFrom purrr pwalk
 #' @importFrom tidyr replace_na
-#' @importFrom stringr str_replace_all str_detect
 #' @importFrom scales number
 #' @importFrom utils file.edit type.convert
 #' @importFrom yaml read_yaml
