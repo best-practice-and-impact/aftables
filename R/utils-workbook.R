@@ -371,14 +371,95 @@
     .has_source(content, tab_title)
   )
 
-  mixed_columns <- .determine_mixed_columns(table)
+  # initial cleaning of table regardless of mixed columns
+  # currency cells, numeric cells, numeric columns
 
-  table_cleaned <- table
+  table_datatypes <- .determine_table_datatypes(table)
 
-  table_cleaned[mixed_columns] <-
-    table_cleaned[mixed_columns] |>
-    mutate(across(where(is.numeric), function(x) x <- 0),
-           across(where(is.character), function(x) x <- ""))
+  numeric_columns <- table_datatypes$numeric_columns
+
+  currency_cells <- table_datatypes$currency_cells
+
+  numeric_cells <- table_datatypes$numeric_cells
+
+  note_cells <- table_datatypes$note_cells
+
+  table_cell_references <-
+    wb_dims(
+      x = table,
+      from_row = start_row,
+      cols = names(table)
+    )
+
+  table_cell_references <- dims_to_rowcol(table_cell_references)
+
+  table_cell_references <- t(outer(table_cell_references$col, table_cell_references$row, paste0))
+
+  #===========================================================================
+  # clean mixed columns by removing notes
+  #===========================================================================
+
+  # extract notes from mixed columns
+  note_values <- table[note_cells]
+  note_cell_references <- table_cell_references[note_cells]
+
+  notes_replacement <-
+    data.frame(
+      cell_reference = note_cell_references,
+      cell_text = note_values
+    )
+
+  table[note_cells] <- ""
+
+  if (any(currency_cells)) {
+    #===========================================================================
+    # set currency formats to pass to .style_table
+    #===========================================================================
+
+    currency_units <- .extract_currency_units(table = table,
+                                              currency_cells = currency_cells)
+
+    currencies_cell_references <- table_cell_references[currency_cells]
+
+    currency_formats <-
+      data.frame(
+        cell_reference = currencies_cell_references,
+        cell_format = paste0(currency_units, "#,##0.00")
+      )
+
+    #===========================================================================
+    # clean table removing currency symbols
+    #===========================================================================
+
+    table[currency_cells] <-
+      .replace_currency_units(table,
+                              currency_cells)
+
+  } else {
+    currency_formats <- NULL
+  }
+
+  if (any(numeric_cells)) {
+    #===========================================================================
+    # set numeric formats to pass to .style_table
+    #===========================================================================
+    numeric_cell_references <- table_cell_references[numeric_cells]
+
+    numeric_formats <-
+      data.frame(
+        cell_reference = numeric_cell_references,
+        cell_format = "#,##0.00"
+      )
+    # convert cells and columns to numeric once currency symbols have been removed
+    table <- .clean_numeric_data(table, numeric_cells)
+
+  } else {
+    numeric_formats <- NULL
+  }
+
+  #=============================================================================
+  # insert cleaned data table into workbook
+  #=============================================================================
 
   wb$add_data_table(
     sheet = tab_title,
@@ -392,183 +473,31 @@
     na.strings = ""
   )
 
-  # user set custom decimal places
-  if (!is.null(wb_config$workbook_format$decimal_places[[tab_title]])) {
-    decimal_places = wb_config$workbook_format$decimal_places[[tab_title]]
+  #=============================================================================
+  # insert notes into mixed columns
+  #=============================================================================
 
-    # only default set, apply it to all columns
-    if (length(decimal_places) == 1 && !is.null(decimal_places$default)) {
-
-      custom_dp <- as.list(rep(decimal_places$default,
-                               ncol(table[mixed_columns])))
-
-      names(custom_dp) <- names(table[mixed_columns])
-
-      columns_custom_dp <- names(table[mixed_columns])
-
-      # individual columns set
-    } else if (length(decimal_places > 1)) {
-
-      custom_dp <- decimal_places[names(decimal_places) != "default"]
-
-      names(custom_dp) <- str_replace_all(names(custom_dp), "column", "")
-
-      names(custom_dp) <- names(table[as.numeric(names(custom_dp))])
-
-      custom_dp <- custom_dp[names(custom_dp) %in% names(table[mixed_columns])]
-
-      columns_custom_dp <- names(custom_dp)
-
-    }
-
-  } else { # no user set decimal places, determine from data
-    decimal_places = NULL
-
-    custom_dp <- .determine_decimal_places(table)
-
-    custom_dp <- custom_dp[names(custom_dp) %in% names(table[mixed_columns])]
-
-    columns_custom_dp <- names(custom_dp)
-
-  }
-
-  if (any(mixed_columns)) {
-    notes_table <-
-      table[mixed_columns] |>
-      mutate(
-        across(everything(), \(x) trimws(x)),
-        across(everything(), \(x) str_extract(x, notes_regex)),
-        across(everything(), \(x) replace_na(x, replace = ""))
+  notes_replacement |>
+    pwalk(\(cell_reference,
+            cell_text) {
+      wb$add_data(
+        sheet = tab_title,
+        x = cell_text,
+        dims = cell_reference,
+        col_names = FALSE,
+        row_names = FALSE,
+        apply_cell_style = FALSE
       )
+    })
+  #=============================================================================
+  # create output to pass to .style_table
+  #=============================================================================
+  output <- list(numeric_columns = numeric_columns,
+                 numeric_formats = numeric_formats,
+                 currency_formats = currency_formats)
 
-    # currency units
-    units_table <-
-      table[mixed_columns] |>
-      mutate(
-        across(everything(), \(x) trimws(x)),
-        across(everything(), \(x) str_extract(x, currency_regex)),
-        across(everything(), \(x) replace_na(x, replace = ""))
-      )
+  output
 
-    # numbers
-    numbers_table <-
-      table[mixed_columns] |>
-      mutate(across(everything(), \(x) trimws(x)),
-             across(everything(), \(x) str_replace(x, currency_regex, "")),
-             across(everything(), \(x) str_replace(x, notes_regex, "")),
-             across(everything(), \(x) str_replace_all(x, ",", "")),
-             across(everything(), \(x) {
-               number(suppressWarnings(as.numeric(x)),
-                      accuracy =
-                        ifelse(cur_column() %in% columns_custom_dp,
-                               ifelse(custom_dp[cur_column()] == 0, 1,
-                                      as.numeric(paste0("0.",
-                                                        paste0(rep("0",
-                                                                   times =
-                                                                     as.numeric(custom_dp[cur_column()]) - 1), collapse = ""), "1"))), 0.01),
-                      big.mark = "")
-             }),
-             across(everything(), \(x) as.character(x)),
-             across(everything(), \(x) replace_na(x, replace = "")))
-
-    table_replacements <-
-      as_tibble(matrix(
-        paste0(
-          as.matrix(units_table),
-          as.matrix(numbers_table)
-        ),
-        ncol = ncol(table[mixed_columns]),
-        nrow = nrow(table[mixed_columns])
-      ),
-      .name_repair = "unique_quiet")
-
-    names(table_replacements) <- names(table[mixed_columns])
-
-    # get table position on sheet
-    table_info <- wb_get_tables(wb, sheet = tab_title)
-    table_pos <- table_info$tab_ref[table_info$tab_name == table_name]
-
-    # get anchor position of table
-    first_value_cell <- dims_to_dataframe(table_pos, fill = TRUE)[1, 1]
-    # get position to update: multiple columns selected
-    table_pos <- wb_dims(
-      x = table,
-      from_dims =
-        first_value_cell,
-      cols = names(table[mixed_columns])
-    )
-
-    # get the entire table by cell references
-    table_pos <- dims_to_rowcol(table_pos)
-
-    table_pos <- t(outer(table_pos$col, table_pos$row, paste0))
-
-    # numbers to insert with custom formats
-    numbers_logical <- (numbers_table != "" & units_table == "")
-    currencies_logical <- units_table != ""
-    notes_logical <- notes_table != ""
-
-    numbers_to_insert <-
-      data.frame(
-        cell_text = numbers_table[numbers_logical],
-        cell_pos = table_pos[numbers_logical]
-      )
-
-    # currencies to insert with custom formats
-    currencies_to_insert <-
-      data.frame(
-        cell_text = numbers_table[currencies_logical],
-        cell_pos = table_pos[currencies_logical]
-      )
-
-    # notes to insert
-    notes_to_insert <-
-      data.frame(
-        cell_text = notes_table[notes_logical],
-        cell_pos = table_pos[notes_logical]
-      )
-
-    numbers_to_insert |>
-      pwalk(\(cell_text,
-              cell_pos) {
-        wb$add_data(
-          sheet = tab_title,
-          x = as.numeric(cell_text),
-          dims = cell_pos,
-          col_names = FALSE,
-          row_names = FALSE,
-          apply_cell_style = FALSE
-        )
-      })
-
-    currencies_to_insert |>
-      pwalk(\(cell_text,
-              cell_pos) {
-        wb$add_data(
-          sheet = tab_title,
-          x = as.numeric(cell_text),
-          dims = cell_pos,
-          col_names = FALSE,
-          row_names = FALSE,
-          apply_cell_style = FALSE
-        )
-      })
-
-    notes_to_insert |>
-      pwalk(\(cell_text, cell_pos) {
-        wb$add_data(
-          sheet = tab_title,
-          x = cell_text,
-          dims = cell_pos,
-          col_names = FALSE,
-          row_names = FALSE,
-          apply_cell_style = FALSE
-        )
-      })
-
-  }
-
-  wb
 }
 
 # Special case to insert cover-page info, depending on whether it's provided as
@@ -723,12 +652,12 @@
   .insert_title(wb, content, tab_title)
   .insert_table_count(wb, content, tab_title)
   .insert_custom_rows(wb, content, tab_title)
-  .insert_table(wb, content, table_name, wb_config)
+  table_format <- .insert_table(wb, content, table_name, wb_config)
 
   styles <- .style_paragraph()
   fonts <- .style_font(wb_config)
   .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts, wb_config)
+  .style_table(wb, content, table_name, styles, fonts, table_format, wb_config)
   .style_contents(wb, content, styles)
 
   wb
@@ -744,12 +673,12 @@
   .insert_title(wb, content, tab_title)
   .insert_table_count(wb, content, tab_title)
   .insert_custom_rows(wb, content, tab_title)
-  .insert_table(wb, content, table_name, wb_config)
+  table_format <- .insert_table(wb, content, table_name, wb_config)
 
   styles <- .style_paragraph()
   fonts <- .style_font(wb_config)
   .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts, wb_config)
+  .style_table(wb, content, table_name, styles, fonts, table_format, wb_config)
   .style_notes(wb, content, styles)
 
   wb
@@ -766,124 +695,181 @@
   .insert_notes_statement(wb, content, tab_title)
   .insert_blanks_message(wb, content, tab_title)
   .insert_custom_rows(wb, content, tab_title)
-  .insert_table(wb, content, table_name, wb_config)
+  table_format <- .insert_table(wb, content, table_name, wb_config)
 
   styles <- .style_paragraph()
   fonts <- .style_font(wb_config)
   .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts, wb_config)
+  .style_table(wb, content, table_name, styles, fonts, table_format, wb_config)
 
   wb
 }
 
-.determine_currency_cells <- function(values) {
-  currency_cells <-
-    sapply(values,
-           grepl,
-           pattern = currency_regex,
-           perl = TRUE,
-           USE.NAMES = FALSE)
+.determine_empty_cells <- function(table) {
 
-  currency_cells
-}
-
-.determine_empty_cells <- function(values) {
-
-  empty_cells <-
-    map2_vec(is.na(values),
-             values == "",
-             function(x, y) x | y)
+  empty_cells <- table |>
+    mutate(across(everything(), \(x) is.na(x) | x == ""))
 
   empty_cells
 }
 
-.extract_numeric_values <- function(values) {
-  numeric_values <- values[sapply(values,
-    grepl,
-    pattern = "^(?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*)$",
-    perl = TRUE
-  )]
+.determine_currency_cells <- function(table) {
+  currency_cells <-
+    table |>
+    mutate(across(everything(),
+                  \(x) {
+                    grepl(x,
+                          pattern = detect_currency_regex,
+                          perl = TRUE)
+                  }))
 
-  numeric_values <- str_replace_all(numeric_values, ",", "")
+  currency_cells
+}
+
+.determine_numeric_cells <- function(table) {
+  numeric_cells <-
+    table |>
+    mutate(across(everything(),
+                  \(x) {
+                    grepl(x,
+                          pattern = numeric_regex,
+                          perl = TRUE)
+                  }))
+
+  numeric_cells
+}
+
+.determine_note_cells <- function(table) {
+  note_cells <-
+    table |>
+    mutate(across(everything(),
+                  \(x) {
+                    grepl(x,
+                          pattern = notes_regex,
+                          perl = TRUE)
+                  }))
+
+  note_cells
+}
+
+.determine_table_datatypes <- function(table) {
+
+  # switch off scientific notation
+  scipen_orig <- getOption("scipen")
+  options(scipen = 999)
+
+  # number of cells in each column of each type
+  currency_cells <- .determine_currency_cells(table)
+
+  numeric_cells <- .determine_numeric_cells(table)
+
+  empty_cells <- .determine_empty_cells(table)
+
+  note_cells <-  .determine_note_cells(table)
+
+  # total number of cells in each column of each type
+  currency_cells_count <- sapply(currency_cells, function(x) sum(x))
+  numeric_cells_count <- sapply(numeric_cells, function(x) sum(x))
+  note_cells_count <- sapply(note_cells, function(x) sum(x))
+  empty_cells_count <- sapply(empty_cells, function(x) sum(x))
+
+  # columns which should be treated as numeric can contain either currency or
+  # numeric data and character data in note format between square brackets []
+  # numeric columns can have any number of note cells but should not be
+  # entirely note or empty cells
+  # columns which are entirely note or empty cells are note columns and should
+  # be treated as characters
+  # a column will only be counted if all the cells can be classified as one
+  # of the data types, to avoid cases of unusual data being treated as numeric
+  numeric_columns <-
+    (
+      (currency_cells_count >= 1 | numeric_cells_count >= 1) &
+      (currency_cells_count +
+       numeric_cells_count +
+       note_cells_count +
+       empty_cells_count) == nrow(table)
+    )
+
+  # valid currency cells are only those in columns which could be numeric
+  # if all currency symbols were removed
+  currency_cells[!numeric_columns] <- FALSE
+  # valid note cells are only those in mixed columns which could be numeric
+  # if all notes were removed
+  note_cells[!numeric_columns] <- FALSE
+
+  output <- list(numeric_columns = names(numeric_columns[numeric_columns]),
+                 currency_cells = as.matrix(currency_cells),
+                 numeric_cells = as.matrix(numeric_cells),
+                 note_cells = as.matrix(note_cells))
+
+  # restore scientific notation
+  options(scipen = scipen_orig)
+
+  output
+}
+
+.extract_numeric_values <- function(values) {
+  numeric_values <-
+    values[
+      sapply(values,
+             grepl,
+             pattern = numeric_regex,
+             perl = TRUE)
+    ]
+
+  numeric_values <- str_replace_all(numeric_values, "[,[[:space:]]]", "")
 
   numeric_values <- as.numeric(numeric_values)
 
   numeric_values
 }
 
-.determine_numeric_cells <- function(values) {
-  numeric_cells <-
-    sapply(values,
-           grepl,
-           pattern = "^((?:\\s*)(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?(?:\\s*))$",
-           perl = TRUE,
-           USE.NAMES = FALSE)
+.extract_currency_units <- function(table, currency_cells) {
+  currency_units <-
+    trimws(
+           regmatches(
+             table[as.matrix(currency_cells)],
+             gregexpr(extract_currency_symbol_regex,
+                      table[as.matrix(currency_cells)],
+                      perl = TRUE)
+           ),
+           which = "both")
 
-  numeric_cells
+  currency_units
 }
 
-.determine_note_cells <- function(values) {
-  note_cells <-
-    sapply(values,
-           grepl,
-           pattern = notes_regex,
-           perl = TRUE,
-           USE.NAMES = FALSE)
+.replace_currency_units <- function(table, currency_cells) {
+  output <-
+    sapply(
+           regmatches(
+             table[as.matrix(currency_cells)],
+             gregexpr(extract_currency_symbol_regex,
+                      table[as.matrix(currency_cells)],
+                      perl = TRUE),
+             invert = TRUE
+           ),
+           paste,
+           collapse = "")
 
-  note_cells
-}
+  output <-
+    as.numeric(str_replace_all(output,
+                               "[[[:space:]],]",
+                               ""))
 
-.determine_mixed_columns <- function(values) {
-
-  currency_cells <- lapply(values, .determine_currency_cells)
-
-  numeric_cells <- lapply(values, .determine_numeric_cells)
-
-  empty_cells <- lapply(values, .determine_empty_cells)
-
-  note_cells <-  lapply(values, .determine_note_cells)
-
-  currency_cells_count <- sapply(currency_cells, function(x) sum(x))
-  note_cells_count <- sapply(note_cells, function(x) sum(x))
-  empty_cells_count <- sapply(empty_cells, function(x) sum(x))
-  numeric_cells_count <- sapply(numeric_cells, function(x) sum(x))
-
-  mixed_columns <-
-    (
-      (currency_cells_count >= 1 | note_cells_count >= 1) &
-      (note_cells_count + empty_cells_count) != nrow(values) &
-      (currency_cells_count +
-       numeric_cells_count +
-       empty_cells_count +
-       note_cells_count) == nrow(values)
-    )
-
-  mixed_columns
+  output
 
 }
 
-.determine_numeric_columns <- function(values) {
+.clean_numeric_data <- function(table, numeric_cells) {
+  table[numeric_cells] <- trimws(table[numeric_cells], which = "both")
 
-  numeric_cells <- lapply(values, .determine_numeric_cells)
+  table[numeric_cells] <- str_replace_all(table[numeric_cells],
+                                          "[[[:space:]],]",
+                                          "")
 
-  empty_cells <- lapply(values, .determine_empty_cells)
+  table <- type.convert(table, as.is = TRUE)
 
-  note_cells <-  lapply(values, .determine_note_cells)
-
-  numeric_cells_count <- sapply(numeric_cells, function(x) sum(x))
-  note_cells_count <- sapply(note_cells, function(x) sum(x))
-  empty_cells_count <- sapply(empty_cells, function(x) sum(x))
-
-  numeric_columns <-
-    (
-      (numeric_cells_count >= 1 | note_cells_count >= 1) &
-      (note_cells_count + empty_cells_count) != nrow(values) &
-      (numeric_cells_count +
-       note_cells_count +
-       empty_cells_count) == nrow(values)
-    )
-
-  numeric_columns
+  table
 }
 
 .determine_currency_columns <- function(values) {
