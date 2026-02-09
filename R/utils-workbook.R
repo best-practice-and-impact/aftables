@@ -393,37 +393,53 @@
 
   table_cell_references <- t(outer(table_cell_references$col, table_cell_references$row, paste0))
 
-  if (sheet_type == "tables") {
+  #===========================================================================
+  # clean mixed columns by removing notes
+  #===========================================================================
 
-    if (any(currency_cells)) {
-      currency_units <- .extract_currency_units(table = table,
-                                                currency_cells = currency_cells)
+  # extract notes from mixed columns
+  note_values <- table[note_cells]
+  note_cell_references <- table_cell_references[note_cells]
 
-      currencies_cell_references <- table_cell_references[currency_cells]
+  notes_replacement <-
+    data.frame(
+      cell_reference = note_cell_references,
+      cell_text = note_values
+    )
 
-      currency_formats <-
-        data.frame(
-          cell_reference = currencies_cell_references,
-          cell_format = paste0(currency_units, "#,##0.00")
-        )
+  table[note_cells] <- ""
 
-      #===========================================================================
-      # clean table removing currency symbols
-      #===========================================================================
+  if (any(currency_cells)) {
+    #===========================================================================
+    # set currency formats to pass to .style_table
+    #===========================================================================
 
-      table[currency_cells] <-
-        .replace_currency_units(table,
-                                currency_cells)
+    currency_units <- .extract_currency_units(table = table,
+                                              currency_cells = currency_cells)
 
-      # convert cells and columns to numeric once currency symbols have been removed
-      table <- .clean_numeric_data(table, numeric_cells)
+    currencies_cell_references <- table_cell_references[currency_cells]
 
-    } else {
-      currency_formats <- NULL
-    }
+    currency_formats <-
+      data.frame(
+        cell_reference = currencies_cell_references,
+        cell_format = paste0(currency_units, "#,##0.00")
+      )
 
     #===========================================================================
-    # get cell references of cells in numeric columns to pass to .style_table
+    # clean table removing currency symbols
+    #===========================================================================
+
+    table[currency_cells] <-
+      .replace_currency_units(table,
+                              currency_cells)
+
+  } else {
+    currency_formats <- NULL
+  }
+
+  if (any(numeric_cells)) {
+    #===========================================================================
+    # set numeric formats to pass to .style_table
     #===========================================================================
     numeric_cell_references <- table_cell_references[numeric_cells]
 
@@ -432,80 +448,45 @@
         cell_reference = numeric_cell_references,
         cell_format = "#,##0.00"
       )
-  } else {
-    numeric_formats <- NULL
-    currency_formats <- NULL
-  }
-
-  if (!any(.determine_mixed_columns(table))) {
-    # no mixed columns so insert table after initial cleaning
-
-    wb$add_data_table(
-      sheet = tab_title,
-      x = table,
-      table_name = table_name,
-      start_col = 1,
-      start_row = start_row,
-      table_style = "none",
-      with_filter = FALSE,
-      banded_rows = FALSE,
-      na.strings = ""
-    )
-
-  } else { # mixed columns detected - see notes in .determine_mixed_columns
-
-    #===========================================================================
-    # clean mixed columns by removing notes
-    #===========================================================================
-
-    # extract notes from numeric columns
-    note_values <- table[note_cells]
-    note_cell_references <- table_cell_references[note_cells]
-
-    notes_replacement <-
-      data.frame(
-        cell_reference = note_cell_references,
-        cell_text = note_values
-      )
-
-    table[note_cells] <- ""
-
-    # clean cells and convert columns to numeric once note cells have been removed
+    # convert cells and columns to numeric once currency symbols have been removed
     table <- .clean_numeric_data(table, numeric_cells)
 
-    #===========================================================================
-    # insert cleaned data table into workbook
-    #===========================================================================
-
-    wb$add_data_table(
-      sheet = tab_title,
-      x = table,
-      table_name = table_name,
-      start_col = 1,
-      start_row = start_row,
-      table_style = "none",
-      with_filter = FALSE,
-      banded_rows = FALSE,
-      na.strings = ""
-    )
-
-    #===========================================================================
-    # insert notes into mixed columns
-    #===========================================================================
-
-    notes_replacement |>
-      pwalk(\(cell_reference,
-              cell_text) {
-        wb$add_data(
-          sheet = tab_title,
-          x = cell_text,
-          dims = cell_reference,
-          col_names = FALSE,
-          row_names = FALSE,
-          apply_cell_style = FALSE
-        )
-      })
+  } else {
+    numeric_formats <- NULL
   }
+
+  #=============================================================================
+  # insert cleaned data table into workbook
+  #=============================================================================
+
+  wb$add_data_table(
+    sheet = tab_title,
+    x = table,
+    table_name = table_name,
+    start_col = 1,
+    start_row = start_row,
+    table_style = "none",
+    with_filter = FALSE,
+    banded_rows = FALSE,
+    na.strings = ""
+  )
+
+  #=============================================================================
+  # insert notes into mixed columns
+  #=============================================================================
+
+  notes_replacement |>
+    pwalk(\(cell_reference,
+            cell_text) {
+      wb$add_data(
+        sheet = tab_title,
+        x = cell_text,
+        dims = cell_reference,
+        col_names = FALSE,
+        row_names = FALSE,
+        apply_cell_style = FALSE
+      )
+    })
   #=============================================================================
   # create output to pass to .style_table
   #=============================================================================
@@ -770,51 +751,11 @@
   note_cells
 }
 
-.determine_mixed_columns <- function(table) {
-
-  # number of cells in each column of each type
-  numeric_cells <- .determine_numeric_cells(table)
-
-  empty_cells <- .determine_empty_cells(table)
-
-  note_cells <-  .determine_note_cells(table)
-
-  # total number of cells in each column of each type
-  note_cells_count <- sapply(note_cells, function(x) sum(x))
-  empty_cells_count <- sapply(empty_cells, function(x) sum(x))
-  numeric_cells_count <- sapply(numeric_cells, function(x) sum(x))
-
-  # columns which should be treated as mixed can contain numeric data and
-  # character data in note format between square brackets []
-
-  # currencies are not treated as mixed columns, they are processed
-  # as numeric columns as the currency symbols have been removed at this stage
-
-  # columns which are entirely note or empty cells are note columns and should
-  # be treated as characters
-
-  # mixed columns have their numeric cells processed as numeric and
-  # note cells processed as characters, with the entre column processed as
-  # numeric to ensure proper formating in Excel
-
-  # a column will only be counted if all the cells can be classified as one
-  # of the data types, to avoid cases of unusual data being treated as mixed
-
-  mixed_columns <-
-    (
-      note_cells_count > 0 &
-      (note_cells_count + empty_cells_count) != nrow(table) &
-      (numeric_cells_count +
-       empty_cells_count +
-       note_cells_count) == nrow(table)
-    ) |>
-    as.vector()
-
-  mixed_columns
-
-}
-
 .determine_table_datatypes <- function(table) {
+
+  # switch off scientific notation
+  scipen_orig <- getOption("scipen")
+  options(scipen = 999)
 
   # number of cells in each column of each type
   currency_cells <- .determine_currency_cells(table)
@@ -851,11 +792,17 @@
   # valid currency cells are only those in columns which could be numeric
   # if all currency symbols were removed
   currency_cells[!numeric_columns] <- FALSE
+  # valid note cells are only those in mixed columns which could be numeric
+  # if all notes were removed
+  note_cells[!numeric_columns] <- FALSE
 
   output <- list(numeric_columns = names(numeric_columns[numeric_columns]),
                  currency_cells = as.matrix(currency_cells),
                  numeric_cells = as.matrix(numeric_cells),
                  note_cells = as.matrix(note_cells))
+
+  # restore scientific notation
+  options(scipen = scipen_orig)
 
   output
 }
