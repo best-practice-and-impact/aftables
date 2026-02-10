@@ -4,14 +4,16 @@
 # The following block is used by usethis to automatically manage
 # roxygen namespace tags. Modify with care!
 ## usethis namespace: start
-#' @importFrom pillar tbl_sum
 #' @import openxlsx2
-#' @importFrom purrr pwalk
 #' @importFrom dplyr across mutate everything filter all_of
-#' @importFrom tidyr replace_na
-#' @importFrom stringr str_replace_all str_detect
-#' @importFrom scales number
+#' @importFrom pillar tbl_sum
+#' @importFrom purrr pwalk
 #' @importFrom rlang .data
+#' @importFrom scales number
+#' @importFrom stringr str_extract
+#' @importFrom stringr str_replace
+#' @importFrom stringr str_replace_all str_detect
+#' @importFrom tidyr replace_na
 #' @importFrom utils type.convert
 ## usethis namespace: end
 NULL

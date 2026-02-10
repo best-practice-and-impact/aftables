@@ -358,8 +358,7 @@
     .has_source(content, tab_title)
   )
 
-  # initial cleaning of table regardless of mixed columns
-  # currency cells, numeric cells, numeric columns
+  # initial cleaning of table
 
   table_datatypes <- .determine_table_datatypes(table)
 
@@ -443,9 +442,9 @@
   }
 
   #=============================================================================
-  # convert cells and columns to numeric once currency symbols have been removed
+  # convert numeric and currency columns to numeric
   #=============================================================================
-  table <- .clean_numeric_data(table, (numeric_cells | currency_cells))
+  table <- .clean_numeric_data(table, numeric_columns)
 
   #=============================================================================
   # insert cleaned data table into workbook
@@ -756,8 +755,8 @@
 .determine_table_datatypes <- function(table) {
 
   # switch off scientific notation
-  scipen_orig <- getOption("scipen")
-  options(scipen = 999)
+  old <- options(scipen = 999)
+  on.exit(options(old), add = TRUE)
 
   # number of cells in each column of each type
   currency_cells <- .determine_currency_cells(table)
@@ -792,11 +791,17 @@
     )
 
   # valid currency cells are only those in columns which could be numeric
-  # if all currency symbols were removed
+  # if all currency symbols and notes were removed
   currency_cells[!numeric_columns] <- FALSE
+
+  # valid numeric cells are only those in columns which could be numeric
+  # if all notes were removed
+  numeric_cells[!numeric_columns] <- FALSE
+
   # valid note cells are only those in mixed columns which could be numeric
   # if all notes were removed
   note_cells[!numeric_columns] <- FALSE
+
 
   output <- list(
     numeric_columns = names(numeric_columns[numeric_columns]),
@@ -804,9 +809,6 @@
     numeric_cells = as.matrix(numeric_cells),
     note_cells = as.matrix(note_cells)
   )
-
-  # restore scientific notation
-  options(scipen = scipen_orig)
 
   output
 }
@@ -831,17 +833,7 @@
 
 .extract_currency_units <- function(table, currency_cells) {
   currency_units <-
-    trimws(
-      regmatches(
-        table[currency_cells],
-        gregexpr(
-          extract_currency_symbol_regex,
-          table[currency_cells],
-          perl = TRUE
-        )
-      ),
-      which = "both"
-    )
+    str_extract(table[currency_cells], extract_currency_symbol_regex)
 
   currency_units
 }
@@ -849,33 +841,21 @@
 .replace_currency_units <- function(table, currency_cells) {
 
   output <-
-    sapply(
-      regmatches(
-        table[currency_cells],
-        gregexpr(
-          extract_currency_symbol_regex,
-          table[currency_cells],
-          perl = TRUE
-        ),
-        invert = TRUE
-      ),
-      paste,
-      collapse = ""
-    )
-
-  output <- str_replace_all(output, "[\\s,]", "")
+    str_replace(table[currency_cells], extract_currency_symbol_regex, "")
 
   output
 
 }
 
-.clean_numeric_data <- function(table, numeric_cells) {
-  table[numeric_cells] <- trimws(table[numeric_cells], which = "both")
+.clean_numeric_data <- function(table, numeric_columns) {
 
-  table[numeric_cells] <-
-    str_replace_all(table[numeric_cells], "[\\s,]", "")
-
-  table <- type.convert(table, as.is = TRUE)
+  table <- table |>
+    mutate(
+      across(
+        where(\(x) !is.numeric(x)) & all_of(numeric_columns),
+        \(x) as.numeric(str_replace_all(x, "[\\s,]", ""))
+      )
+    )
 
   table
 }

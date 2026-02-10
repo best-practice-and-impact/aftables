@@ -82,7 +82,7 @@ demo_df <- as.data.frame(demo_aftable)
 demo_workbook <- generate_workbook(demo_aftable)
 
 detect_currency_regex <- "^\\s*(([-\u2212]?\\s*[\u00A3\u0024\u20AC\u00A5]|[\u00A3\u0024\u20AC\u00A5]\\s*[-\u2212]?)\\s*(\\d{1,3}(,\\d{3})+|\\d+)(\\.\\d+)?|[-\u2212]?\\s*(\\d{1,3}(,\\d{3})+|\\d+)(\\.\\d+)?\\s*[\u00A3\u0024\u20AC\u00A5])\\s*$"
-extract_currency_symbol_regex <- "\\[[^\\]]*\\](*SKIP)(*F)|[[:space:]]*[\u00A3|\u0024|\u20AC|\u00A5]"
+extract_currency_symbol_regex <- "[\u00A3|\u0024|\u20AC|\u00A5]"
 numeric_regex <- "^\\s*[-\u2212]?\\s*(\\d{1,3}(,\\d{3})+|\\d+)(\\.\\d+)?\\s*$"
 notes_regex <- "^\\s*(\\[[^\\]]+\\]\\s*)+\\s*$"
 
@@ -90,9 +90,11 @@ notes_regex <- "^\\s*(\\[[^\\]]+\\]\\s*)+\\s*$"
 usethis::use_data(demo_df, overwrite = TRUE)
 usethis::use_data(demo_aftable, overwrite = TRUE)
 usethis::use_data(demo_workbook, overwrite = TRUE)
-usethis::use_data(detect_currency_regex,
-                  extract_currency_symbol_regex,
-                  numeric_regex,
-                  notes_regex,
-                  overwrite = TRUE,
-                  internal = TRUE)
+usethis::use_data(
+  detect_currency_regex,
+  extract_currency_symbol_regex,
+  numeric_regex,
+  notes_regex,
+  overwrite = TRUE,
+  internal = TRUE
+)
