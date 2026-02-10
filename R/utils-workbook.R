@@ -402,8 +402,10 @@
     # set currency formats to pass to .style_table
     #===========================================================================
 
-    currency_units <- .extract_currency_units(table = table,
-                                              currency_cells = currency_cells)
+    currency_units <- .extract_currency_units(
+      table = table,
+      currency_cells = currency_cells
+    )
 
     currencies_cell_references <- table_cell_references[currency_cells]
 
@@ -417,9 +419,7 @@
     # clean table removing currency symbols
     #===========================================================================
 
-    table[currency_cells] <-
-      .replace_currency_units(table,
-                              currency_cells)
+    table[currency_cells] <- .replace_currency_units(table, currency_cells)
 
   } else {
     currency_formats <- NULL
@@ -479,9 +479,11 @@
   # create output to pass to .style_table
   #=============================================================================
 
-  output <- list(numeric_columns = numeric_columns,
-                 numeric_formats = numeric_formats,
-                 currency_formats = currency_formats)
+  output <- list(
+    numeric_columns = numeric_columns,
+    numeric_formats = numeric_formats,
+    currency_formats = currency_formats
+  )
 
   output
 

@@ -88,7 +88,9 @@
   nchar_break <- 50
 
   numeric_cols_names <- table_formats$numeric_columns
-  numeric_cols_index <- which(names(table) %in% numeric_cols_names) # get the index of columns that are likely numeric, so styles can be applied
+
+  # get the index of columns that are likely numeric, so styles can be applied
+  numeric_cols_index <- which(names(table) %in% numeric_cols_names)
 
   numeric_cells <- table_formats$numeric_cells
 
