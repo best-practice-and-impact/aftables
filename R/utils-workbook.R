@@ -709,12 +709,16 @@
 .determine_currency_cells <- function(table) {
   currency_cells <-
     table |>
-    mutate(across(everything(),
-                  \(x) {
-                    grepl(x,
-                          pattern = detect_currency_regex,
-                          perl = TRUE)
-                  }))
+    mutate(
+      across(
+        everything(),
+        \(x) {
+          grepl(x,
+                pattern = detect_currency_regex,
+                perl = TRUE)
+        }
+      )
+    )
 
   currency_cells
 }
@@ -722,12 +726,14 @@
 .determine_numeric_cells <- function(table) {
   numeric_cells <-
     table |>
-    mutate(across(everything(),
-                  \(x) {
-                    grepl(x,
-                          pattern = numeric_regex,
-                          perl = TRUE)
-                  }))
+    mutate(
+      across(
+        everything(),
+        \(x) {
+          grepl(x, pattern = numeric_regex, perl = TRUE)
+        }
+      )
+    )
 
   numeric_cells
 }
@@ -735,12 +741,14 @@
 .determine_note_cells <- function(table) {
   note_cells <-
     table |>
-    mutate(across(everything(),
-                  \(x) {
-                    grepl(x,
-                          pattern = notes_regex,
-                          perl = TRUE)
-                  }))
+    mutate(
+      across(
+        everything(),
+        \(x) {
+          grepl(x, pattern = notes_regex, perl = TRUE)
+        }
+      )
+    )
 
   note_cells
 }
@@ -790,10 +798,12 @@
   # if all notes were removed
   note_cells[!numeric_columns] <- FALSE
 
-  output <- list(numeric_columns = names(numeric_columns[numeric_columns]),
-                 currency_cells = as.matrix(currency_cells),
-                 numeric_cells = as.matrix(numeric_cells),
-                 note_cells = as.matrix(note_cells))
+  output <- list(
+    numeric_columns = names(numeric_columns[numeric_columns]),
+    currency_cells = as.matrix(currency_cells),
+    numeric_cells = as.matrix(numeric_cells),
+    note_cells = as.matrix(note_cells)
+  )
 
   # restore scientific notation
   options(scipen = scipen_orig)
@@ -804,10 +814,12 @@
 .extract_numeric_values <- function(values) {
   numeric_values <-
     values[
-      sapply(values,
-             grepl,
-             pattern = numeric_regex,
-             perl = TRUE)
+      sapply(
+        values,
+        grepl,
+        pattern = numeric_regex,
+        perl = TRUE
+      )
     ]
 
   numeric_values <- str_replace_all(numeric_values, "[\\s,]", "")
@@ -820,13 +832,16 @@
 .extract_currency_units <- function(table, currency_cells) {
   currency_units <-
     trimws(
-           regmatches(
-             table[currency_cells],
-             gregexpr(extract_currency_symbol_regex,
-                      table[currency_cells],
-                      perl = TRUE)
-           ),
-           which = "both")
+      regmatches(
+        table[currency_cells],
+        gregexpr(
+          extract_currency_symbol_regex,
+          table[currency_cells],
+          perl = TRUE
+        )
+      ),
+      which = "both"
+    )
 
   currency_units
 }
@@ -835,20 +850,20 @@
 
   output <-
     sapply(
-           regmatches(
-             table[currency_cells],
-             gregexpr(extract_currency_symbol_regex,
-                      table[currency_cells],
-                      perl = TRUE),
-             invert = TRUE
-           ),
-           paste,
-           collapse = "")
+      regmatches(
+        table[currency_cells],
+        gregexpr(
+          extract_currency_symbol_regex,
+          table[currency_cells],
+          perl = TRUE
+        ),
+        invert = TRUE
+      ),
+      paste,
+      collapse = ""
+    )
 
-  output <-
-    str_replace_all(output,
-                    "[\\s,]",
-                    "")
+  output <- str_replace_all(output, "[\\s,]", "")
 
   output
 
@@ -857,9 +872,8 @@
 .clean_numeric_data <- function(table, numeric_cells) {
   table[numeric_cells] <- trimws(table[numeric_cells], which = "both")
 
-  table[numeric_cells] <- str_replace_all(table[numeric_cells],
-                                          "[\\s,]",
-                                          "")
+  table[numeric_cells] <-
+    str_replace_all(table[numeric_cells], "[\\s,]", "")
 
   table <- type.convert(table, as.is = TRUE)
 
