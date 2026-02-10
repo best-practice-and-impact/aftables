@@ -344,7 +344,8 @@
 }
 
 .insert_table <- function(wb, content, table_name) {
-  table <- content[content$table_name == table_name, ][["table"]][[1]]
+  # convert tibbles to data frames before processing
+  table <- as.data.frame(content[content$table_name == table_name, ][["table"]][[1]])
   sheet_type <- content[content$table_name == table_name, "sheet_type"][[1]]
   tab_title <- content[content$table_name == table_name, "tab_title"][[1]]
 
@@ -436,12 +437,15 @@
         cell_reference = numeric_cell_references,
         cell_format = "#,##0.00"
       )
-    # convert cells and columns to numeric once currency symbols have been removed
-    table <- .clean_numeric_data(table, numeric_cells)
 
   } else {
     numeric_formats <- NULL
   }
+
+  #=============================================================================
+  # convert cells and columns to numeric once currency symbols have been removed
+  #=============================================================================
+  table <- .clean_numeric_data(table, (numeric_cells | currency_cells))
 
   #=============================================================================
   # insert cleaned data table into workbook
@@ -806,7 +810,7 @@
              perl = TRUE)
     ]
 
-  numeric_values <- str_replace_all(numeric_values, "[,[[:space:]]]", "")
+  numeric_values <- str_replace_all(numeric_values, "[\\s,]", "")
 
   numeric_values <- as.numeric(numeric_values)
 
@@ -817,9 +821,9 @@
   currency_units <-
     trimws(
            regmatches(
-             table[as.matrix(currency_cells)],
+             table[currency_cells],
              gregexpr(extract_currency_symbol_regex,
-                      table[as.matrix(currency_cells)],
+                      table[currency_cells],
                       perl = TRUE)
            ),
            which = "both")
@@ -832,9 +836,9 @@
   output <-
     sapply(
            regmatches(
-             table[as.matrix(currency_cells)],
+             table[currency_cells],
              gregexpr(extract_currency_symbol_regex,
-                      table[as.matrix(currency_cells)],
+                      table[currency_cells],
                       perl = TRUE),
              invert = TRUE
            ),
@@ -842,9 +846,9 @@
            collapse = "")
 
   output <-
-    as.numeric(str_replace_all(output,
-                               "[[[:space:]],]",
-                               ""))
+    str_replace_all(output,
+                    "[\\s,]",
+                    "")
 
   output
 
@@ -854,7 +858,7 @@
   table[numeric_cells] <- trimws(table[numeric_cells], which = "both")
 
   table[numeric_cells] <- str_replace_all(table[numeric_cells],
-                                          "[[[:space:]],]",
+                                          "[\\s,]",
                                           "")
 
   table <- type.convert(table, as.is = TRUE)
