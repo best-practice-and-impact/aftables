@@ -23,10 +23,8 @@ Imports:
     openxlsx2,
     pillar,
     purrr,
-    scales,
     dplyr,
     stringr,
-    tidyr,
     rlang,
     tidyselect
 Suggests: 

@@ -9,12 +9,9 @@
 #' @importFrom pillar tbl_sum
 #' @importFrom purrr pwalk
 #' @importFrom rlang .data
-#' @importFrom scales number
 #' @importFrom stringr str_extract
 #' @importFrom stringr str_replace
-#' @importFrom stringr str_replace_all str_detect
-#' @importFrom tidyr replace_na
+#' @importFrom stringr str_replace_all
 #' @importFrom tidyselect where
-#' @importFrom utils type.convert
 ## usethis namespace: end
 NULL
