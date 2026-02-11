@@ -84,7 +84,7 @@
 
 
   #=============================================================================
-  # style table headers and wrap text
+  # style table headers, wrap text, left align columns by default
   #=============================================================================
 
   # Wrap text
@@ -95,6 +95,16 @@
       cols = seq(table_width)
     ),
     wrap_text = style_ref[["wrap_text"]]
+  )
+
+  # Left align text
+  wb$add_cell_style(
+    sheet = tab_title,
+    dims = wb_dims(
+      rows = seq(start_row, start_row + table_height),
+      cols = seq(table_width)
+    ),
+    horizontal = style_ref[["lalign"]]
   )
 
   # Table headers are bold
@@ -123,7 +133,6 @@
   wide_cells_index <- which(names(table) %in% wide_cells)
   wide_headers_index <- which(nchar(names(table)) > nchar_break)
   wide_cols_index <- unique(c(wide_cells_index, wide_headers_index))
-
 
   wb$set_col_widths(
     sheet = tab_title,
