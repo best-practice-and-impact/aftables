@@ -14,6 +14,7 @@
 #' @importFrom stringr str_replace
 #' @importFrom stringr str_replace_all str_detect
 #' @importFrom tidyr replace_na
+#' @importFrom tidyselect where
 #' @importFrom utils type.convert
 ## usethis namespace: end
 NULL
