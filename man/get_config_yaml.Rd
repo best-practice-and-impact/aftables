@@ -64,9 +64,6 @@ It is recommended to use the default configuration as a template for a new
 entry. Copy the default entry, paste it below the minimum entry and replace
 \code{default} with a new name. The name of an entry is used in the \code{config_name}
 argument in the aftables \code{generate_workbook} function.
-
-The aftables \code{generate_workbook} function requires config.yaml to include a
-default configuration, and will result in an error if it is removed.
 }
 \examples{
 
