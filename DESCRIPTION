@@ -26,7 +26,8 @@ Imports:
     dplyr,
     stringr,
     rlang,
-    tidyselect
+    tidyselect,
+    tidyr
 Suggests: 
     covr,
     knitr,
