@@ -30,9 +30,6 @@
 #' `default` with a new name. The name of an entry is used in the `config_name`
 #' argument in the aftables `generate_workbook` function.
 #'
-#' The aftables `generate_workbook` function requires config.yaml to include a
-#' default configuration, and will result in an error if it is removed.
-#'
 #' @examples
 #'
 #' # Copy default aftables config.yaml file to user's home directory, and open
