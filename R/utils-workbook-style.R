@@ -129,7 +129,7 @@
   # Find indices of columns that should be wider than default
   is_factor_column <- sapply(table, is.factor) # nchar (below) fails on factors
   table[is_factor_column] <- lapply(table[is_factor_column], as.character)
-  wide_cells <- names(Filter(function(x) max(tidyr::replace_na(nchar(table), 0)) > nchar_break, table))
+  wide_cells <- names(Filter(function(x) max(tidyr::replace_na(nchar(x), 0)) > nchar_break, table))
   wide_cells_index <- which(names(table) %in% wide_cells)
   wide_headers_index <- which(nchar(names(table)) > nchar_break)
   wide_cols_index <- unique(c(wide_cells_index, wide_headers_index))
