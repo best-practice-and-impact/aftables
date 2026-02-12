@@ -1,4 +1,3 @@
-
 #' Generate A Workbook Object From An 'aftable'
 #'
 #' Populate an 'openxlsx2' wbWorkbook-class object with content from an
@@ -23,7 +22,6 @@
 #'
 #' @export
 generate_workbook <- function(aftable) {
-
   if (!is_aftable(aftable)) {
     stop("The object passed to argument 'content' must have class 'aftable'.")
   }
@@ -54,5 +52,4 @@ generate_workbook <- function(aftable) {
   }
 
   wb
-
 }

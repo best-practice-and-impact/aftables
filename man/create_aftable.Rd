@@ -142,8 +142,10 @@ table_1_df <- data.frame(
   "Numeric thousands" = abs(round(rnorm(10), 4) * 1e5),
   "Numeric decimal" = abs(round(rnorm(10), 5)),
   "Long name that means that the column width needs to be widened" = 1:10,
-  Notes = c("[note 1]", rep(NA_character_, 4), "[note 2]",
-            rep(NA_character_, 4)),
+  Notes = c(
+    "[note 1]", rep(NA_character_, 4), "[note 2]",
+    rep(NA_character_, 4)
+  ),
   check.names = FALSE
 )
 
@@ -171,16 +173,20 @@ x <- aftables::create_aftable(
     NA_character_,
     "A custom row.",
     c(
-      paste0("First custom row [with a hyperlink.]",
-             "(https://best-practice-and-impact.github.io/aftables/)"),
+      paste0(
+        "First custom row [with a hyperlink.]",
+        "(https://best-practice-and-impact.github.io/aftables/)"
+      ),
       "Second custom row."
     ),
     "A custom row."
   ),
   sources = c(
     rep(NA_character_, 3),
-    paste0("[The Source Material, 2024.]",#
-           "(https://best-practice-and-impact.github.io/aftables/)"),
+    paste0(
+      "[The Source Material, 2024.]",
+      "(https://best-practice-and-impact.github.io/aftables/)"
+    ),
     "The Source Material, 2024."
   ),
   tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)

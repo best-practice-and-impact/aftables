@@ -2,7 +2,6 @@
 #' @param tab_titles Character vector. Names of tabs in the workbook.
 #' @noRd
 .check_tab_titles <- function(tab_titles) {
-
   tab_title_num_start <- grep("^\\d", unlist(tab_titles))
 
   if (length(tab_title_num_start) > 0) {
@@ -12,21 +11,19 @@
       call. = FALSE
     )
   }
-
 }
 
 #' Clean Sheet Tab Titles
 #' @param tab_titles Character vector. Names of tabs in the workbook.
 #' @noRd
 .clean_tab_titles <- function(tab_titles) {
-
   tab_titles_cleaned <- gsub("[^[:alnum:][:space:]_]", "", tab_titles)
   tab_titles_cleaned <- trimws(tab_titles_cleaned)
   tab_titles_cleaned <- gsub(" ", "_", tab_titles_cleaned)
   tab_titles_cleaned <- strtrim(tab_titles_cleaned, 31)
 
   before <- tab_titles[!tab_titles %in% tab_titles_cleaned]
-  after  <- tab_titles_cleaned[!tab_titles %in% tab_titles_cleaned]
+  after <- tab_titles_cleaned[!tab_titles %in% tab_titles_cleaned]
 
   if (length(before > 0)) {
     warning(
@@ -38,26 +35,21 @@
   }
 
   tab_titles_cleaned
-
 }
 
 #' Add a Missing Terminal Period to a String
 #' @param text Character. A string.
 #' @noRd
 .append_period <- function(text) {
-
   last_char <- substr(text, nchar(text), nchar(text))
 
   for (i in seq_along(text)) {
-
     if (!is.na(last_char[i]) && last_char[i] != ".") {
       text[i] <- paste0(text[i], ".")
     }
-
   }
 
   text
-
 }
 
 #' Validate an 'aftable' Object
@@ -65,7 +57,6 @@
 #'     \code{\link{create_aftable}}.
 #' @noRd
 .validate_aftable <- function(x) {
-
   names_req <- c(
     "tab_title",
     "sheet_type",
@@ -87,7 +78,8 @@
   if (length(names_req) != length(x) || nrow(x) < 3) {
     stop(
       "Input must be a data.frame with ", names_count,
-      " columns and at least 4 rows.", call. = FALSE
+      " columns and at least 4 rows.",
+      call. = FALSE
     )
   }
 
@@ -191,7 +183,6 @@
   if (length(x[["tab_title"]]) != length(unique(tolower(x[["tab_title"]])))) {
     stop("Each 'tab_title' must be unique (case-insensitive).", call. = FALSE)
   }
-
 }
 
 #' Warn if an 'aftable' Has a Non-critical Problem
@@ -199,7 +190,6 @@
 #'     \code{\link{create_aftable}}.
 #' @noRd
 .warn_aftable <- function(content) {
-
   # Warn about tab_title limitations
 
   tab_titles <- content$tab_title
@@ -263,39 +253,34 @@
 
 
   if (has_notes_sheet) {
-
     if (!has_notes) {
       warning(
         "You have a 'notes' sheet, but no notes in your tables.",
         call. = FALSE
       )
     }
-
   }
 
   if (has_notes) {
-
     if (!has_notes_sheet) {
       warning(
         "You have notes in your tables, but no 'notes' sheet.",
         call. = FALSE
       )
     }
-
   }
 
   # Warn about notes (note sheet present, but mismatches exist)
 
   if (has_notes_sheet) {
+    notes_sheet <- content[content$sheet_type == "notes", ] # max of one notes sheet
 
-    notes_sheet  <- content[content$sheet_type == "notes", ]  # max of one notes sheet
+    notes_sheet_vector <- notes_sheet[, "table"][[1]][[1]] # assumes first col has note values
 
-    notes_sheet_vector <- notes_sheet[, "table"][[1]][[1]]  # assumes first col has note values
-
-    notes_sheet_values <- unlist(  # e.g. get c(1, 2) from c("[note 1]", "[note 2]")
+    notes_sheet_values <- unlist( # e.g. get c(1, 2) from c("[note 1]", "[note 2]")
       regmatches(
         notes_sheet_vector,
-        gregexpr("\\d", notes_sheet_vector, perl = TRUE)  # extract numbers
+        gregexpr("\\d", notes_sheet_vector, perl = TRUE) # extract numbers
       )
     )
 
@@ -311,7 +296,7 @@
     )
 
     not_in_tables <- setdiff(notes_sheet_values, tables_sheet_notes)
-    not_in_notes  <- setdiff(tables_sheet_notes, notes_sheet_values)
+    not_in_notes <- setdiff(tables_sheet_notes, notes_sheet_values)
 
     if (has_notes_sheet && has_notes && length(not_in_notes) > 0) {
       warning(
@@ -330,7 +315,6 @@
         call. = FALSE
       )
     }
-
   }
 
   # Warn about blank cells in tables
@@ -375,6 +359,4 @@
       call. = FALSE
     )
   }
-
-
 }

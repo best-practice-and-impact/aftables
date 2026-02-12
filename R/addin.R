@@ -20,7 +20,6 @@ at_template_aftable <- function() {
 #'
 #' @export
 at_template_workflow <- function() {
-
   rstudioapi::insertText(
     paste0(
       "# Prepare tables of information",
@@ -42,13 +41,11 @@ at_template_workflow <- function() {
       'openxlsx2::wb_save(my_wb, "example.xlsx")  # change save location'
     )
   )
-
 }
 
 #' A String Containing Code to Prepare Tables for an 'aftables' Object
 #' @noRd
 string_tables <- function() {
-
   'cover_list <- list(
   "Section 1" = c("First row of Section 1.", "Second row of Section 1."),
   "Section 2" = "The only row of Section 2.",
@@ -86,13 +83,11 @@ table_1_df <- data.frame(
 )
 
 table_2_df <- data.frame(Category = LETTERS[1:10], Numeric = 1:10)'
-
 }
 
 #' A String Containing Code to Generate an 'aftables' Object
 #' @noRd
 string_create_aftable <- function() {
-
   'my_aftable <-
   aftables::create_aftable(
     tab_titles = c("Cover", "Contents", "Notes", "Table_1", "Table_2"),
@@ -126,5 +121,4 @@ string_create_aftable <- function() {
     ),
     tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)
   )'
-
 }
