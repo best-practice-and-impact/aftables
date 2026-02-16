@@ -98,14 +98,15 @@ create_config_yaml <- function(path = getwd(),
 # check wb_config field datatypes
 wb_config_check <- function(wb_config) {
 
-  workbook_properties <- pluck(wb_config,
-                               "workbook_properties")
+  workbook_properties <- pluck(wb_config, "workbook_properties")
 
-  workbook_format <- pluck(wb_config,
-                           "workbook_format")
+  workbook_format <- pluck(wb_config, "workbook_format")
 
-  config_datatypes <- c(lapply(workbook_properties, typeof),
-                        lapply(workbook_format, typeof)) |> unlist()
+  config_datatypes <- c(
+    lapply(workbook_properties, typeof),
+    lapply(workbook_format, typeof)
+  ) |>
+    unlist()
 
   # the config may contain any of these entries and they should be these datatypes
   # if the config contains any extra entries they won't be used by functions
