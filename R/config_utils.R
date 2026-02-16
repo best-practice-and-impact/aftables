@@ -1,19 +1,17 @@
-#' Function to export  file included with aftables
+#' Create an aftables config.yaml
 #'
 #' Copy the example config.yaml file included with aftables to a directory of
-#' the users choice, and optionally open the file for editing. The config.yaml
+#' the user's choice, and optionally open the file for editing. The config.yaml
 #' file can be passed to the aftables function
 #' \code{\link[aftables]{generate_workbook}}.
 #'
 #' @param path optional character string containing directory to copy the
-#' config.yaml file. Defaults to current working directory.
+#'   config.yaml file. Defaults to current working directory.
 #' @param open_config optional logical whether to open the copy of config.yaml
-#' for editing in the current R session. Default FALSE.
+#'   for editing in the current R session.
 #'
-#' @details
-#' If there is an existing config.yaml file in the destination directory this
-#' function will not overwrite it. If `open_config` is set to TRUE in this
-#' situation the existing config.yaml file will be opened.
+#' @details If there is an existing config.yaml file in the destination
+#' directory this function will not overwrite it.
 #'
 #' Contents of example config.yaml:
 #'
@@ -26,68 +24,71 @@
 #' cat('\n```\n')
 #' ```
 #'
-#' All configurations must be placed below an `aftables` key. The `aftables`
-#' config yaml file can be combined with other config yaml files as long as the
-#' `aftables` key is preserved so the \code{\link[aftables]{generate_workbook}}
-#' can find and process the `aftables` configurations.
+#' All configurations must be placed below an `aftables` key. `aftables` should
+#' be followed by a `default` key and/or custom keys (e.g. `workbook1`).
 #'
-#' It is recommended to use the `default` configuration as a template. Edit the
-#' `default` configuration and optionally replace `default` with a new key. New
-#' configurations can be appended below the `default` key. The configuration key
-#'  is used in the `config_name` argument in the \code{\link[aftables]{generate_workbook}} function.
+#' The `default` key settings will be read by all calls to
+#' \code{\link[aftables]{generate_workbook}} which use this config.yml. This
+#' allows you to share settings when generating multiple workbooks in one
+#' script.
 #'
-#' Values can be set in the `default` configuration and any user-created
-#' configurations. When a non-default configuration key is provided as the
-#' `config_name` argument to \code{\link[aftables]{generate_workbook}}, the
-#' values set in the non-default configuration will be preferred over the
-#' `default` configuration, even if they are set in the `default` configuration.
-#' If there is no `default` configuration all values will be taken from the
-#' non-default configuration.
+#' Custom key settings (e.g. `workbook1`) will only be used by
+#' \code{\link[aftables]{generate_workbook}} when the key is provided as the
+#' `config_name` argument. This allows you to specify settings for a specific
+#' workbook. Custom key settings will be preferred over the `default` settings.
+#'
+#' Not all workbook configuration options need to be set. Required settings are
+#' documented in \code{\link[aftables]{generate_workbook}}.
 #'
 #' @examples
 #' # Use default arguments to copy `aftables` `config.yaml` file to the current
 #' # working directory without opening the copied file for editing:
 #'
 #' \dontrun{
-#' create_config_yaml()}
-#'
-#' # Copy aftables config.yaml file to user's home directory, and open
-#' # the copied file for editing:
-#'
-#' \dontrun{
-#' create_config_yaml(path = "~", open_config = TRUE)}
+#' create_config_yaml(open_config = FALSE)}
 #'
 #' @export
-create_config_yaml <- function(path = getwd(), open_config = FALSE) {
+create_config_yaml <- function(path = getwd(),
+                               open_config = rlang::is_interactive()) {
 
-  if (file.exists(path)) {
-    file.copy(from = system.file("ext-data",
-                                 "config.yaml",
-                                 package = "aftables"),
-              to = path,
-              overwrite = FALSE,
-              copy.mode = FALSE)
-
-    if (missing(path)) {
-      warning(
-        paste0("config.yaml copied to working directory. The default options for generate_workbook will use this file."),
-        call. = FALSE
-      )
-    } else {
-      message(
-        paste0("config.yaml copied to ", path, " folder.",
-               call. = FALSE)
-      )
-    }
-
-    if (open_config) {
-      file.edit(paste0(path, "/config.yaml"))
-    }
-  } else {
+  if (!file.exists(path)) {
     stop(
       paste0("The directory `", path, "` does not exist."),
       call. = FALSE
     )
+  }
+
+  if (file.exists(paste0(path, "/config.yaml"))) {
+    stop(
+      paste0("`", path, "/config.yaml` already exists."),
+      call. = FALSE
+    )
+  }
+
+  copy <- file.copy(
+    from = system.file("ext-data", "config.yaml", package = "aftables"),
+    to = path,
+    overwrite = FALSE,
+    copy.mode = FALSE
+  )
+
+  if (!copy) {
+    stop("Error copying config.yaml")
+  }
+
+  if (missing(path)) {
+    warning(
+      paste0("config.yaml copied to working directory. The default options for generate_workbook will use this file."),
+      call. = FALSE
+    )
+  } else {
+    message(
+      paste0("config.yaml copied to ", path, " folder.")
+    )
+  }
+
+  if (open_config) {
+    file.edit(paste0(path, "/config.yaml"))
   }
 
   invisible(NULL)

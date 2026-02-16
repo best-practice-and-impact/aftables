@@ -2,27 +2,26 @@
 % Please edit documentation in R/config_utils.R
 \name{create_config_yaml}
 \alias{create_config_yaml}
-\title{Function to export  file included with aftables}
+\title{Create an aftables config.yaml}
 \usage{
-create_config_yaml(path = getwd(), open_config = FALSE)
+create_config_yaml(path = getwd(), open_config = rlang::is_interactive())
 }
 \arguments{
 \item{path}{optional character string containing directory to copy the
 config.yaml file. Defaults to current working directory.}
 
 \item{open_config}{optional logical whether to open the copy of config.yaml
-for editing in the current R session. Default FALSE.}
+for editing in the current R session.}
 }
 \description{
 Copy the example config.yaml file included with aftables to a directory of
-the users choice, and optionally open the file for editing. The config.yaml
+the user's choice, and optionally open the file for editing. The config.yaml
 file can be passed to the aftables function
 \code{\link[aftables]{generate_workbook}}.
 }
 \details{
-If there is an existing config.yaml file in the destination directory this
-function will not overwrite it. If \code{open_config} is set to TRUE in this
-situation the existing config.yaml file will be opened.
+If there is an existing config.yaml file in the destination
+directory this function will not overwrite it.
 
 Contents of example config.yaml:
 
@@ -61,35 +60,27 @@ Contents of example config.yaml:
 
 }\if{html}{\out{</div>}}
 
-All configurations must be placed below an \code{aftables} key. The \code{aftables}
-config yaml file can be combined with other config yaml files as long as the
-\code{aftables} key is preserved so the \code{\link[aftables]{generate_workbook}}
-can find and process the \code{aftables} configurations.
+All configurations must be placed below an \code{aftables} key. \code{aftables} should
+be followed by a \code{default} key and/or custom keys (e.g. \code{workbook1}).
 
-It is recommended to use the \code{default} configuration as a template. Edit the
-\code{default} configuration and optionally replace \code{default} with a new key. New
-configurations can be appended below the \code{default} key. The configuration key
-is used in the \code{config_name} argument in the \code{\link[aftables]{generate_workbook}} function.
+The \code{default} key settings will be read by all calls to
+\code{\link[aftables]{generate_workbook}} which use this config.yml. This
+allows you to share settings when generating multiple workbooks in one
+script.
 
-Values can be set in the \code{default} configuration and any user-created
-configurations. When a non-default configuration key is provided as the
-\code{config_name} argument to \code{\link[aftables]{generate_workbook}}, the
-values set in the non-default configuration will be preferred over the
-\code{default} configuration, even if they are set in the \code{default} configuration.
-If there is no \code{default} configuration all values will be taken from the
-non-default configuration.
+Custom key settings (e.g. \code{workbook1}) will only be used by
+\code{\link[aftables]{generate_workbook}} when the key is provided as the
+\code{config_name} argument. This allows you to specify settings for a specific
+workbook. Custom key settings will be preferred over the \code{default} settings.
+
+Not all workbook configuration options need to be set. Required settings are
+documented in \code{\link[aftables]{generate_workbook}}.
 }
 \examples{
 # Use default arguments to copy `aftables` `config.yaml` file to the current
 # working directory without opening the copied file for editing:
 
 \dontrun{
-create_config_yaml()}
-
-# Copy aftables config.yaml file to user's home directory, and open
-# the copied file for editing:
-
-\dontrun{
-create_config_yaml(path = "~", open_config = TRUE)}
+create_config_yaml(open_config = FALSE)}
 
 }
