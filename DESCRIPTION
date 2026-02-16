@@ -27,7 +27,6 @@ Imports:
     stringr,
     tidyselect,
     tidyr,
-    scales,
     rlang,
     utils,
     yaml

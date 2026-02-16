@@ -156,7 +156,10 @@ test_that("absence of note sheets doesn't prevent aftable formation", {
   suppressWarnings(x <- as_aftable(df))
 
   expect_s3_class(x, "aftable")
-  expect_s3_class(generate_workbook(x), c("wbWorkbook", "R6"))
+
+  suppressWarnings(x <- generate_workbook(x))
+
+  expect_s3_class(x, c("wbWorkbook", "R6"))
 })
 
 test_that("tab_titles with starting numeral will error", {

@@ -10,25 +10,25 @@
 
 #' Set up a list of common font styles
 #' @noRd
-.style_font <- function(wb_config) {
+.style_font <- function(workbook_format) {
 
   base_font_size <-
-    ifelse(!is.null(wb_config$workbook_format$base_font_size),
-           wb_config$workbook_format$base_font_size,
+    ifelse(!is.null(workbook_format$base_font_size),
+           workbook_format$base_font_size,
            12)
 
   table_header_size <-
-    ifelse(!is.null(wb_config$workbook_format$table_header_size),
-           wb_config$workbook_format$table_header_size,
+    ifelse(!is.null(workbook_format$table_header_size),
+           workbook_format$table_header_size,
            14)
 
   sheet_header_size <-
-    ifelse(!is.null(wb_config$workbook_format$sheet_header_size),
-           wb_config$workbook_format$sheet_header_size,
+    ifelse(!is.null(workbook_format$sheet_header_size),
+           workbook_format$sheet_header_size,
            16)
 
-  base_font_name <- ifelse(!is.null(wb_config$workbook_format$base_font_name),
-                           wb_config$workbook_format$base_font_name,
+  base_font_name <- ifelse(!is.null(workbook_format$base_font_name),
+                           workbook_format$base_font_name,
                            "Arial")
 
   list(
@@ -44,15 +44,15 @@
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @noRd
 
-.style_workbook <- function(wb, wb_config) {
+.style_workbook <- function(wb, workbook_format) {
 
   base_font_size <-
-    ifelse(!is.null(wb_config$workbook_format$base_font_size),
-           wb_config$workbook_format$base_font_size,
+    ifelse(!is.null(workbook_format$base_font_size),
+           workbook_format$base_font_size,
            12)
 
-  base_font_name <- ifelse(!is.null(wb_config$workbook_format$base_font_name),
-                           wb_config$workbook_format$base_font_name,
+  base_font_name <- ifelse(!is.null(workbook_format$base_font_name),
+                           workbook_format$base_font_name,
                            "Arial")
 
   wb$set_base_font(
@@ -96,31 +96,25 @@
 #' @param style_ref List. The style-reference object made with .style_paragraph().
 #' @param font_ref List. The font-reference object made with .style_font().
 #' @noRd
-.style_table <- function(wb, content, table_name, style_ref, font_ref, table_formats, wb_config) {
+.style_table <- function(wb, content, table_name, style_ref, font_ref, table_formats, workbook_format) {
   content_row <- content[content[["table_name"]] == table_name, ]
   table <- content_row[, "table"][[1]]
   tab_title <- content_row[, "tab_title"][[1]]
 
-  if (!is.null(wb_config$workbook_format$decimal_places)) {
-    decimal_places = wb_config$workbook_format$decimal_places
-  } else {
-    decimal_places = NULL
-  }
-
-  if (!is.null(wb_config$workbook_format$cellwidth_default)) {
-    cellwidth_default <- wb_config$workbook_format$cellwidth_default
+  if (!is.null(workbook_format$cellwidth_default)) {
+    cellwidth_default <- workbook_format$cellwidth_default
   } else {
     cellwidth_default <- 16
   }
 
-  if (!is.null(wb_config$workbook_format$cellwidth_wider)) {
-    cellwidth_wider <- wb_config$workbook_format$cellwidth_wider
+  if (!is.null(workbook_format$cellwidth_wider)) {
+    cellwidth_wider <- workbook_format$cellwidth_wider
   } else {
     cellwidth_wider <- 32
   }
 
-  if (!is.null(wb_config$workbook_format$nchar_break)) {
-    nchar_break <- wb_config$workbook_format$nchar_break
+  if (!is.null(workbook_format$nchar_break)) {
+    nchar_break <- workbook_format$nchar_break
   } else {
     nchar_break <- 50
   }
@@ -414,28 +408,4 @@
     wrap_text = style_ref[["wrap_text"]],
     horizontal = style_ref[["lalign"]]
   )
-}
-
-.determine_decimal_places <- function(x) {
-  # length zero input
-  if (length(x) == 0) {
-    return(numeric())
-  }
-
-  x <- x |>
-    .extract_numeric_values()
-
-  # count decimals
-  x_nchr <- x |>
-    abs() |>
-    as.character() |>
-    nchar() |>
-    as.numeric()
-  x_int <- floor(x) |>
-    abs() |>
-    nchar()
-  x_nchr <- x_nchr - 1 - x_int
-  x_nchr[x_nchr < 0] <- 0
-
-  max(x_nchr, na.rm = TRUE)
 }

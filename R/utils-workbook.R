@@ -343,14 +343,14 @@
   wb
 }
 
-.insert_table <- function(wb, content, table_name, wb_config) {
+.insert_table <- function(wb, content, table_name, workbook_format) {
   # convert tibbles to data frames before processing
   table <- as.data.frame(content[content$table_name == table_name, ][["table"]][[1]])
   sheet_type <- content[content$table_name == table_name, "sheet_type"][[1]]
   tab_title <- content[content$table_name == table_name, "tab_title"][[1]]
 
-  if (!is.null(wb_config$workbook_format$decimal_places)) {
-    decimal_places = wb_config$workbook_format$decimal_places
+  if (!is.null(workbook_format$decimal_places)) {
+    decimal_places = workbook_format$decimal_places
   } else {
     decimal_places = NULL
   }
@@ -623,7 +623,7 @@
   wb
 }
 
-.add_cover <- function(wb, content, wb_config) {
+.add_cover <- function(wb, content, workbook_format) {
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "cover", "tab_title"][[1]]
@@ -633,7 +633,7 @@
   .insert_cover_table(wb, content, table_name) # rather than .insert_table
 
   styles <- .style_paragraph()
-  fonts <- .style_font(wb_config)
+  fonts <- .style_font(workbook_format)
   .style_sheet_title(wb, tab_title, styles, fonts)
   .style_cover(wb, content, styles, fonts)
   # TODO: needs special handling if list provided
@@ -641,7 +641,7 @@
 }
 
 
-.add_contents <- function(wb, content, wb_config) {
+.add_contents <- function(wb, content, workbook_format) {
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "contents", "tab_title"][[1]]
@@ -650,19 +650,19 @@
   .insert_title(wb, content, tab_title)
   .insert_table_count(wb, content, tab_title)
   .insert_custom_rows(wb, content, tab_title)
-  table_format <- .insert_table(wb, content, table_name, wb_config)
+  table_format <- .insert_table(wb, content, table_name, workbook_format)
 
   styles <- .style_paragraph()
-  fonts <- .style_font(wb_config)
+  fonts <- .style_font(workbook_format)
   .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts, table_format, wb_config)
+  .style_table(wb, content, table_name, styles, fonts, table_format, workbook_format)
   .style_contents(wb, content, styles)
 
   wb
 }
 
 
-.add_notes <- function(wb, content, wb_config) {
+.add_notes <- function(wb, content, workbook_format) {
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "notes", "tab_title"][[1]]
@@ -671,18 +671,18 @@
   .insert_title(wb, content, tab_title)
   .insert_table_count(wb, content, tab_title)
   .insert_custom_rows(wb, content, tab_title)
-  table_format <- .insert_table(wb, content, table_name, wb_config)
+  table_format <- .insert_table(wb, content, table_name, workbook_format)
 
   styles <- .style_paragraph()
-  fonts <- .style_font(wb_config)
+  fonts <- .style_font(workbook_format)
   .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts, table_format, wb_config)
+  .style_table(wb, content, table_name, styles, fonts, table_format, workbook_format)
   .style_notes(wb, content, styles)
 
   wb
 }
 
-.add_tables <- function(wb, content, table_name, wb_config) {
+.add_tables <- function(wb, content, table_name, workbook_format) {
   .stop_bad_input(wb, content, table_name)
 
   tab_title <- content[content$table_name == table_name, "tab_title"][[1]]
@@ -693,12 +693,12 @@
   .insert_notes_statement(wb, content, tab_title)
   .insert_blanks_message(wb, content, tab_title)
   .insert_custom_rows(wb, content, tab_title)
-  table_format <- .insert_table(wb, content, table_name, wb_config)
+  table_format <- .insert_table(wb, content, table_name, workbook_format)
 
   styles <- .style_paragraph()
-  fonts <- .style_font(wb_config)
+  fonts <- .style_font(workbook_format)
   .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts, table_format, wb_config)
+  .style_table(wb, content, table_name, styles, fonts, table_format, workbook_format)
 
   wb
 }
@@ -866,18 +866,17 @@
   table
 }
 
-.set_workbook_parameters <- function(wb, content) {
+.set_workbook_properties <- function(wb, content) {
 
-  wb$set_properties(creator = content$creator,
+  wb$set_properties(creator = content$author,
                     title = content$title,
                     subject = content$subject,
                     category = content$category,
                     datetime_created = content$datetime_created,
                     datetime_modified = content$datetime_modified,
                     modifier = content$modifier,
-                    keywords = content$keywords,
+                    keywords = paste(content$keywords, collapse = ", "),
                     comments = content$comments,
-                    manager = content$manager,
-                    company = content$company)
+                    manager = content$manager)
   wb
 }
