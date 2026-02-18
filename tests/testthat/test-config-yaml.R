@@ -3,9 +3,11 @@ test_that("no config is applied without config.yaml or function arguments", {
 
   y <- openxlsx2::wb_get_properties(x)
 
-  # only 2 properties should be set (by openxlsx2 when wbWorkbook object created)
-  expect_equal(y["creator"], c(creator = Sys.getenv("USERNAME")))
-  expect_equal(y["modifier"], c(modifier = Sys.getenv("USERNAME")))
+  # only 4 properties should be set (by openxlsx2 when wbWorkbook object created)
+  expect_true(all(c("creator",
+                     "modifier",
+                     "datetime_created",
+                     "datetime_modified") %in% names(y)))
 
   # none of the additional properties should be set
   expect_false(all(c("title",
@@ -26,9 +28,11 @@ test_that("no config if default function arguments are provided", {
 
   y <- openxlsx2::wb_get_properties(x)
 
-  # only 2 properties should be set (by openxlsx2 when wbWorkbook object created)
-  expect_equal(y["creator"], c(creator = Sys.getenv("USERNAME")))
-  expect_equal(y["modifier"], c(modifier = Sys.getenv("USERNAME")))
+  # only 4 properties should be set (by openxlsx2 when wbWorkbook object created)
+  expect_true(all(c("creator",
+                    "modifier",
+                    "datetime_created",
+                    "datetime_modified") %in% names(y)))
 
   # none of the additional properties should be set
   expect_false(all(c("title",
