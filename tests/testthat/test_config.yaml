@@ -4,9 +4,9 @@ aftables:
       author: "Analysis Function"
       title: "aftables example workbook"
       keywords:
-        keyword1: "aftables"
-        keyword2: "example"
-        keyword3: "workbook"
+        - "aftables"
+        - "example"
+        - "workbook"
       subject: "aftables example subject"
       category: "aftables example category"
       modifier: "Analysis Function"
@@ -23,13 +23,13 @@ aftables:
     workbook_properties:
       category: "aftables workbook 1 category"
       keywords:
-        keyword4: "workbook 1"
+        - "workbook 1"
   workbook2:
     workbook_properties:
       title: "aftables workbook 2"
       category: "aftables workbook 2 category"
       keywords:
-        keyword4: "workbook 2"
+        - "workbook 2"
   blank:
     workbook_properties:
       author:
@@ -38,9 +38,9 @@ aftables:
       category:
       modifier:
       keywords:
-        keyword1:
-        keyword2:
-        keyword3:
+        -
+        -
+        -
       comments:
     workbook_format:
       base_font_name:
@@ -73,7 +73,7 @@ aftables:
       author: "Analysis Function config"
       title: "aftables example workbook config"
       keywords:
-        keyword4: "mixed-config"
+        - "mixed-config"
       subject: "aftables example subject config"
       category: "aftables example category config"
       modifier: "Analysis Function config"
@@ -94,9 +94,9 @@ aftables:
       category: 1
       modifier: 1
       keywords:
-        keyword1: 1
-        keyword2: 2
-        keyword3: 3
+        - 1
+        - 2
+        - 3
       comments: 1
     workbook_format:
       base_font_name: 1

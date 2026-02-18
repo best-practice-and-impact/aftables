@@ -4,9 +4,9 @@ aftables:
       author: "Analysis Function"
       title: "aftables example workbook"
       keywords:
-        keyword1: "aftables"
-        keyword2: "example"
-        keyword3: "workbook"
+        - "aftables"
+        - "example"
+        - "workbook"
       subject: "aftables example subject"
       category: "aftables example category"
       modifier: "Analysis Function"

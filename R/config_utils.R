@@ -73,10 +73,11 @@ create_config_yaml <- function(path = getwd(),
   )
 
   if (!copy) {
-    stop("Error copying config.yaml")
+    stop("Error copying config.yaml",
+         .call = FALSE)
   }
 
-  if (missing(path)) {
+  if (path == getwd()) {
     warning(
       paste0("config.yaml copied to working directory. The default options for generate_workbook will use this file."),
       call. = FALSE
@@ -95,12 +96,137 @@ create_config_yaml <- function(path = getwd(),
 
 }
 
-# check wb_config field datatypes
-wb_config_check <- function(wb_config) {
+# process config arguments
+process_config <- function(config_options) {
 
-  workbook_properties <- pluck(wb_config, "workbook_properties")
+  # remove null config options not set by user
+  config_options <- config_options[!sapply(config_options, is.null)]
 
-  workbook_format <- pluck(wb_config, "workbook_format")
+  config <- list(workbook_properties = NULL,
+                 workbook_format = NULL)
+
+  # default to no user config set
+  user_config <- "none"
+
+  if (file.exists(config_options$config_path)) {
+    config_file <- read_yaml(config_options$config_path)
+
+    aftables_config <- NULL
+    default_config <- NULL
+    custom_config <- NULL
+
+    if (purrr::pluck_exists(config_file, "aftables")) {
+
+      aftables_config <- purrr::pluck(config_file, "aftables")
+
+      default_config <- purrr::pluck(aftables_config, "default")
+
+      # only extract custom config if user provides it
+      if (!is.null(config_options$config_name)) {
+        custom_config <- purrr::pluck(aftables_config, config_options$config_name)
+      }
+
+      # user did not set any config options
+      # try and process default_config
+      if (config_options$config_path == "config.yaml" &&
+            is.null(config_options$config_name)) {
+        user_config <- "default"
+      }
+
+      # user set default config options
+      # process default_config
+      if (!is.null(config_options$config_name) &&
+            config_options$config_name == "default") {
+
+        if (is.null(default_config)) {
+          stop("The default key doesn't exist in the config file. Please view the documentation for create_config_yaml for an example aftables config file.",
+               .call = FALSE)
+        }
+
+        user_config <- "default"
+      }
+
+      # user set custom config options
+      # process default_config and custom_config
+      if (!is.null(config_options$config_name) &&
+            config_options$config_name != "default") {
+
+        # error if both default config and custom config are missing
+        if (is.null(default_config) && is.null(custom_config)) {
+          stop(
+            paste0(
+              "The default key and the ",
+              config_options$config_name,
+              " key don't exist in the config file. Please view the documentation for create_config_yaml for an example aftables config file."
+            ),
+            .call = FALSE
+          )
+        }
+
+        user_config <- "custom"
+      }
+    }
+  }
+
+  # process default_config
+  # if default_config is NULL
+  if (user_config == "default") {
+    config$workbook_properties <- default_config$workbook_properties
+    config$workbook_format <- default_config$workbook_format
+  }
+
+  # process default_config and/or custom_config
+  if (user_config == "custom") {
+
+    # no default config, use custom config only
+    if (is.null(default_config)) {
+      config$workbook_properties <- custom_config$workbook_properties
+      config$workbook_format <- custom_config$workbook_format
+    }
+
+    # merge configs, preferring custom config
+    if (!is.null(default_config)) {
+      merged_config <- wb_merge_configs(default_config, custom_config)
+
+      config$workbook_properties <- merged_config$workbook_properties
+      config$workbook_format <- merged_config$workbook_format
+    }
+  }
+
+  # update workbook_properties with values from arguments if set by user
+  config_arguments <- c("author", "title", "keywords")
+  config_arguments <- config_arguments[config_arguments %in% names(config_options)]
+
+  if (length(config_arguments) > 0) {
+    # if no config file was processed use values set by user
+    if (is.null(config$workbook_properties)) {
+      config$workbook_properties <-
+        config_options[config_arguments]
+    } else {
+      # replace the config file values with values set by user
+      config$workbook_properties <-
+        purrr::list_modify(config$workbook_properties,
+                           !!!config_options[config_arguments])
+    }
+  }
+
+  # validate the final config
+  validate_config(config)
+
+  output <- list(workbook_properties = config$workbook_properties,
+                 workbook_format = config$workbook_format)
+
+  output
+}
+
+# check config field datatypes
+validate_config <- function(config) {
+
+  workbook_properties <- pluck(config,
+                               "workbook_properties")
+
+  workbook_format <- pluck(config,
+                           "workbook_format")
 
   config_datatypes <- c(
     lapply(workbook_properties, typeof),
@@ -126,7 +252,7 @@ wb_config_check <- function(wb_config) {
     "modifier" = "character",
     "comments" = "character",
     "base_font_name"  = "character",
-    "keywords" = "list"
+    "keywords" = "character"
   )
 
   datatypes_to_check <- complete_datatypes[names(config_datatypes)]
@@ -148,33 +274,13 @@ wb_config_check <- function(wb_config) {
 
 }
 
-wb_merge_configs <- function(default_config, user_config) {
+wb_merge_configs <- function(default_config, custom_config) {
 
-  # get entries in default_config which are not in user config
-  keys <- setdiff(names(default_config), names(user_config))
+  merged_config <- purrr::list_modify(default_config, !!!custom_config)
 
-  merged_config <- default_config[keys]
-
-  # append entries in user config which are not in default config
-  keys <- setdiff(names(user_config), names(default_config))
-  merged_config <- c(merged_config, user_config[keys])
-
-  # get entries in both user_config and default_config
-  keys <- intersect(names(user_config), names(default_config))
-
-  # append user_config list items to default_config list items (keywords)
-  # and replace default_config items with user_config items
-  merged_config <- c(
-    merged_config,
-    ifelse(
-      sapply(default_config[keys], typeof) == "list",
-      stats::setNames(mapply(c,
-                             default_config[keys],
-                             user_config[keys]),
-                      keys),
-      default_config[keys] <- user_config[keys]
-    )
-  )
+  merged_config$workbook_properties$keywords <-
+    c(default_config$workbook_properties$keywords,
+      custom_config$workbook_properties$keywords)
 
   merged_config
 }

@@ -31,9 +31,9 @@ Contents of example config.yaml:
       author: "Analysis Function"
       title: "aftables example workbook"
       keywords:
-        keyword1: "aftables"
-        keyword2: "example"
-        keyword3: "workbook"
+        - "aftables"
+        - "example"
+        - "workbook"
       subject: "aftables example subject"
       category: "aftables example category"
       modifier: "Analysis Function"
@@ -50,13 +50,13 @@ Contents of example config.yaml:
     workbook_properties:
       category: "aftables workbook 1 category"
       keywords:
-        keyword4: "workbook 1"
+        - "workbook 1"
   workbook2:
     workbook_properties:
       title: "aftables workbook 2"
       category: "aftables workbook 2 category"
       keywords:
-        keyword4: "workbook 2"
+        - "workbook 2"
 
 }\if{html}{\out{</div>}}
 

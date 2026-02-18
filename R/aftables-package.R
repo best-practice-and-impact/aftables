@@ -12,6 +12,7 @@
 #' @importFrom pillar tbl_sum
 #' @importFrom purrr pwalk
 #' @importFrom purrr pluck
+#' @importFrom purrr list_modify
 #' @importFrom stringr str_extract
 #' @importFrom stringr str_replace
 #' @importFrom stringr str_replace_all

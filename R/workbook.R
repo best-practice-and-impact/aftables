@@ -13,12 +13,10 @@
 #' Default NULL.
 #' @param keywords optional character vector containing keywords to add to workbook.
 #' Default NULL.
-#' @param config_path optional character string containing directory where config yaml
-#' file is stored. Defaults to working directory.
-#' @param config_file optional character string containing name of config yaml file.
-#' Default `config.yaml`.
+#' @param config_path optional character string containing path to config file.
+#' Defaults to config.yaml file located in working directory.
 #' @param config_name optional character string specifying which configuration to use.
-#' Default `default`
+#' Default NULL.
 #'
 #' @return An openxlsx2 wbWorkbook-class object.
 #'
@@ -85,184 +83,23 @@ generate_workbook <- function(aftable,
                               author = NULL,
                               title = NULL,
                               keywords = NULL,
-                              config_path = ".",
-                              config_file = "config.yaml",
-                              config_name = "default") {
+                              config_path = "config.yaml",
+                              config_name = NULL) {
 
   if (!is_aftable(aftable)) {
     stop("The object passed to argument 'content' must have class 'aftable'.")
   }
 
-  #  if no path provided look in working directory
-  if (is.null(config_path) || missing(config_path)) {
-    config_location <- paste0("./", config_file)
-  } else {
-    config_location <- paste0(config_path, "/", config_file)
-  }
+  config_options <- list(author = author,
+                         title = title,
+                         keywords = keywords,
+                         config_path = config_path,
+                         config_name = config_name)
 
-  # user provided path to a config.yaml file that doesn't exist
-  if (!missing(config_path) && !file.exists(paste0(config_location))) {
-    stop(
-      paste0(
-        "config_path set but config file not found. Please check that '",
-        config_file,
-        "' exists in",
-        config_path,
-        " directory."
-      ),
-      call. = FALSE
-    )
-  }
+  config <- process_config(config_options)
 
-  wb_config <- NULL
-
-  if (file.exists(paste0(config_location))) {
-    # config file found in working directory
-    wb_config <- read_yaml(file = config_location)
-
-    # check if aftables key exists in config
-    if (is.null(pluck(wb_config, "aftables"))) {
-      stop(
-        paste0(
-          "aftables key does not exist in ",
-          config_file,
-          ". Please check there is an aftables key in your ",
-          config_file,
-          ", file."
-        ),
-        call. = FALSE
-      )
-    }
-
-    # warn if default does not exist
-    if (is.null(pluck(wb_config, "aftables", "default"))) {
-      warning(
-        paste0(
-          "default config does not exist in ",
-          config_file,
-          ". Please check there is a default key in your ",
-          config_file,
-          " file."
-        ),
-        call. = FALSE
-      )
-    }
-
-    # error if user set key does not exist
-    if (config_name != "default" && is.null(pluck(wb_config, "aftables", config_name))) {
-      warning(
-        paste0(
-          "user set config does not exist in ",
-          config_file,
-          ". Please check there is a ",
-          config_name,
-          " key in your ",
-          config_file,
-          " file."
-        ),
-        call. = FALSE
-      )
-    }
-
-    wb_config_default <- pluck(wb_config, "aftables", "default")
-
-    wb_config_user <- pluck(wb_config, "aftables", config_name)
-
-    # combine wb_config that user requested with default config, preferring user config if values set
-    wb_config_combined <- list()
-
-    if (!is.null(wb_config_user$workbook_properties) && config_name != "default") {
-      wb_config_combined$workbook_properties <- wb_merge_configs(wb_config_default$workbook_properties,
-                                                                 wb_config_user$workbook_properties)
-    } else {
-      wb_config_combined$workbook_properties <- wb_config_default$workbook_properties
-    }
-
-    if (!is.null(wb_config_user$workbook_format) && config_name != "default") {
-      wb_config_combined$workbook_format <- wb_merge_configs(wb_config_default$workbook_format,
-                                                             wb_config_user$workbook_format)
-    } else {
-      wb_config_combined$workbook_format <- wb_config_default$workbook_format
-    }
-
-    # validate config data types
-    wb_config_check(wb_config_combined)
-
-    workbook_format <- wb_config_combined$workbook_format
-
-    workbook_properties <-
-      c(
-        wb_config_combined$workbook_properties,
-        list(
-          datetime_created = Sys.time(),
-          datetime_modified = Sys.time()
-        )
-      )
-
-  } else { # otherwise no config provided create minimum workbook_properties
-
-    workbook_properties <- vector("list", 5)
-
-    names(workbook_properties) <- c("author",
-                                    "title",
-                                    "keywords",
-                                    "datetime_created",
-                                    "datetime_modified")
-
-    workbook_properties$datetime_created <- Sys.time()
-    workbook_properties$datetime_modified <- Sys.time()
-
-    workbook_format <- NULL
-
-  }
-
-  # if arguments set then process arguments
-
-  # else no config
-
-  # if user does set config path and doesn't set config name
-  # file has aftables config then process it
-  # file does not have aftables config then error
-
-  # user does not set config path and does set config name
-  # file does not exist then error
-  # file exists but config doesn't then error
-  # file exists and config exists then process
-
-  # user sets config path and config name
-  # file does not exist then error
-  # file exists but config doesn't then error
-  # file exists and config exists then process
-
-  # process config:
-  # check config file
-  # if config file contains any of the workbook_parameters or workbook_formats
-  # entries then check if those datatypes are correct
-
-  # if pass then process config
-  # if arguments then process arguments
-
-  # use workbook_properties from arguments if config is missing/empty
-  if (is.null(workbook_properties$author)) {
-    workbook_properties$author <- as.character(author)
-  }
-
-  if (is.null(workbook_properties$title)) {
-    workbook_properties$title <- as.character(title)
-  }
-
-  if (is.null(workbook_properties$keywords)) {
-    workbook_properties$keywords <- keywords
-  }
-
-  if (any(is.null(workbook_properties$author),
-          is.null(workbook_properties$title),
-          is.null(workbook_properties$keywords))) {
-    warning(
-      "Minimum workbook properties have not been set. Analysis Function guidance recommends at a minimum setting workbook author, title and keywords/tags",
-      call. = FALSE
-    )
-  }
+  workbook_properties <- config$workbook_properties
+  workbook_format <- config$workbook_format
 
   # Create a table_name from tab_title (unique, no spaces, no punctuation)
   aftable[["table_name"]] <-

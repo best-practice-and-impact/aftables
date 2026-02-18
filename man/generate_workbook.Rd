@@ -9,9 +9,8 @@ generate_workbook(
   author = NULL,
   title = NULL,
   keywords = NULL,
-  config_path = ".",
-  config_file = "config.yaml",
-  config_name = "default"
+  config_path = "config.yaml",
+  config_name = NULL
 )
 }
 \arguments{
@@ -28,14 +27,11 @@ Default NULL.}
 \item{keywords}{optional character vector containing keywords to add to workbook.
 Default NULL.}
 
-\item{config_path}{optional character string containing directory where config yaml
-file is stored. Defaults to working directory.}
-
-\item{config_file}{optional character string containing name of config yaml file.
-Default \code{config.yaml}.}
+\item{config_path}{optional character string containing path to config file.
+Defaults to config.yaml file located in working directory.}
 
 \item{config_name}{optional character string specifying which configuration to use.
-Default \code{default}}
+Default NULL.}
 }
 \value{
 An openxlsx2 wbWorkbook-class object.

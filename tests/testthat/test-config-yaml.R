@@ -1,8 +1,76 @@
+test_that("no config is applied without config.yaml or function arguments", {
+  x <- suppressWarnings(generate_workbook(as_aftable(demo_df)))
+
+  y <- openxlsx2::wb_get_properties(x)
+
+  # only 2 properties should be set (by openxlsx2 when wbWorkbook object created)
+  expect_equal(y["creator"], c(creator = Sys.getenv("USERNAME")))
+  expect_equal(y["modifier"], c(modifier = Sys.getenv("USERNAME")))
+
+  # none of the additional properties should be set
+  expect_false(all(c("title",
+                     "subject",
+                     "keywords",
+                     "comments",
+                     "category") %in% names(y)))
+
+})
+
+test_that("no config if default function arguments are provided", {
+  x <- suppressWarnings(generate_workbook(as_aftable(demo_df),
+                                          author = NULL,
+                                          title = NULL,
+                                          keywords = NULL,
+                                          config_path = "config.yaml",
+                                          config_name = NULL))
+
+  y <- openxlsx2::wb_get_properties(x)
+
+  # only 2 properties should be set (by openxlsx2 when wbWorkbook object created)
+  expect_equal(y["creator"], c(creator = Sys.getenv("USERNAME")))
+  expect_equal(y["modifier"], c(modifier = Sys.getenv("USERNAME")))
+
+  # none of the additional properties should be set
+  expect_false(all(c("title",
+                     "subject",
+                     "keywords",
+                     "comments",
+                     "category") %in% names(y)))
+
+})
+
+test_that("no config is applied from config.yaml without aftables key", {
+
+  # copy config.yaml file without aftables key
+  file.copy(
+    from = "./tests/testthat/test_empty_config.yaml",
+    to = "./config.yaml",
+    overwrite = FALSE,
+    copy.mode = FALSE
+  )
+
+  x <- suppressWarnings(generate_workbook(as_aftable(demo_df)))
+
+  y <- openxlsx2::wb_get_properties(x)
+
+  # only 2 properties should be set (by openxlsx2 when wbWorkbook object created)
+  expect_equal(y["creator"], c(creator = Sys.getenv("USERNAME")))
+  expect_equal(y["modifier"], c(modifier = Sys.getenv("USERNAME")))
+
+  # none of the additional properties should be set
+  expect_false(all(c("title",
+                     "subject",
+                     "keywords",
+                     "comments",
+                     "category") %in% names(y)))
+
+  if (file.exists("config.yaml")) file.remove("config.yaml")
+
+})
 
 test_that("default config.yaml is applied correctly", {
   x <- suppressWarnings(generate_workbook(as_aftable(demo_df),
-                                          config_path = testthat::test_path(),
-                                          config_file = "test_config.yaml",
+                                          config_path = paste0(testthat::test_path(), "/test_config.yaml"),
                                           config_name = "default"))
 
   y <- openxlsx2::wb_get_properties(x)
@@ -21,7 +89,7 @@ test_that("minimum properties are applied correctly via arguments", {
   x <- suppressWarnings(generate_workbook(as_aftable(demo_df),
                                           author = "Analysis Function",
                                           title = "example workbook",
-                                          keywords =  c("keywords" = "example, demonstration, config.yaml")))
+                                          keywords =  c("example", "demonstration", "config.yaml")))
 
   y <- openxlsx2::wb_get_properties(x)
 
@@ -50,58 +118,56 @@ test_that("minimum properties are applied correctly via arguments", {
 
 test_that("error when values in config.yaml are blank", {
   expect_error(suppressWarnings(generate_workbook(as_aftable(demo_df),
-                                                  config_path = testthat::test_path(),
-                                                  config_file = "test_config.yaml",
+                                                  config_path = paste0(testthat::test_path(), "/test_blank_config.yaml"),
                                                   config_name = "blank")),
                "Please review the following config.yaml entries")
 })
 
-test_that("properties from arguments are ignored when properties in config.yaml are set", {
+test_that("properties from config.yaml are ignored when properties arguments are set", {
   x <- suppressWarnings(generate_workbook(as_aftable(demo_df),
                                           author = "Analysis Function argument",
                                           title = "aftables example workbook argument",
                                           keywords =  c("keywords" = "aftables, example, keywords, argument"),
-                                          config_path = testthat::test_path(),
-                                          config_file = "test_config.yaml",
+                                          config_path = paste0(testthat::test_path(), "/test_config.yaml"),
                                           config_name = "mixed-config"))
 
   y <- openxlsx2::wb_get_properties(x)
 
-  expect_equal(y["creator"], c("creator" = "Analysis Function config"))
-  expect_equal(y["title"], c("title" = "aftables example workbook config"))
-  expect_equal(y["keywords"], c("keywords" = "aftables, example, workbook, mixed-config"))
+  expect_equal(y["creator"], c("creator" = "Analysis Function argument"))
+  expect_equal(y["title"], c("title" = "aftables example workbook argument"))
+  expect_equal(y["keywords"], c("keywords" = "aftables, example, keywords, argument"))
 
 })
 
 test_that("error when values in config.yaml are wrong datatype (character/numeric/list)", {
   expect_error(suppressWarnings(generate_workbook(as_aftable(demo_df),
-                                                  config_path = testthat::test_path(),
-                                                  config_file = "test_config.yaml",
+                                                  config_path = paste0(testthat::test_path(), "/test_config.yaml"),
                                                   config_name = "wrong-datatypes")),
                "Please review the following config.yaml entries")
 })
 
-test_that("warning when aftables cannot find configs", {
-  suppressWarnings(expect_warning(generate_workbook(as_aftable(demo_df),
-                                                    config_path = testthat::test_path(),
-                                                    config_file = "test_config_warnings.yaml",
-                                                    config_name = "default"),
-                                  "default config does not exist in test_config_warnings.yaml. Please check there is a default key in your test_config_warnings.yaml."))
-
-  suppressWarnings(expect_warning(generate_workbook(as_aftable(demo_df),
-                                                    config_path = testthat::test_path(),
-                                                    config_file = "test_config_warnings.yaml",
-                                                    config_name = "user-config"),
-                                  "user set config does not exist in test_config_warnings.yaml. Please check there is a user-config key in your test_config_warnings.yaml."))
+test_that("error when aftables cannot find default config requested by user", {
+  suppressWarnings(expect_error(generate_workbook(as_aftable(demo_df),
+                                                  config_path = paste0(testthat::test_path(), "/test_config_warnings.yaml"),
+                                                  config_name = "default"),
+                                "The default key doesn't exist in the config file. Please view the documentation for create_config_yaml for an example aftables config file."))
 
 })
 
-test_that("generate_workbook finds default config.yaml file created with create_config_yaml function", {
+test_that("error when both default key and custom key are missing", {
+  suppressWarnings(expect_error(generate_workbook(as_aftable(demo_df),
+                                                  config_path = paste0(testthat::test_path(), "/test_empty_config.yaml"),
+                                                  config_name = "empty"),
+                                "The default key and the empty key don't exist in the config file. Please view the documentation for create_config_yaml for an example aftables config file."))
 
-  expect_warning(create_config_yaml(),
+})
+
+test_that("generate_workbook with default arguments finds config.yaml file created with create_config_yaml function", {
+
+  expect_warning(create_config_yaml(open_config = FALSE),
                  "config.yaml copied to working directory. The default options for generate_workbook will use this file.")
 
-  x <- generate_workbook(as_aftable(demo_df))
+  x <- suppressWarnings(generate_workbook(as_aftable(demo_df)))
 
   y <- openxlsx2::wb_get_properties(x)
 
@@ -113,6 +179,6 @@ test_that("generate_workbook finds default config.yaml file created with create_
   expect_equal(y["comments"], c("comments" = "aftables example comments"))
   expect_equal(y["category"], c("category" = "aftables example category"))
 
-  if (file.exists("./config.yaml")) file.remove("./config.yaml")
+  if (file.exists("config.yaml")) file.remove("config.yaml")
 
 })
