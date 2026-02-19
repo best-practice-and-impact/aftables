@@ -7,23 +7,31 @@
 #' @param aftable An aftable-class object created using
 #'     \code{\link{create_aftable}} (or \code{\link{as_aftable}}), which
 #'     contains the data and information needed to create a workbook.
-#' @param creator character string containing creator to add to workbook.
+#' @param author optional character string containing author to add to workbook.
 #' Default NULL.
-#' @param title character string containing title to add to workbook.
+#' @param title optional character string containing title to add to workbook.
 #' Default NULL.
-#' @param keywords character vector containing keywords to add to workbook.
+#' @param keywords optional character vector containing keywords to add to workbook.
 #' Default NULL.
-#' @param config_path character string containing path to config.yaml.
-#' Default NULL.
-#' @param config_name character string specifying which configuration to use.
+#' @param config_path optional character string containing path to config file.
+#' Defaults to config.yaml file located in working directory.
+#' @param config_name optional character string specifying which configuration to use.
 #' Default NULL.
 #'
 #' @return An openxlsx2 wbWorkbook-class object.
 #'
 #' @details
 #'
-#' See \code{\link[aftables]{get_config_yaml}} for details of the config.yaml
+#' See \code{\link[aftables]{create_config_yaml}} for details of the config.yaml
 #' file, including how to add and edit configurations.
+#'
+#' If author, title and/or keywords are provided in both the `config.yaml` file
+#' and in the function arguments, the values provided in the function arguments
+#' are preferred to those provided in the `config.yaml` file. If `config_name`
+#' is provided, values set in the `config_name` configuration in the
+#' `config.yaml` file are preferred over those provided in the `default`
+#' configuration. Values which are missing from the `config_name` configuration
+#' are taken from the `default` configuration.
 #'
 #' Analysis Function guidance advises workbooks should have the author, title,
 #' keywords and language fields completed. aftables provides functionality to
@@ -32,105 +40,66 @@
 #'
 #' @examples
 #' # Convert an aftable to an openxlsx2 wbWorkbook-class object
+#' \dontrun{
 #' x <- generate_workbook(demo_aftable)
-#' class(x)
+#' class(x)}
 #'
 #' # As above, using a compliant data.frame and the base pipe
+#' \dontrun{
 #' y <- demo_df |>
 #'   as_aftable() |>
-#'   generate_workbook()
+#'   generate_workbook()}
 #'
 #' # Using config.yaml file to set workbook properties and edit text and cell formatting
+#' \dontrun{
 #' example_workbook <- generate_workbook(demo_aftable,
 #'                                       config_path = system.file("ext-data",
 #'                                                                 "config.yaml",
 #'                                                                 package = "aftables"),
-#'                                       config_name = "default")
-#
-#' # Use openxlsx2::wb_get_properties to view properties that have been applied
-#' openxlsx2::wb_get_properties(example_workbook)
+#'                                       config_name = "default")}
 #'
-#' # Using config.yaml file to set minimum workbook properties and edit text and cell formatting
-#' example_workbook <- generate_workbook(demo_aftable,
-#'                                       config_path = system.file("ext-data",
-#'                                                                 "config.yaml",
-#'                                                                 package = "aftables"),
-#'                                       config_name = "minimum")
-#
 #' # Use openxlsx2::wb_get_properties to view properties that have been applied
-#' openxlsx2::wb_get_properties(example_workbook)
+#' \dontrun{
+#' openxlsx2::wb_get_properties(example_workbook)}
 #'
-#' # Setting the minimum workbook properties without using a config.yaml file
+#' # Setting the minimum workbook properties as function arguments
+#' \dontrun{
 #' example_workbook <- generate_workbook(demo_aftable,
-#'                                       creator = "Example author",
+#'                                       author = "Example author",
 #'                                       title = "example workbook",
 #'                                       keywords = c("keyword1",
 #'                                                    "keyword2",
-#'                                                    "keyword3"))
+#'                                                    "keyword3"))}
 #'
 #' # Use openxlsx2::wb_get_properties to view properties that have been applied
-#' openxlsx2::wb_get_properties(example_workbook)
+#' \dontrun{
+#' openxlsx2::wb_get_properties(example_workbook)}
 #'
 #' # Save the workbook with openxlsx2::wb_save
 #' \dontrun{
 #' openxlsx2::wb_save(example_workbook, "example_workbook.xlsx")}
 #' @export
-generate_workbook <- function(aftable, creator = NULL, title = NULL,
-                              keywords = NULL, config_path = NULL,
+generate_workbook <- function(aftable,
+                              author = NULL,
+                              title = NULL,
+                              keywords = NULL,
+                              config_path = "config.yaml",
                               config_name = NULL) {
-
 
   if (!is_aftable(aftable)) {
     stop("The object passed to argument 'content' must have class 'aftable'.")
   }
 
-  # get parameters from config.yaml
-  if (!is.null(config_path) && !is.null(config_name)) {
-    wb_config <- read_yaml(file = config_path)
-    # read_yaml gets the entire file, need to get only the user's desired config
-    wb_config <- wb_config[[config_name]]
+  config_options <- list(author = author,
+                         title = title,
+                         keywords = keywords,
+                         config_path = config_path,
+                         config_name = config_name)
 
-    # sanitise the wb_config
-    wb_config_errors <- .check_config_yaml(config_to_check = wb_config,
-                                           aftable = aftable)
+  config <- process_config(config_options)
 
-    if (length(wb_config_errors) > 0) {
-      stop(paste("there were the following errors: ",
-                 paste(paste(seq_along(wb_config_errors), ".", sep = ""),
-                       wb_config_errors, collapse = " "), sep = ""))
-    }
-
-    parameters <- list(
-      creator = wb_config$workbook_properties$creator,
-      title =  wb_config$workbook_properties$title,
-      subject =  wb_config$workbook_properties$subject,
-      category = wb_config$workbook_properties$category,
-      modifier = wb_config$workbook_properties$modifier,
-      keywords = paste(wb_config$workbook_properties$keywords, collapse = ", "),
-      comments = wb_config$workbook_properties$comments,
-      manager = wb_config$workbook_properties$manager,
-      company = wb_config$workbook_properties$company,
-      custom = wb_config$workbook_properties$custom
-    )
-
-    parameters <- parameters[!sapply(parameters, is.null)]
-
-  } else {
-    wb_config <- NULL
-    parameters <- list()
-
-    if (!is.null(creator)) {
-      parameters$creator <- creator
-    }
-
-    if (!is.null(title)) {
-      parameters$title <- title
-    }
-
-    if (!is.null(keywords)) {
-      parameters$keywords <- paste(keywords, collapse = ", ")
-    }
-  }
+  workbook_properties <- config$workbook_properties
+  workbook_format <- config$workbook_format
 
   # Create a table_name from tab_title (unique, no spaces, no punctuation)
   aftable[["table_name"]] <-
@@ -138,24 +107,24 @@ generate_workbook <- function(aftable, creator = NULL, title = NULL,
   aftable[["table_name"]] <-
     gsub("(?!_)[[:punct:]]", "", aftable[["table_name"]], perl = TRUE)
 
-  # Create workbook, set base style, add tabs, cover, contents (required for all workbooks)
+  # Create workbook, set base style, set properties, add tabs, cover, contents (required for all workbooks)
   wb <- wb_workbook(theme = "Office 2007 - 2010 Theme")
-  wb <- .set_workbook_parameters(wb, parameters)
-  wb <- .style_workbook(wb, wb_config)
+  wb <- .set_workbook_properties(wb, workbook_properties)
+  wb <- .style_workbook(wb, workbook_format)
   wb <- .add_tabs(wb, aftable)
-  wb <- .add_cover(wb, aftable, wb_config)
-  wb <- .add_contents(wb, aftable, wb_config)
+  wb <- .add_cover(wb, aftable, workbook_format)
+  wb <- .add_contents(wb, aftable, workbook_format)
 
   # There won't always be a notes tab
   if (any(aftable$sheet_type %in% "notes")) {
-    wb <- .add_notes(wb, aftable, wb_config)
+    wb <- .add_notes(wb, aftable, workbook_format)
   }
 
   # Iterable titles for tabs containing tables
   table_sheets <- aftable[aftable$sheet_type == "tables", ][["table_name"]]
 
   for (i in table_sheets) {
-    wb <- .add_tables(wb, aftable, table_name = i, wb_config = wb_config)
+    wb <- .add_tables(wb, aftable, table_name = i, workbook_format)
   }
 
   wb

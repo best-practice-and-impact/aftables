@@ -179,25 +179,13 @@
   sheet_type <- content[content$tab_title == tab_title, "sheet_type"][[1]]
   sheet_title <- content[content$tab_title == tab_title, "sheet_title"][[1]]
 
-  if (sheet_type %in% c("cover", "contents", "notes")) {
-    wb$add_data(
-      sheet = tab_title,
-      x = sheet_title,
-      start_col = 1,
-      start_row = 1,
-      na.strings = ""
-    )
-  }
-
-  if (sheet_type == "tables") {
-    wb$add_data(
-      sheet = tab_title,
-      x = sheet_title,
-      start_col = 1,
-      start_row = 1,
-      na.strings = ""
-    )
-  }
+  wb$add_data(
+    sheet = tab_title,
+    x = sheet_title,
+    start_col = 1,
+    start_row = 1,
+    na.strings = ""
+  )
 
   wb
 }
@@ -357,13 +345,14 @@
   wb
 }
 
-.insert_table <- function(wb, content, table_name, wb_config) {
-  table <- content[content$table_name == table_name, ][["table"]][[1]]
+.insert_table <- function(wb, content, table_name, workbook_format) {
+  # convert tibbles to data frames before processing
+  table <- as.data.frame(content[content$table_name == table_name, ][["table"]][[1]])
   sheet_type <- content[content$table_name == table_name, "sheet_type"][[1]]
   tab_title <- content[content$table_name == table_name, "tab_title"][[1]]
 
-  if (!is.null(wb_config$workbook_format$decimal_places)) {
-    decimal_places = wb_config$workbook_format$decimal_places
+  if (!is.null(workbook_format$decimal_places)) {
+    decimal_places = workbook_format$decimal_places
   } else {
     decimal_places = NULL
   }
@@ -377,8 +366,7 @@
     .has_source(content, tab_title)
   )
 
-  # initial cleaning of table regardless of mixed columns
-  # currency cells, numeric cells, numeric columns
+  # initial cleaning of table
 
   table_datatypes <- .determine_table_datatypes(table)
 
@@ -422,8 +410,10 @@
     # set currency formats to pass to .style_table
     #===========================================================================
 
-    currency_units <- .extract_currency_units(table = table,
-                                              currency_cells = currency_cells)
+    currency_units <- .extract_currency_units(
+      table = table,
+      currency_cells = currency_cells
+    )
 
     currencies_cell_references <- table_cell_references[currency_cells]
     currency_cell_formats <-
@@ -445,9 +435,7 @@
     # clean table removing currency symbols
     #===========================================================================
 
-    table[currency_cells] <-
-      .replace_currency_units(table,
-                              currency_cells)
+    table[currency_cells] <- .replace_currency_units(table, currency_cells)
 
   } else {
     currency_formats <- NULL
@@ -473,11 +461,16 @@
       )
 
     # convert cells and columns to numeric once currency symbols have been removed
-    table <- .clean_numeric_data(table, numeric_cells)
+    table <- .clean_numeric_data(table, numeric_columns)
 
   } else {
     numeric_formats <- NULL
   }
+
+  #=============================================================================
+  # convert numeric and currency columns to numeric
+  #=============================================================================
+  table <- .clean_numeric_data(table, numeric_columns)
 
   #=============================================================================
   # insert cleaned data table into workbook
@@ -514,9 +507,12 @@
   #=============================================================================
   # create output to pass to .style_table
   #=============================================================================
-  output <- list(numeric_columns = numeric_columns,
-                 numeric_formats = numeric_formats,
-                 currency_formats = currency_formats)
+
+  output <- list(
+    numeric_columns = numeric_columns,
+    numeric_formats = numeric_formats,
+    currency_formats = currency_formats
+  )
 
   output
 
@@ -647,7 +643,7 @@
   wb
 }
 
-.add_cover <- function(wb, content, wb_config) {
+.add_cover <- function(wb, content, workbook_format) {
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "cover", "tab_title"][[1]]
@@ -657,7 +653,7 @@
   .insert_cover_table(wb, content, table_name) # rather than .insert_table
 
   styles <- .style_paragraph()
-  fonts <- .style_font(wb_config)
+  fonts <- .style_font(workbook_format)
   .style_sheet_title(wb, tab_title, styles, fonts)
   .style_cover(wb, content, styles, fonts)
   # TODO: needs special handling if list provided
@@ -665,7 +661,7 @@
 }
 
 
-.add_contents <- function(wb, content, wb_config) {
+.add_contents <- function(wb, content, workbook_format) {
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "contents", "tab_title"][[1]]
@@ -674,19 +670,19 @@
   .insert_title(wb, content, tab_title)
   .insert_table_count(wb, content, tab_title)
   .insert_custom_rows(wb, content, tab_title)
-  table_format <- .insert_table(wb, content, table_name, wb_config)
+  table_format <- .insert_table(wb, content, table_name, workbook_format)
 
   styles <- .style_paragraph()
-  fonts <- .style_font(wb_config)
+  fonts <- .style_font(workbook_format)
   .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts, table_format, wb_config)
+  .style_table(wb, content, table_name, styles, fonts, table_format, workbook_format)
   .style_contents(wb, content, styles)
 
   wb
 }
 
 
-.add_notes <- function(wb, content, wb_config) {
+.add_notes <- function(wb, content, workbook_format) {
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "notes", "tab_title"][[1]]
@@ -695,18 +691,18 @@
   .insert_title(wb, content, tab_title)
   .insert_table_count(wb, content, tab_title)
   .insert_custom_rows(wb, content, tab_title)
-  table_format <- .insert_table(wb, content, table_name, wb_config)
+  table_format <- .insert_table(wb, content, table_name, workbook_format)
 
   styles <- .style_paragraph()
-  fonts <- .style_font(wb_config)
+  fonts <- .style_font(workbook_format)
   .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts, table_format, wb_config)
+  .style_table(wb, content, table_name, styles, fonts, table_format, workbook_format)
   .style_notes(wb, content, styles)
 
   wb
 }
 
-.add_tables <- function(wb, content, table_name, wb_config) {
+.add_tables <- function(wb, content, table_name, workbook_format) {
   .stop_bad_input(wb, content, table_name)
 
   tab_title <- content[content$table_name == table_name, "tab_title"][[1]]
@@ -717,12 +713,12 @@
   .insert_notes_statement(wb, content, tab_title)
   .insert_blanks_message(wb, content, tab_title)
   .insert_custom_rows(wb, content, tab_title)
-  table_format <- .insert_table(wb, content, table_name, wb_config)
+  table_format <- .insert_table(wb, content, table_name, workbook_format)
 
   styles <- .style_paragraph()
-  fonts <- .style_font(wb_config)
+  fonts <- .style_font(workbook_format)
   .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts, table_format, wb_config)
+  .style_table(wb, content, table_name, styles, fonts, table_format, workbook_format)
 
   wb
 }
@@ -738,12 +734,16 @@
 .determine_currency_cells <- function(table) {
   currency_cells <-
     table |>
-    mutate(across(everything(),
-                  \(x) {
-                    grepl(x,
-                          pattern = detect_currency_regex,
-                          perl = TRUE)
-                  }))
+    mutate(
+      across(
+        everything(),
+        \(x) {
+          grepl(x,
+                pattern = detect_currency_regex,
+                perl = TRUE)
+        }
+      )
+    )
 
   currency_cells
 }
@@ -751,12 +751,14 @@
 .determine_numeric_cells <- function(table) {
   numeric_cells <-
     table |>
-    mutate(across(everything(),
-                  \(x) {
-                    grepl(x,
-                          pattern = numeric_regex,
-                          perl = TRUE)
-                  }))
+    mutate(
+      across(
+        everything(),
+        \(x) {
+          grepl(x, pattern = numeric_regex, perl = TRUE)
+        }
+      )
+    )
 
   numeric_cells
 }
@@ -764,12 +766,14 @@
 .determine_note_cells <- function(table) {
   note_cells <-
     table |>
-    mutate(across(everything(),
-                  \(x) {
-                    grepl(x,
-                          pattern = notes_regex,
-                          perl = TRUE)
-                  }))
+    mutate(
+      across(
+        everything(),
+        \(x) {
+          grepl(x, pattern = notes_regex, perl = TRUE)
+        }
+      )
+    )
 
   note_cells
 }
@@ -777,8 +781,8 @@
 .determine_table_datatypes <- function(table) {
 
   # switch off scientific notation
-  scipen_orig <- getOption("scipen")
-  options(scipen = 999)
+  old <- options(scipen = 999)
+  on.exit(options(old), add = TRUE)
 
   # number of cells in each column of each type
   currency_cells <- .determine_currency_cells(table)
@@ -813,20 +817,23 @@
     )
 
   # valid currency cells are only those in columns which could be numeric
-  # if all currency symbols were removed
+  # if all currency symbols and notes were removed
   currency_cells[!numeric_columns] <- FALSE
+
+  # valid numeric cells are only those in columns which could be numeric
+  # if all notes were removed
+  numeric_cells[!numeric_columns] <- FALSE
+
   # valid note cells are only those in mixed columns which could be numeric
   # if all notes were removed
   note_cells[!numeric_columns] <- FALSE
 
-  output <- list(numeric_columns = names(numeric_columns[numeric_columns]),
-                 currency_cells = as.matrix(currency_cells),
-                 numeric_cells = as.matrix(numeric_cells),
-                 note_cells = as.matrix(note_cells))
-
-
-  # restore scientific notation
-  options(scipen = scipen_orig)
+  output <- list(
+    numeric_columns = names(numeric_columns[numeric_columns]),
+    currency_cells = as.matrix(currency_cells),
+    numeric_cells = as.matrix(numeric_cells),
+    note_cells = as.matrix(note_cells)
+  )
 
   output
 }
@@ -834,13 +841,15 @@
 .extract_numeric_values <- function(values) {
   numeric_values <-
     values[
-      sapply(values,
-             grepl,
-             pattern = numeric_regex,
-             perl = TRUE)
+      sapply(
+        values,
+        grepl,
+        pattern = numeric_regex,
+        perl = TRUE
+      )
     ]
 
-  numeric_values <- str_replace_all(numeric_values, "[,[[:space:]]]", "")
+  numeric_values <- str_replace_all(numeric_values, "[\\s,]", "")
 
   numeric_values <- as.numeric(numeric_values)
 
@@ -849,14 +858,7 @@
 
 .extract_currency_units <- function(table, currency_cells) {
   currency_units <-
-    trimws(
-           regmatches(
-             table[as.matrix(currency_cells)],
-             gregexpr(extract_currency_symbol_regex,
-                      table[as.matrix(currency_cells)],
-                      perl = TRUE)
-           ),
-           which = "both")
+    str_extract(table[currency_cells], extract_currency_symbol_regex)
 
   currency_units
 }
@@ -864,33 +866,20 @@
 .replace_currency_units <- function(table, currency_cells) {
 
   output <-
-    sapply(
-           regmatches(
-             table[as.matrix(currency_cells)],
-             gregexpr(extract_currency_symbol_regex,
-                      table[as.matrix(currency_cells)],
-                      perl = TRUE),
-             invert = TRUE
-           ),
-           paste,
-           collapse = "")
-
-  output <-
-    as.numeric(str_replace_all(output,
-                               "[[[:space:]],]",
-                               ""))
+    str_replace(table[currency_cells], extract_currency_symbol_regex, "")
 
   output
 }
 
-.clean_numeric_data <- function(table, numeric_cells) {
-  table[numeric_cells] <- trimws(table[numeric_cells], which = "both")
+.clean_numeric_data <- function(table, numeric_columns) {
 
-  table[numeric_cells] <- str_replace_all(table[numeric_cells],
-                                          "[[[:space:]],]",
-                                          "")
-
-  table <- type.convert(table, as.is = TRUE)
+  table <- table |>
+    mutate(
+      across(
+        where(\(x) !is.numeric(x)) & all_of(numeric_columns),
+        \(x) as.numeric(str_replace_all(x, "[\\s,]", ""))
+      )
+    )
 
   table
 }
@@ -923,17 +912,19 @@
   currency_columns
 }
 
-.set_workbook_parameters <- function(wb, content) {
+.set_workbook_properties <- function(wb, content) {
 
-  wb$set_properties(creator = content$creator,
-                    title = content$title,
-                    subject = content$subject,
-                    category = content$category,
-                    modifier = content$modifier,
-                    keywords = content$keywords,
-                    comments = content$comments,
-                    manager = content$manager,
-                    company = content$company)
+  if (!is.null(content)) {
+    wb$set_properties(creator = content$author,
+                      title = content$title,
+                      subject = content$subject,
+                      category = content$category,
+                      modifier = content$modifier,
+                      keywords = paste0(content$keywords, collapse = ", "),
+                      comments = content$comments,
+                      manager = content$manager)
+  }
+
   wb
 }
 

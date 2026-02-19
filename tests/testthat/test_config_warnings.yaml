@@ -1,5 +1,5 @@
 aftables:
-  default:
+  default1:
     workbook_properties:
       author: "Analysis Function"
       title: "aftables example workbook"
@@ -19,14 +19,3 @@ aftables:
       cellwidth_default: 16
       cellwidth_wider: 32
       nchar_break: 50
-  workbook1:
-    workbook_properties:
-      category: "aftables workbook 1 category"
-      keywords:
-        - "workbook 1"
-  workbook2:
-    workbook_properties:
-      title: "aftables workbook 2"
-      category: "aftables workbook 2 category"
-      keywords:
-        - "workbook 2"

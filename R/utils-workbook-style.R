@@ -10,25 +10,25 @@
 
 #' Set up a list of common font styles
 #' @noRd
-.style_font <- function(wb_config) {
+.style_font <- function(workbook_format) {
 
   base_font_size <-
-    ifelse(!is.null(wb_config$workbook_format$base_font_size),
-           wb_config$workbook_format$base_font_size,
+    ifelse(!is.null(workbook_format$base_font_size),
+           workbook_format$base_font_size,
            12)
 
   table_header_size <-
-    ifelse(!is.null(wb_config$workbook_format$table_header_size),
-           wb_config$workbook_format$table_header_size,
+    ifelse(!is.null(workbook_format$table_header_size),
+           workbook_format$table_header_size,
            14)
 
   sheet_header_size <-
-    ifelse(!is.null(wb_config$workbook_format$sheet_header_size),
-           wb_config$workbook_format$sheet_header_size,
+    ifelse(!is.null(workbook_format$sheet_header_size),
+           workbook_format$sheet_header_size,
            16)
 
-  base_font_name <- ifelse(!is.null(wb_config$workbook_format$base_font_name),
-                           wb_config$workbook_format$base_font_name,
+  base_font_name <- ifelse(!is.null(workbook_format$base_font_name),
+                           workbook_format$base_font_name,
                            "Arial")
 
   list(
@@ -44,15 +44,15 @@
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @noRd
 
-.style_workbook <- function(wb, wb_config) {
+.style_workbook <- function(wb, workbook_format) {
 
   base_font_size <-
-    ifelse(!is.null(wb_config$workbook_format$base_font_size),
-           wb_config$workbook_format$base_font_size,
+    ifelse(!is.null(workbook_format$base_font_size),
+           workbook_format$base_font_size,
            12)
 
-  base_font_name <- ifelse(!is.null(wb_config$workbook_format$base_font_name),
-                           wb_config$workbook_format$base_font_name,
+  base_font_name <- ifelse(!is.null(workbook_format$base_font_name),
+                           workbook_format$base_font_name,
                            "Arial")
 
   wb$set_base_font(
@@ -96,26 +96,25 @@
 #' @param style_ref List. The style-reference object made with .style_paragraph().
 #' @param font_ref List. The font-reference object made with .style_font().
 #' @noRd
-.style_table <- function(wb, content, table_name, style_ref, font_ref, table_formats, wb_config) {
+.style_table <- function(wb, content, table_name, style_ref, font_ref, table_formats, workbook_format) {
   content_row <- content[content[["table_name"]] == table_name, ]
   table <- content_row[, "table"][[1]]
   tab_title <- content_row[, "tab_title"][[1]]
-  sheet_type <- content_row[, "sheet_type"][[1]]
 
-  if (!is.null(wb_config$workbook_format$cellwidth_default)) {
-    cellwidth_default <- wb_config$workbook_format$cellwidth_default
+  if (!is.null(workbook_format$cellwidth_default)) {
+    cellwidth_default <- workbook_format$cellwidth_default
   } else {
     cellwidth_default <- 16
   }
 
-  if (!is.null(wb_config$workbook_format$cellwidth_wider)) {
-    cellwidth_wider <- wb_config$workbook_format$cellwidth_wider
+  if (!is.null(workbook_format$cellwidth_wider)) {
+    cellwidth_wider <- workbook_format$cellwidth_wider
   } else {
     cellwidth_wider <- 32
   }
 
-  if (!is.null(wb_config$workbook_format$nchar_break)) {
-    nchar_break <- wb_config$workbook_format$nchar_break
+  if (!is.null(workbook_format$nchar_break)) {
+    nchar_break <- workbook_format$nchar_break
   } else {
     nchar_break <- 50
   }
@@ -132,6 +131,47 @@
   table_height <- nrow(table)
   table_width <- ncol(table)
 
+
+  #=============================================================================
+  # style table headers, wrap text, left align columns by default
+  #=============================================================================
+
+  # Wrap text
+  wb$add_cell_style(
+    sheet = tab_title,
+    dims = wb_dims(
+      rows = seq(start_row, start_row + table_height),
+      cols = seq(table_width)
+    ),
+    wrap_text = style_ref[["wrap_text"]]
+  )
+
+  # Left align text
+  wb$add_cell_style(
+    sheet = tab_title,
+    dims = wb_dims(
+      rows = seq(start_row, start_row + table_height),
+      cols = seq(table_width)
+    ),
+    horizontal = style_ref[["lalign"]]
+  )
+
+  # Table headers are bold
+  # .style_font() checks the config.yaml file for user preferences
+  # which are then included here in font_ref
+  wb$add_font(
+    sheet = tab_title,
+    dims = wb_dims(rows = start_row, cols = seq(table_width)),
+    bold = font_ref[["bold"]],
+    size = font_ref[["table_header_size"]],
+    name = font_ref[["name"]]
+  )
+
+
+  #=============================================================================
+  # set column widths
+  #=============================================================================
+
   cellwidth_default <- 16
   cellwidth_wider <- 32
   nchar_break <- 50
@@ -145,13 +185,10 @@
   # Find indices of columns that should be wider than default
   is_factor_column <- sapply(table, is.factor) # nchar (below) fails on factors
   table[is_factor_column] <- lapply(table[is_factor_column], as.character)
-  wide_cells <- names(Filter(function(x) max(nchar(x)) > nchar_break, table))
+  wide_cells <- names(Filter(function(x) max(tidyr::replace_na(nchar(x), 0)) > nchar_break, table))
   wide_cells_index <- which(names(table) %in% wide_cells)
   wide_headers_index <- which(nchar(names(table)) > nchar_break)
-  wide_cols_index <- c(wide_cells_index, wide_headers_index)
-
-  # Table data columns are SET-WIDTH (depending on character length),
-  # RIGHT-ALIGNED (if numeric) and WRAPPED
+  wide_cols_index <- unique(c(wide_cells_index, wide_headers_index))
 
   wb$set_col_widths(
     sheet = tab_title,
@@ -159,7 +196,7 @@
     widths = cellwidth_default
   )
 
-  if (length(wide_cols_index[!is.na(wide_cols_index)])) { # only run if needed
+  if (length(wide_cols_index) >= 1) {
     wb$set_col_widths(
       sheet = tab_title,
       cols = wide_cols_index,
@@ -167,11 +204,16 @@
     )
   }
 
+
   #=============================================================================
-  # format numeric columns and apply numeric formatting cells in mixed columns
+  # right align numeric columns
   #=============================================================================
 
-  if (length(numeric_cols_index > 0)) { # only run if needed
+  # get the index of numeric columns
+  numeric_cols_names <- table_formats$numeric_columns
+  numeric_cols_index <- which(names(table) %in% numeric_cols_names)
+
+  if (length(numeric_cols_index > 0)) {
     wb$add_cell_style(
       sheet = tab_title,
       dims = wb_dims(

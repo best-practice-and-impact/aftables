@@ -184,7 +184,7 @@ x <- aftables::create_aftable(
   sources = c(
     rep(NA_character_, 3),
     paste0(
-      "[The Source Material, 2024.]", #
+      "[The Source Material, 2024.]",
       "(https://best-practice-and-impact.github.io/aftables/)"
     ),
     "The Source Material, 2024."

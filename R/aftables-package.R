@@ -4,18 +4,21 @@
 # The following block is used by usethis to automatically manage
 # roxygen namespace tags. Modify with care!
 ## usethis namespace: start
-#' @importFrom pillar tbl_sum
 #' @import openxlsx2
+
 #' @import dplyr
-#' @importFrom purrr pwalk map2 map2_vec
-#' @importFrom tidyr replace_na pivot_longer
-#' @importFrom stringr str_extract str_replace str_replace_all str_detect
-#' @importFrom purrr pwalk
 #' @importFrom tidyr replace_na
-#' @importFrom scales number
-#' @importFrom utils file.edit type.convert
+#' @importFrom utils file.edit
 #' @importFrom yaml read_yaml
 #' @importFrom methods is
 #' @importFrom rlang .data
+#' @importFrom pillar tbl_sum
+#' @importFrom purrr pwalk
+#' @importFrom purrr pluck
+#' @importFrom purrr list_modify
+#' @importFrom stringr str_extract
+#' @importFrom stringr str_replace
+#' @importFrom stringr str_replace_all
+#' @importFrom tidyselect where
 ## usethis namespace: end
 NULL
