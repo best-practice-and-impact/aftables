@@ -90,13 +90,16 @@ generate_workbook <- function(aftable,
     stop("The object passed to argument 'content' must have class 'aftable'.")
   }
 
-  config_options <- list(author = author,
-                         title = title,
-                         keywords = keywords,
-                         config_path = config_path,
-                         config_name = config_name)
+  user_config <- list(
+    workbook_properties = list(
+      author = author,
+      title = title,
+      keywords = keywords
+    ),
+    workbook_format = list()
+  )
 
-  config <- process_config(config_options)
+  config <- process_config(user_config, config_path, config_name)
 
   workbook_properties <- config$workbook_properties
   workbook_format <- config$workbook_format
