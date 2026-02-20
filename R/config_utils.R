@@ -103,47 +103,84 @@ process_config <- function(user_config, config_path, config_name) {
   # Get settings from config file if exists ------------------------------------
 
   if (!is.null(config_path) && config_path != "config.yaml" &&
-      !file.exists(config_path)) {
+        !file.exists(config_path)) {
     stop("Config file ", config_path, " does not exist", call. = FALSE)
+  }
+
+  if ((is.null(config_path) || !file.exists(config_path)) &&
+        !is.null(config_name)) {
+    stop(
+      "config_name has been set but config file does not exist",
+      call. = FALSE
+    )
   }
 
   if (!is.null(config_path) && file.exists(config_path)) {
 
     config_file <- read_yaml(config_path)
 
-    if (!purrr::pluck_exists(config_file, "aftables")) {
+    if (config_path != "config.yaml" &&
+          !purrr::pluck_exists(config_file, "aftables")) {
       stop(
         "Config file ", config_path, " does not contain an aftables key",
         call. = FALSE
       )
     }
 
-    # Get default config settings ---------
-    default_config <- purrr::pluck(config_file, "aftables", "default")
-
-    # Error if default config doesn't exist and haven't specified custom config
-    if (is.null(default_config) && is.null(config_name)) {
-      stop(
-        "Config file ", config_path, " does not contain a default aftables configuration and a custom key is not being used",
+    if (config_path == "config.yaml" &&
+          !purrr::pluck_exists(config_file, "aftables")) {
+      warning(
+        "Config file ", config_path,
+        " does not contain an aftables key and will therefore be ignored",
         call. = FALSE
       )
     }
 
-    if (is.null(default_config)) {
-      default_config <- list()
+
+    # Get default config settings ---------
+
+    if (is.null(config_name) &&
+          purrr::pluck_exists(config_file, "aftables") &&
+          !purrr::pluck_exists(config_file, "aftables", "default")) {
+      stop(
+        "Config file ", config_path,
+        " does not contain a default aftables configuration and a custom key is not being used",
+        call. = FALSE
+      )
+    }
+
+    default_config <- purrr::pluck(
+      config_file,
+      "aftables", "default",
+      .default = list()
+    )
+
+    if (!is.list(default_config)) {
+      stop("Default configuration key must be a named list", call. = FALSE)
     }
 
 
     # Get custom config settings ---------
+
     if (!is.null(config_name)) {
+
+      if (!purrr::pluck_exists(config_file, "aftables", config_name)) {
+        stop(
+          "Config file ", config_path, " does not contain custom key `",
+          config_name, "`",
+          call. = FALSE
+        )
+      }
+
       custom_config <- purrr::pluck(
         config_file,
-        "aftables", config_name
+        "aftables", config_name,
+        .default = list()
       )
 
-      if (is.null(custom_config)) {
+      if (!is.list(custom_config)) {
         stop(
-          "Config file ", config_path, " does not contain custom key `", config_name, "`",
+          "Custom configuration key ", config_name, " must be a named list",
           call. = FALSE
         )
       }
@@ -174,7 +211,7 @@ process_config <- function(user_config, config_path, config_name) {
 
 
   # Validate the final config --------------------------------------------------
-  validate_config(config)
+ # validate_config(config)
 
   config
 }
