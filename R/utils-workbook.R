@@ -868,16 +868,20 @@
 
 .set_workbook_properties <- function(wb, content) {
 
-  if (!is.null(content)) {
-    wb$set_properties(creator = content$author,
-                      title = content$title,
-                      subject = content$subject,
-                      category = content$category,
-                      modifier = content$modifier,
-                      keywords = paste0(content$keywords, collapse = ", "),
-                      comments = content$comments,
-                      manager = content$manager)
+  if (!is.null(content$keywords)) {
+    content$keywords <- paste0(content$keywords, collapse = ", ")
   }
+
+  wb$set_properties(
+    creator = content$author,
+    title = content$title,
+    subject = content$subject,
+    category = content$category,
+    modifier = content$modifier,
+    keywords = content$keywords,
+    comments = content$comments,
+    manager = content$manager
+  )
 
   wb
 }
