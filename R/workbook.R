@@ -78,15 +78,15 @@ generate_workbook <- function(aftable,
     stop("The object passed to argument 'content' must have class 'aftable'.")
   }
 
-  if(!is.null(author) && !rlang::is_scalar_character(author)) {
+  if (!is.null(author) && !rlang::is_scalar_character(author)) {
     stop("author must be a character vector of length 1", call. = FALSE)
   }
 
-  if(!is.null(title) && !rlang::is_scalar_character(title)) {
+  if (!is.null(title) && !rlang::is_scalar_character(title)) {
     stop("title must be a character vector of length 1", call. = FALSE)
   }
 
-  if(!is.null(keywords) && !is.character(keywords)) {
+  if (!is.null(keywords) && !is.character(keywords)) {
     stop("keywords must be a character vector", call. = FALSE)
   }
 
