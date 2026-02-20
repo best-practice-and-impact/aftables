@@ -18,20 +18,20 @@ generate_workbook(
 \code{\link{create_aftable}} (or \code{\link{as_aftable}}), which
 contains the data and information needed to create a workbook.}
 
-\item{author}{optional character string containing author to add to workbook.
+\item{author}{Optional character string to set the workbook author.
 Default NULL.}
 
-\item{title}{optional character string containing title to add to workbook.
+\item{title}{Optional character string to set the workbook title.
 Default NULL.}
 
-\item{keywords}{optional character vector containing keywords to add to workbook.
+\item{keywords}{Optional character vector to set the workbook keywords.
 Default NULL.}
 
-\item{config_path}{optional character string containing path to config file.
+\item{config_path}{Optional character string containing path to config file.
 Defaults to config.yaml file located in working directory.}
 
-\item{config_name}{optional character string specifying which configuration to use.
-Default NULL.}
+\item{config_name}{Optional character string specifying which configuration
+to use from config file. Default NULL.}
 }
 \value{
 An openxlsx2 wbWorkbook-class object.
@@ -42,54 +42,28 @@ aftable-class object. In turn, the output can be passed to
 \code{\link[openxlsx2]{wb_save}} from 'openxlsx2'
 }
 \details{
-See \code{\link[aftables]{create_config_yaml}} for details of the config.yaml
-file, including how to add and edit configurations.
-
-If author, title and/or keywords are provided in both the \code{config.yaml} file
-and in the function arguments, the values provided in the function arguments
-are preferred to those provided in the \code{config.yaml} file. If \code{config_name}
-is provided, values set in the \code{config_name} configuration in the
-\code{config.yaml} file are preferred over those provided in the \code{default}
-configuration. Values which are missing from the \code{config_name} configuration
-are taken from the \code{default} configuration.
-
 Analysis Function guidance advises workbooks should have the author, title,
-keywords and language fields completed. aftables provides functionality to
-set author, title and keywords fields for workbooks. See \href{https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/#section-15}{Releasing statistics in spreadsheets}
-for more information including how to set language for workbooks.
+keywords and language document properties completed. \code{aftables} provides
+functionality to set the author, title and keywords properties.
+See \href{https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/#section-15}{Releasing statistics in spreadsheets}
+for more information including how to set the workbook language.
+
+A config file can be used to set workbook properties and formatting. See
+\code{\link[aftables]{create_config_yaml}} for details of how to create a
+config.yaml file. If author, title or keywords are provided in both the
+\code{config.yaml} file and in the \code{generate_workbook} arguments, the values provided in the
+function arguments are preferred to those provided in the \code{config.yaml} file.
 }
 \examples{
 # Convert an aftable to an openxlsx2 wbWorkbook-class object
-\dontrun{
-x <- generate_workbook(demo_aftable)
-class(x)}
-
-# As above, using a compliant data.frame and the base pipe
-\dontrun{
-y <- demo_df |>
-  as_aftable() |>
-  generate_workbook()}
-
-# Using config.yaml file to set workbook properties and edit text and cell formatting
-\dontrun{
-example_workbook <- generate_workbook(demo_aftable,
-                                      config_path = system.file("ext-data",
-                                                                "config.yaml",
-                                                                package = "aftables"),
-                                      config_name = "default")}
-
-# Use openxlsx2::wb_get_properties to view properties that have been applied
-\dontrun{
-openxlsx2::wb_get_properties(example_workbook)}
-
 # Setting the minimum workbook properties as function arguments
 \dontrun{
-example_workbook <- generate_workbook(demo_aftable,
-                                      author = "Example author",
-                                      title = "example workbook",
-                                      keywords = c("keyword1",
-                                                   "keyword2",
-                                                   "keyword3"))}
+example_workbook <- generate_workbook(
+  demo_aftable,
+  author = "Example author",
+  title = "example workbook",
+  keywords = c("keyword1", "keyword2", "keyword3")
+)}
 
 # Use openxlsx2::wb_get_properties to view properties that have been applied
 \dontrun{
@@ -98,4 +72,18 @@ openxlsx2::wb_get_properties(example_workbook)}
 # Save the workbook with openxlsx2::wb_save
 \dontrun{
 openxlsx2::wb_save(example_workbook, "example_workbook.xlsx")}
+
+# Using config.yaml file to set workbook properties and edit text and cell
+# formatting
+\dontrun{
+example_workbook2 <- generate_workbook(
+  demo_aftable,
+  config_path = system.file("ext-data", "config.yaml", package = "aftables"),
+  config_name = "workbook1"
+  )}
+
+# Use openxlsx2::wb_get_properties to view properties that have been applied
+\dontrun{
+openxlsx2::wb_get_properties(example_workbook2)}
+
 }
