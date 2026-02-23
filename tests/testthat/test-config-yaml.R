@@ -1,77 +1,82 @@
 test_that("no config is applied without config.yaml or function arguments", {
-  x <- suppressWarnings(generate_workbook(as_aftable(demo_df)))
-
-  y <- openxlsx2::wb_get_properties(x)
-
-  # only 4 properties should be set (by openxlsx2 when wbWorkbook object created)
-  expect_true(all(c("creator",
-                    "modifier",
-                    "datetime_created",
-                    "datetime_modified") %in% names(y)))
-
-  # none of the additional properties should be set
-  expect_false(all(c("title",
-                     "subject",
-                     "keywords",
-                     "comments",
-                     "category") %in% names(y)))
-
-})
-
-test_that("no config if default function arguments are provided", {
-  x <- suppressWarnings(generate_workbook(as_aftable(demo_df),
-                                          author = NULL,
-                                          title = NULL,
-                                          keywords = NULL,
-                                          config_path = "config.yaml",
-                                          config_name = NULL))
-
-  y <- openxlsx2::wb_get_properties(x)
-
-  # only 4 properties should be set (by openxlsx2 when wbWorkbook object created)
-  expect_true(all(c("creator",
-                    "modifier",
-                    "datetime_created",
-                    "datetime_modified") %in% names(y)))
-
-  # none of the additional properties should be set
-  expect_false(all(c("title",
-                     "subject",
-                     "keywords",
-                     "comments",
-                     "category") %in% names(y)))
-
-})
-
-test_that("no config is applied from config.yaml without aftables key", {
-
-  # copy config.yaml file without aftables key
-  file.copy(
-    from = "./tests/testthat/test_empty_config.yaml",
-    to = "./config.yaml",
-    overwrite = FALSE,
-    copy.mode = FALSE
+  wb <- generate_workbook(
+    as_aftable(demo_df),
+    config_path = NULL
   )
 
-  x <- suppressWarnings(generate_workbook(as_aftable(demo_df)))
-
-  y <- openxlsx2::wb_get_properties(x)
+  wb_properties <- openxlsx2::wb_get_properties(wb)
 
   # only 4 properties should be set (by openxlsx2 when wbWorkbook object created)
-  expect_true(all(c("creator",
-                    "modifier",
-                    "datetime_created",
-                    "datetime_modified") %in% names(y)))
+  expect_equal(
+    names(wb_properties),
+    c("creator", "datetime_created", "datetime_modified", "modifier")
+  )
+
+})
+
+test_that(
+  "no config if default function arguments are provided and config.yaml doesn't exist", {
+
+  wb <- generate_workbook(
+    as_aftable(demo_df),
+    author = NULL,
+    title = NULL,
+    keywords = NULL,
+    config_path = "config.yaml",
+    config_name = NULL
+  )
+
+  wb_properties <- openxlsx2::wb_get_properties(wb)
+
+  # only 4 properties should be set (by openxlsx2 when wbWorkbook object created)
+  expect_equal(
+    names(wb_properties),
+    c("creator", "datetime_created", "datetime_modified", "modifier")
+  )
+
+})
+
+test_that("error if invalid config file", {
 
 
-  # none of the additional properties should be set
-  expect_false(all(c("title",
-                     "subject",
-                     "keywords",
-                     "comments",
-                     "category") %in% names(y)))
+  expect_error(
+    generate_workbook(
+      as_aftable(demo_df),
+      author = NULL,
+      title = NULL,
+      keywords = NULL,
+      config_path = "./tests/testthat/test_missing_aftable_config.yaml",
+      config_name = NULL
+    ),
+    "does not contain an aftables key"
+  )
 
-  if (file.exists("config.yaml")) file.remove("config.yaml")
+  expect_error(
+    generate_workbook(
+      as_aftable(demo_df),
+      author = NULL,
+      title = NULL,
+      keywords = NULL,
+      config_path = "./tests/testthat/test_missing_default_config.yaml",
+      config_name = NULL
+    ),
+    "does not contain a default aftables configuration and a custom key is not being used"
+  )
+
+  expect_error(
+    generate_workbook(
+      as_aftable(demo_df),
+      author = NULL,
+      title = NULL,
+      keywords = NULL,
+      config_path = "./tests/testthat/test_missing_default_config.yaml",
+      config_name = NULL
+    ),
+    "does not contain a default aftables configuration and a custom key is not being used"
+  )
+
+
+
 
 })
 
