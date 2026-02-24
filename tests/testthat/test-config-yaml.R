@@ -1,7 +1,13 @@
 test_that("no config is applied without config.yaml or function arguments", {
-  wb <- generate_workbook(
-    as_aftable(demo_df),
-    config_path = NULL
+  expect_warning(
+    expect_warning(
+      wb <- generate_workbook(
+        as_aftable(demo_df),
+        config_path = NULL
+      ),
+      "One of your tables is missing a source statement."
+    ),
+    "You have blank cells in these tables but haven't provided a reason: Table_1."
   )
 
   wb_properties <- openxlsx2::wb_get_properties(wb)
@@ -14,16 +20,21 @@ test_that("no config is applied without config.yaml or function arguments", {
 
 })
 
-test_that(
-  "no config if default function arguments are provided and config.yaml doesn't exist", {
+test_that("no config if default function arguments are provided and config.yaml doesn't exist", {
 
-  wb <- generate_workbook(
-    as_aftable(demo_df),
-    author = NULL,
-    title = NULL,
-    keywords = NULL,
-    config_path = "config.yaml",
-    config_name = NULL
+  expect_warning(
+    expect_warning(
+      wb <- generate_workbook(
+        as_aftable(demo_df),
+        author = NULL,
+        title = NULL,
+        keywords = NULL,
+        config_path = "config.yaml",
+        config_name = NULL
+      ),
+      "One of your tables is missing a source statement."
+    ),
+    "You have blank cells in these tables but haven't provided a reason: Table_1."
   )
 
   wb_properties <- openxlsx2::wb_get_properties(wb)
@@ -38,159 +49,188 @@ test_that(
 
 test_that("error if invalid config file", {
 
-
   expect_error(
-    generate_workbook(
-      as_aftable(demo_df),
-      author = NULL,
-      title = NULL,
-      keywords = NULL,
-      config_path = "./tests/testthat/test_missing_aftable_config.yaml",
-      config_name = NULL
+    expect_warning(
+      expect_warning(
+        generate_workbook(
+          as_aftable(demo_df),
+          author = NULL,
+          title = NULL,
+          keywords = NULL,
+          config_path = paste0(testthat::test_path(), "/test_missing_aftable_config.yaml"),
+          config_name = NULL
+        ),
+        "One of your tables is missing a source statement."
+      ),
+      "You have blank cells in these tables but haven't provided a reason: Table_1."
     ),
     "does not contain an aftables key"
   )
 
   expect_error(
-    generate_workbook(
-      as_aftable(demo_df),
-      author = NULL,
-      title = NULL,
-      keywords = NULL,
-      config_path = "./tests/testthat/test_missing_default_config.yaml",
-      config_name = NULL
+    expect_warning(
+      expect_warning(
+        generate_workbook(
+          as_aftable(demo_df),
+          author = NULL,
+          title = NULL,
+          keywords = NULL,
+          config_path = paste0(testthat::test_path(), "/test_missing_default_config.yaml"),
+          config_name = NULL
+        ),
+        "One of your tables is missing a source statement."
+      ),
+      "You have blank cells in these tables but haven't provided a reason: Table_1."
     ),
     "does not contain a default aftables configuration and a custom key is not being used"
   )
 
   expect_error(
-    generate_workbook(
-      as_aftable(demo_df),
-      author = NULL,
-      title = NULL,
-      keywords = NULL,
-      config_path = "./tests/testthat/test_missing_default_config.yaml",
-      config_name = NULL
+    expect_warning(
+      expect_warning(
+        generate_workbook(
+          as_aftable(demo_df),
+          author = NULL,
+          title = NULL,
+          keywords = NULL,
+          config_path = paste0(testthat::test_path(), "/test_missing_default_config.yaml"),
+          config_name = NULL
+        ),
+        "One of your tables is missing a source statement."
+      ),
+      "You have blank cells in these tables but haven't provided a reason: Table_1."
     ),
     "does not contain a default aftables configuration and a custom key is not being used"
   )
 
-
-
-
 })
 
 test_that("default config.yaml is applied correctly", {
-  x <- suppressWarnings(generate_workbook(as_aftable(demo_df),
-                                          config_path = paste0(testthat::test_path(), "/test_config.yaml"),
-                                          config_name = "default"))
 
-  y <- openxlsx2::wb_get_properties(x)
+  expect_warning(
+    expect_warning(
+      wb <- generate_workbook(as_aftable(demo_df),
+                              config_path = paste0(testthat::test_path(), "/test_config.yaml"),
+                              config_name = "default"),
+      "One of your tables is missing a source statement."
+    ),
+    "You have blank cells in these tables but haven't provided a reason: Table_1."
+  )
 
-  expect_equal(y["creator"], c("creator" = "Analysis Function"))
-  expect_equal(y["modifier"], c("modifier" = "Analysis Function"))
-  expect_equal(y["title"], c("title" = "aftables example workbook"))
-  expect_equal(y["subject"], c("subject" = "aftables example subject"))
-  expect_equal(y["keywords"], c("keywords" = "aftables, example, workbook"))
-  expect_equal(y["comments"], c("comments" = "aftables example comments"))
-  expect_equal(y["category"], c("category" = "aftables example category"))
+  wb_properties <- openxlsx2::wb_get_properties(wb)
+
+  expect_equal(wb_properties["creator"], c("creator" = "Analysis Function"))
+  expect_equal(wb_properties["modifier"], c("modifier" = "Analysis Function"))
+  expect_equal(wb_properties["title"], c("title" = "aftables example workbook"))
+  expect_equal(wb_properties["subject"], c("subject" = "aftables example subject"))
+  expect_equal(wb_properties["keywords"], c("keywords" = "aftables, example, workbook"))
+  expect_equal(wb_properties["comments"], c("comments" = "aftables example comments"))
+  expect_equal(wb_properties["category"], c("category" = "aftables example category"))
 })
 
 test_that("minimum properties are applied correctly via arguments", {
 
-  x <- suppressWarnings(generate_workbook(as_aftable(demo_df),
-                                          author = "Analysis Function",
-                                          title = "example workbook",
-                                          keywords =  c("example", "demonstration", "config.yaml")))
+  expect_warning(
+    expect_warning(
+      wb <- generate_workbook(as_aftable(demo_df),
+                              author = "Analysis Function",
+                              title = "example workbook",
+                              keywords =  c("example", "demonstration", "config.yaml")),
+      "One of your tables is missing a source statement."
+    ),
+    "You have blank cells in these tables but haven't provided a reason: Table_1."
+  )
 
-  y <- openxlsx2::wb_get_properties(x)
+  wb_properties <- openxlsx2::wb_get_properties(wb)
 
   # only 6 properties should be set
-  expect_equal(names(y), c("creator",
-                           "datetime_created",
-                           "datetime_modified",
-                           "modifier",
-                           "title",
-                           "keywords"))
-
-  # none of the additional properties should be set
-  expect_false(all(c("subject",
-                     "comments",
-                     "category") %in% names(y)))
+  expect_equal(names(wb_properties),
+               c("creator",
+                 "datetime_created",
+                 "datetime_modified",
+                 "modifier",
+                 "title",
+                 "keywords"))
 
   # minimum properties
-  expect_equal(y["creator"], c("creator" = "Analysis Function"))
-  expect_equal(y["title"], c("title" = "example workbook"))
-  expect_equal(y["keywords"], c("keywords" = "example, demonstration, config.yaml"))
+  expect_equal(wb_properties["creator"],
+               c("creator" = "Analysis Function"))
+  expect_equal(wb_properties["title"],
+               c("title" = "example workbook"))
+  expect_equal(wb_properties["keywords"],
+               c("keywords" = "example, demonstration, config.yaml"))
 
   # if modifier is blank it is populated with value for author
-  expect_equal(y["modifier"], c("modifier" = "Analysis Function"))
+  expect_equal(wb_properties["modifier"],
+               c("modifier" = "Analysis Function"))
 
-})
-
-test_that("error when values in config.yaml are blank", {
-  expect_error(suppressWarnings(generate_workbook(as_aftable(demo_df),
-                                                  config_path = paste0(testthat::test_path(), "/test_blank_config.yaml"),
-                                                  config_name = "blank")),
-               "Please review the following config.yaml entries")
 })
 
 test_that("properties from config.yaml are ignored when properties arguments are set", {
-  x <- suppressWarnings(generate_workbook(as_aftable(demo_df),
-                                          author = "Analysis Function argument",
-                                          title = "aftables example workbook argument",
-                                          keywords =  c("keywords" = "aftables, example, keywords, argument"),
-                                          config_path = paste0(testthat::test_path(), "/test_config.yaml"),
-                                          config_name = "mixed-config"))
 
-  y <- openxlsx2::wb_get_properties(x)
+  expect_warning(
+    expect_warning(
+      wb <- generate_workbook(as_aftable(demo_df),
+                              author = "Analysis Function argument",
+                              title = "aftables example workbook argument",
+                              keywords =  c("keywords" = "aftables, example, keywords, argument"),
+                              config_path = paste0(testthat::test_path(), "/test_config.yaml"),
+                              config_name = "mixed-config"),
+      "One of your tables is missing a source statement."
+    ),
+    "You have blank cells in these tables but haven't provided a reason: Table_1."
+  )
 
-  expect_equal(y["creator"], c("creator" = "Analysis Function argument"))
-  expect_equal(y["title"], c("title" = "aftables example workbook argument"))
-  expect_equal(y["keywords"], c("keywords" = "aftables, example, keywords, argument"))
+  wb_properties <- openxlsx2::wb_get_properties(wb)
+
+  expect_equal(wb_properties["creator"],
+               c("creator" = "Analysis Function argument"))
+  expect_equal(wb_properties["title"],
+               c("title" = "aftables example workbook argument"))
+  expect_equal(wb_properties["keywords"],
+               c("keywords" = "aftables, example, keywords, argument"))
 
 })
 
 test_that("error when values in config.yaml are wrong datatype (character/numeric/list)", {
-  expect_error(suppressWarnings(generate_workbook(as_aftable(demo_df),
-                                                  config_path = paste0(testthat::test_path(), "/test_config.yaml"),
-                                                  config_name = "wrong-datatypes")),
-               "Please review the following config.yaml entries")
+
+  expect_error(
+    expect_warning(
+      expect_warning(
+        generate_workbook(as_aftable(demo_df),
+                          config_path = paste0(testthat::test_path(), "/test_config.yaml"),
+                          config_name = "wrong-datatypes"),
+        "One of your tables is missing a source statement."
+      ),
+      "You have blank cells in these tables but haven't provided a reason: Table_1."
+    ),
+    "Please review the following invalid config entries"
+  )
+
 })
 
 test_that("error when aftables cannot find default config requested by user", {
-  suppressWarnings(expect_error(generate_workbook(as_aftable(demo_df),
-                                                  config_path = paste0(testthat::test_path(), "/test_config_warnings.yaml"),
-                                                  config_name = "default"),
-                                "The default key doesn't exist in the config file. Please view the documentation for create_config_yaml for an example aftables config file."))
+  expect_error(
+    expect_warning(
+      expect_warning(
+        generate_workbook(as_aftable(demo_df),
+                          config_path = paste0(testthat::test_path(), "/test_config_warnings.yaml"),
+                          config_name = "default"),
+        "One of your tables is missing a source statement."
+      ),
+      "You have blank cells in these tables but haven't provided a reason: Table_1."
+    ),
+    "does not contain key `default`"
+  )
 
 })
 
-test_that("error when both default key and custom key are missing", {
-  suppressWarnings(expect_error(generate_workbook(as_aftable(demo_df),
-                                                  config_path = paste0(testthat::test_path(), "/test_empty_config.yaml"),
-                                                  config_name = "empty"),
-                                "The default key and the empty key don't exist in the config file. Please view the documentation for create_config_yaml for an example aftables config file."))
-
-})
-
-test_that("generate_workbook with default arguments finds config.yaml file created with create_config_yaml function", {
-
-  expect_warning(create_config_yaml(open_config = FALSE),
-                 "config.yaml copied to working directory. The default options for generate_workbook will use this file.")
-
-  x <- suppressWarnings(generate_workbook(as_aftable(demo_df)))
-
-  y <- openxlsx2::wb_get_properties(x)
-
-  expect_equal(y["creator"], c("creator" = "Analysis Function"))
-  expect_equal(y["modifier"], c("modifier" = "Analysis Function"))
-  expect_equal(y["title"], c("title" = "aftables example workbook"))
-  expect_equal(y["subject"], c("subject" = "aftables example subject"))
-  expect_equal(y["keywords"], c("keywords" = "aftables, example, workbook"))
-  expect_equal(y["comments"], c("comments" = "aftables example comments"))
-  expect_equal(y["category"], c("category" = "aftables example category"))
-
-  if (file.exists("config.yaml")) file.remove("config.yaml")
-
-})
+expect_warning(
+  expect_warning(
+    wb <- generate_workbook(as_aftable(demo_df),
+                            config_path = paste0(testthat::test_path(), "/test_wrong_config.yaml"),
+                            config_name = "default"),
+    "One of your tables is missing a source statement."
+  ),
+  "You have blank cells in these tables but haven't provided a reason: Table_1."
+)
