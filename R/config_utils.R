@@ -216,9 +216,9 @@ process_config <- function(user_config, config_path, config_name) {
 # check config field datatypes
 validate_config <- function(config) {
 
-  # the config may contain any of these entries and they should be these datatypes
-  # if the config contains any extra entries they won't be used by functions
-  # the functions will handle non-existent or empty entries as NULL
+  # The config may contain any of these entries and they should be these
+  # datatypes. If the config contains any extra entries they won't be used by
+  # functions. Functions will handle non-existent or empty entries as NULL.
 
   correct_datatypes <-
     tibble::tibble(
@@ -250,7 +250,7 @@ validate_config <- function(config) {
       )
     )
 
-  # turn config list into dataframe
+  # Turn config list into dataframe
   config_df <-
     tibble::tibble(
       parent = c(rep("workbook_properties",
@@ -259,14 +259,16 @@ validate_config <- function(config) {
                      length(config$workbook_format))),
       entry =  c(names(config$workbook_properties),
                  names(config$workbook_format)),
-      # find the datatype of each entry under workbook_properties and workbook_format
+      # find the datatype of each entry under workbook_properties and
+      # workbook_format
       config_datatype = replace(
         purrr::map_depth(config, 2, typeof) |>
           unlist(use.names = FALSE),
         NULL,
         NA_character_
       ),
-      # find the length of each entry under workbook_properties and workbook_format
+      # find the length of each entry under workbook_properties and
+      # workbook_format
       config_length = replace(
         purrr::map_depth(config, 2, length) |>
           unlist(use.names = FALSE),
@@ -275,13 +277,14 @@ validate_config <- function(config) {
       )
     )
 
-  # warning if entries in user config are not recognised
+  # Warning if entries in user config are not recognised
   # either wrong name or under the wrong entry (workbook_properties/workbook_format)
   unrecognised_entries <-
-    dplyr::anti_join(config_df,
-                     correct_datatypes,
-                     by = dplyr::join_by("parent" == "correct_parent",
-                                         "entry")) |>
+    dplyr::anti_join(
+      config_df,
+      correct_datatypes,
+      by = dplyr::join_by("parent" == "correct_parent", "entry")
+    ) |>
     mutate(message = paste0(.data$parent, ":", .data$entry))
 
   if (nrow(unrecognised_entries) > 0) {
@@ -298,19 +301,19 @@ validate_config <- function(config) {
     )
   }
 
-  # combine the configs
+  # Combine the configs
   combined_configs <-
     dplyr::inner_join(correct_datatypes,
                       config_df,
                       by = dplyr::join_by("correct_parent" == "parent",
                                           "entry"))
 
-  # keywords can be any length, all other entries should be 1
+  # Keywords can be any length, all other entries should be 1
   config_lengths <-
     combined_configs |>
     filter(.data$entry != "keywords" & .data$config_length > 1)
 
-  # error if any entries contain more than 1 value apart from keywords
+  # Error if any entries contain more than 1 value apart from keywords
   if (nrow(config_lengths) > 0) {
     stop(
       paste0(
@@ -322,24 +325,26 @@ validate_config <- function(config) {
     )
   }
 
-  # identify entries with incorrect datatypes and create error messages
+  # Identify entries with incorrect datatypes and create error messages
   incorrect_datatypes <-
     combined_configs |>
     filter(.data$datatype != .data$config_datatype) |>
     mutate(
-      across(everything(), ~ stringr::str_replace(.x,
-                                                  "character",
-                                                  "character string")),
-      across(everything(), ~ stringr::str_replace(.x,
-                                                  "integer",
-                                                  "integer value")),
+      across(
+        everything(),
+        ~ stringr::str_replace(.x, "character", "character string")
+      ),
+      across(
+        everything(),
+        ~ stringr::str_replace(.x, "integer", "integer value")
+      ),
       error_message = paste0(.data$correct_parent, ":", .data$entry, " is ",
                              .data$config_datatype, ". It should be ",
                              .data$datatype, ".")
     ) |>
     dplyr::select("error_message")
 
-  # error if any invalid config datatypes
+  # Error if any invalid config datatypes
   if (nrow(incorrect_datatypes) > 0) {
     stop(
       c(
