@@ -89,7 +89,7 @@ create_config_yaml <- function(path = getwd(),
   }
 
   if (open_config) {
-    file.edit(paste0(path, "/config.yaml"))
+    utils::file.edit(paste0(path, "/config.yaml"))
   }
 
   invisible(NULL)
@@ -117,7 +117,7 @@ process_config <- function(user_config, config_path, config_name) {
 
   if (!is.null(config_path) && file.exists(config_path)) {
 
-    config_file <- read_yaml(config_path)
+    config_file <- yaml::read_yaml(config_path)
 
     if (config_path != "config.yaml" &&
           !purrr::pluck_exists(config_file, "aftables")) {
