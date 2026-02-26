@@ -183,4 +183,3 @@ test_that("table cleaning functions work as intended", {
 
 
 })
-
