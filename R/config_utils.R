@@ -332,11 +332,11 @@ validate_config <- function(config) {
     mutate(
       across(
         everything(),
-        ~ stringr::str_replace(.x, "character", "character string")
+        \(x) stringr::str_replace(x, "character", "character string")
       ),
       across(
         everything(),
-        ~ stringr::str_replace(.x, "integer", "integer value")
+        \(x) stringr::str_replace(x, "integer", "integer value")
       ),
       error_message = paste0(.data$correct_parent, ":", .data$entry, " is ",
                              .data$config_datatype, ". It should be ",
