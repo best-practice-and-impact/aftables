@@ -159,7 +159,6 @@ process_config <- function(user_config, config_path, config_name) {
       stop("Default configuration key must be a named list", call. = FALSE)
     }
 
-
     # Get custom config settings ---------
 
     if (!is.null(config_name)) {
@@ -204,6 +203,31 @@ process_config <- function(user_config, config_path, config_name) {
   # Combine config settings, user config has highest priority, default config lowest
   config <-  purrr::list_modify(default_config, !!!custom_config)
   config <-  purrr::list_modify(config, !!!user_config)
+
+  # warning if the config workbook_properties have not been
+  # changed from the internal config.yaml defaults
+  if (length(config$workbook_properties) > 0 &&
+      any(unlist(config$workbook_properties,
+                 use.names = FALSE) %in%
+          c("Analysis Function",
+            "aftables example workbook",
+            "aftables",
+            "example",
+            "workbook",
+            "aftables example subject",
+            "aftables example category",
+            "Analysis Function",
+            "aftables example comments")
+      )
+  ) {
+    warning(
+      paste0(
+        "Your config file contains values identical to the aftables example ",
+        "config. Please check your config file."
+      ),
+      call. = FALSE
+    )
+  }
 
   # Validate the final config --------------------------------------------------
   validate_config(config)

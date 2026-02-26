@@ -109,12 +109,15 @@ test_that("default config.yaml is applied correctly", {
 
   expect_warning(
     expect_warning(
-      wb <- generate_workbook(as_aftable(demo_df),
-                              config_path = paste0(testthat::test_path(), "/test_config.yaml"),
-                              config_name = "default"),
-      "One of your tables is missing a source statement."
+      expect_warning(
+        wb <- generate_workbook(as_aftable(demo_df),
+                                config_path = paste0(testthat::test_path(), "/test_config.yaml"),
+                                config_name = "default"),
+        "One of your tables is missing a source statement."
+      ),
+      "You have blank cells in these tables but haven't provided a reason: Table_1."
     ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
+    "Your config file contains values identical to the aftables example config. Please check your config file."
   )
 
   wb_properties <- openxlsx2::wb_get_properties(wb)
@@ -129,16 +132,18 @@ test_that("default config.yaml is applied correctly", {
 })
 
 test_that("minimum properties are applied correctly via arguments", {
-
   expect_warning(
     expect_warning(
-      wb <- generate_workbook(as_aftable(demo_df),
-                              author = "Analysis Function",
-                              title = "example workbook",
-                              keywords =  c("example", "demonstration", "config.yaml")),
-      "One of your tables is missing a source statement."
+      expect_warning(
+        wb <- generate_workbook(as_aftable(demo_df),
+                                author = "Analysis Function",
+                                title = "example workbook",
+                                keywords =  c("example", "demonstration", "config.yaml")),
+        "One of your tables is missing a source statement."
+      ),
+      "You have blank cells in these tables but haven't provided a reason: Table_1."
     ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
+    "Your config file contains values identical to the aftables example config. Please check your config file."
   )
 
   wb_properties <- openxlsx2::wb_get_properties(wb)
@@ -167,7 +172,6 @@ test_that("minimum properties are applied correctly via arguments", {
 })
 
 test_that("properties from config.yaml are ignored when properties arguments are set", {
-
   expect_warning(
     expect_warning(
       wb <- generate_workbook(as_aftable(demo_df),
@@ -197,12 +201,15 @@ test_that("error when values in config.yaml are wrong datatype (character/numeri
   expect_error(
     expect_warning(
       expect_warning(
-        generate_workbook(as_aftable(demo_df),
-                          config_path = paste0(testthat::test_path(), "/test_config.yaml"),
-                          config_name = "wrong-datatypes"),
-        "One of your tables is missing a source statement."
+        expect_warning(
+          generate_workbook(as_aftable(demo_df),
+                            config_path = paste0(testthat::test_path(), "/test_config.yaml"),
+                            config_name = "wrong-datatypes"),
+          "One of your tables is missing a source statement."
+        ),
+        "You have blank cells in these tables but haven't provided a reason: Table_1."
       ),
-      "You have blank cells in these tables but haven't provided a reason: Table_1."
+      "The config file contains values identical to the aftables example config. Please check your config file."
     ),
     "Please review the following invalid config entries"
   )
@@ -213,12 +220,15 @@ test_that("error when aftables cannot find default config requested by user", {
   expect_error(
     expect_warning(
       expect_warning(
-        generate_workbook(as_aftable(demo_df),
-                          config_path = paste0(testthat::test_path(), "/test_config_warnings.yaml"),
-                          config_name = "default"),
-        "One of your tables is missing a source statement."
+        expect_warning(
+          generate_workbook(as_aftable(demo_df),
+                            config_path = paste0(testthat::test_path(), "/test_config_warnings.yaml"),
+                            config_name = "default"),
+          "One of your tables is missing a source statement."
+        ),
+        "You have blank cells in these tables but haven't provided a reason: Table_1."
       ),
-      "You have blank cells in these tables but haven't provided a reason: Table_1."
+      "The config file contains values identical to the aftables example config. Please check your config file."
     ),
     "does not contain key `default`"
   )
@@ -229,26 +239,33 @@ test_that("error when entries apart from keywords have more than 1 value", {
   expect_error(
     expect_warning(
       expect_warning(
-        generate_workbook(as_aftable(demo_df),
-                          config_path = paste0(testthat::test_path(), "/test_config.yaml"),
-                          config_name = "wrong-lengths"),
-        "One of your tables is missing a source statement."
+        expect_warning(
+          generate_workbook(as_aftable(demo_df),
+                            config_path = paste0(testthat::test_path(), "/test_config.yaml"),
+                            config_name = "wrong-lengths"),
+          "One of your tables is missing a source statement."
+        ),
+        "You have blank cells in these tables but haven't provided a reason: Table_1."
       ),
-      "You have blank cells in these tables but haven't provided a reason: Table_1."
+      "Your config file contains values identical to the aftables example config. Please check your config file."
     ),
     "Config entries must contain only one value apart from keywords. Please check your config file."
   )
 })
+
 test_that("error when config entries have invalid names or in wrong place", {
   expect_warning(
     expect_warning(
       expect_warning(
-        generate_workbook(as_aftable(demo_df),
-                          config_path = paste0(testthat::test_path(), "/test_wrong_config.yaml"),
-                          config_name = "default"),
-        "One of your tables is missing a source statement."
+        expect_warning(
+          generate_workbook(as_aftable(demo_df),
+                            config_path = paste0(testthat::test_path(), "/test_wrong_config.yaml"),
+                            config_name = "default"),
+          "One of your tables is missing a source statement."
+        ),
+        "You have blank cells in these tables but haven't provided a reason: Table_1."
       ),
-      "You have blank cells in these tables but haven't provided a reason: Table_1."
+      "Your config file contains values identical to the aftables example config. Please check your config file."
     ),
     "Some entries in your config file could not be processed."
   )

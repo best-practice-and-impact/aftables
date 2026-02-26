@@ -78,7 +78,9 @@ demo_aftable <- create_aftable(
 
 demo_df <- as.data.frame(demo_aftable)
 
-demo_workbook <- generate_workbook(demo_aftable, config_path = "int/extdata/config.yaml", config_name = "minimal")
+demo_workbook <- suppressWarnings(generate_workbook(demo_aftable,
+                                                    config_path = "./inst/ext-data/config.yaml",
+                                                    config_name = "default"))
 
 detect_currency_regex <- "^\\s*((-?\\s*[\u00A3\u0024\u20AC\u00A5]|[\u00A3\u0024\u20AC\u00A5]\\s*-?)\\s*(\\d{1,3}(,\\d{3})+|\\d+)(\\.\\d+)?|-?\\s*(\\d{1,3}(,\\d{3})+|\\d+)(\\.\\d+)?\\s*[\u00A3\u0024\u20AC\u00A5])\\s*$"
 extract_currency_symbol_regex <- "[\u00A3|\u0024|\u20AC|\u00A5]"
