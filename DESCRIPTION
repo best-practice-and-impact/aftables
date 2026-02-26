@@ -30,14 +30,14 @@ Imports:
     tidyr,
     rlang,
     utils,
-    yaml
+    yaml,
+    tibble
 Suggests: 
     covr,
     knitr,
     rmarkdown,
     rstudioapi,
-    testthat (>= 3.0.0),
-    tibble
+    testthat (>= 3.0.0)
 VignetteBuilder: 
     knitr
 Config/testthat/edition: 3

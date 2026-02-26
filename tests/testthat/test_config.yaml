@@ -30,44 +30,6 @@ aftables:
       category: "aftables workbook 2 category"
       keywords:
         - "workbook 2"
-  blank:
-    workbook_properties:
-      author:
-      title:
-      subject:
-      category:
-      modifier:
-      keywords:
-        -
-        -
-        -
-      comments:
-    workbook_format:
-      base_font_name:
-      base_font_size:
-      table_header_size:
-      sheet_header_size:
-      cellwidth_default:
-      cellwidth_wider:
-      nchar_break:
-  empty:
-  mixed:
-    workbook_properties:
-      author:
-      title:
-      subject: "example subject"
-      category: "example"
-      modifier: "Analysis Function"
-      keywords:
-      comments: "example"
-    workbook_format:
-      base_font_name: "Arial"
-      base_font_size: 12
-      table_header_size: 14
-      sheet_header_size: 16
-      cellwidth_default: 16
-      cellwidth_wider: 32
-      nchar_break: 50
   mixed-config:
     workbook_properties:
       author: "Analysis Function config"
@@ -106,3 +68,38 @@ aftables:
       cellwidth_default: "16"
       cellwidth_wider: "32"
       nchar_break: "50"
+  wrong-lengths:
+    workbook_properties:
+      author:
+        - "Analysis"
+        - "Function"
+      title:
+        - "aftables"
+        - "example"
+        - "workbook"
+      keywords:
+        - "aftables"
+        - "example"
+        - "workbook"
+      subject:
+        - "aftables"
+        - "example"
+        - "subject"
+      category:
+        - "aftables"
+        - "example"
+        - "category"
+      modifier:
+        - "Analysis Function"
+      comments:
+        - "aftables"
+        - "example"
+        - "comments"
+    workbook_format:
+      base_font_name: "Arial"
+      base_font_size: 12
+      table_header_size: 14
+      sheet_header_size: 16
+      cellwidth_default: 16
+      cellwidth_wider: 32
+      nchar_break: 50

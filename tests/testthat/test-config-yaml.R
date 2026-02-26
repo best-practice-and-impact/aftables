@@ -225,12 +225,31 @@ test_that("error when aftables cannot find default config requested by user", {
 
 })
 
-expect_warning(
+test_that("error when entries apart from keywords have more than 1 value", {
+  expect_error(
+    expect_warning(
+      expect_warning(
+        generate_workbook(as_aftable(demo_df),
+                          config_path = paste0(testthat::test_path(), "/test_config.yaml"),
+                          config_name = "wrong-lengths"),
+        "One of your tables is missing a source statement."
+      ),
+      "You have blank cells in these tables but haven't provided a reason: Table_1."
+    ),
+    "Config entries must contain only one value apart from keywords. Please check your config file."
+  )
+})
+test_that("error when config entries have invalid names or in wrong place", {
   expect_warning(
-    wb <- generate_workbook(as_aftable(demo_df),
-                            config_path = paste0(testthat::test_path(), "/test_wrong_config.yaml"),
-                            config_name = "default"),
-    "One of your tables is missing a source statement."
-  ),
-  "You have blank cells in these tables but haven't provided a reason: Table_1."
-)
+    expect_warning(
+      expect_warning(
+        generate_workbook(as_aftable(demo_df),
+                          config_path = paste0(testthat::test_path(), "/test_wrong_config.yaml"),
+                          config_name = "default"),
+        "One of your tables is missing a source statement."
+      ),
+      "You have blank cells in these tables but haven't provided a reason: Table_1."
+    ),
+    "Some entries in your config file could not be processed."
+  )
+})

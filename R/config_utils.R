@@ -74,7 +74,7 @@ create_config_yaml <- function(path = getwd(),
 
   if (!copy) {
     stop("Error copying config.yaml",
-         .call = FALSE)
+         call. = FALSE)
   }
 
   if (path == getwd()) {
@@ -199,17 +199,11 @@ process_config <- function(user_config, config_path, config_name) {
 
   # Combine config options -----------------------------------------------------
   # Remove null options in user config - these are default function argument
-  user_config <- purrr::map_depth(user_config, 1, plyr::compact)
+  user_config <- purrr::map_depth(user_config, 1, purrr::compact)
 
   # Combine config settings, user config has highest priority, default config lowest
   config <-  purrr::list_modify(default_config, !!!custom_config)
   config <-  purrr::list_modify(config, !!!user_config)
-
-  # convert list of keywords to vector
-  config$workbook_properties$keywords <-
-    config$workbook_properties$keywords |>
-    unlist(use.names = FALSE)
-
 
   # Validate the final config --------------------------------------------------
   validate_config(config)
@@ -222,123 +216,135 @@ process_config <- function(user_config, config_path, config_name) {
 # check config field datatypes
 validate_config <- function(config) {
 
-  # remove any NULLs from config before processing
-  config <- purrr::map_depth(config, 1, plyr::compact)
-
-  # order any fields alphabetically
-  config <- purrr::map_depth(config, 1, ~ if (length(.x) > 0) .x[order(names(.x))])
-
-  config <- purrr::map_depth(config, 1, ~ switch(typeof(.x),
-                                                 "list" = .x[order(names(.x))],
-                                                 "NULL" = list()))
-
-  # get datatypes from config
-  config_datatypes <- purrr::map_depth(config, 2, typeof)
-
   # the config may contain any of these entries and they should be these datatypes
   # if the config contains any extra entries they won't be used by functions
   # the functions will handle non-existent or empty entries as NULL
 
-  correct_datatypes <- list(
-    "workbook_properties" =
-      list(
-        "author" = "character",
-        "category" = "character",
-        "comments" = "character",
-        "company" = "character",
-        "keywords" = "character",
-        "manager" = "character",
-        "modifier" = "character",
-        "subject" = "character",
-        "title" = "character"
-      ),
-    "workbook_format" =
-      list(
-        "base_font_name"  = "character",
-        "base_font_size" = "integer",
-        "cellwidth_default" = "integer",
-        "cellwidth_wider" = "integer",
-        "nchar_break" = "integer",
-        "sheet_header_size" = "integer",
-        "table_header_size" = "integer"
-      )
-  )
-
-  config_names <- purrr::map_depth(config_datatypes, 1, names)
-  correct_names <- purrr::map_depth(correct_datatypes, 1, names)
-
-  # determine which config_fields to check
-  correct_fields <- purrr::map2(correct_names,
-                                config_names,
-                                \(x, y) x %in% y)
-
-  config_fields <- purrr::map2(config_names,
-                               correct_names,
-                               \(x, y) x %in% y)
-
-  # filter both complete_datatypes and config_datatypes to match on entries
   correct_datatypes <-
-    purrr::map2(correct_datatypes,
-                correct_fields,
-                \(x, y) x[y])
+    tibble::tibble(
+      correct_parent = c(
+        rep("workbook_properties", 9),
+        rep("workbook_format", 7)
+      ),
+      entry = c(
+        "author",
+        "category",
+        "comments",
+        "company",
+        "keywords",
+        "manager",
+        "modifier",
+        "subject",
+        "title",
+        "base_font_name",
+        "base_font_size",
+        "cellwidth_default",
+        "cellwidth_wider",
+        "nchar_break",
+        "sheet_header_size",
+        "table_header_size"
+      ),
+      datatype = c(
+        rep("character", 10),
+        rep("integer", 6)
+      )
+    )
 
-  config_datatypes <-
-    purrr::map2(config_datatypes,
-                config_fields,
-                \(x, y) x[y])
+  # turn config list into dataframe
+  config_df <-
+    tibble::tibble(
+      parent = c(rep("workbook_properties",
+                     length(config$workbook_properties)),
+                 rep("workbook_format",
+                     length(config$workbook_format))),
+      entry =  c(names(config$workbook_properties),
+                 names(config$workbook_format)),
+      # find the datatype of each entry under workbook_properties and workbook_format
+      config_datatype = replace(
+        purrr::map_depth(config, 2, typeof) |>
+          unlist(use.names = FALSE),
+        NULL,
+        NA_character_
+      ),
+      # find the length of each entry under workbook_properties and workbook_format
+      config_length = replace(
+        purrr::map_depth(config, 2, length) |>
+          unlist(use.names = FALSE),
+        NULL,
+        NA_character_
+      )
+    )
 
-  # remove any NULLs introduced
-  correct_datatypes <- purrr::map_depth(correct_datatypes, 1, plyr::compact)
-  config_datatypes <- purrr::map_depth(config_datatypes, 1, plyr::compact)
+  # warning if entries in user config are not recognised
+  # either wrong name or under the wrong entry (workbook_properties/workbook_format)
+  unrecognised_entries <-
+    dplyr::anti_join(config_df,
+                     correct_datatypes,
+                     by = dplyr::join_by("parent" == "correct_parent",
+                                         "entry")) |>
+    mutate(message = paste0(.data$parent, ":", .data$entry))
 
-  # use all.equal to compare user config_datatypes to correct_datatypes
-  invalid_config_entries <-
-    all.equal(config_datatypes,
-              correct_datatypes,
-              check.class = FALSE)
+  if (nrow(unrecognised_entries) > 0) {
+    warning(
+      paste0(
+        "Some entries in your config file could not be processed.\n",
+        "Entries with invalid names or in the wrong location will ",
+        "not be added to your workbook.\n",
+        "Please check the names and locations of these entries ",
+        "in your config file:\n",
+        paste0(unrecognised_entries$message, collapse = "\n")
+      ),
+      call. = FALSE
+    )
+  }
 
-  if (!isTRUE(invalid_config_entries)) {
+  # combine the configs
+  combined_configs <-
+    dplyr::inner_join(correct_datatypes,
+                      config_df,
+                      by = dplyr::join_by("correct_parent" == "parent",
+                                          "entry"))
 
-    # clean output of all.equal
-    invalid_config_entries <-
-      invalid_config_entries |>
-      stringr::str_remove_all(pattern = "[\u201C|\u201D]") |> # “”
-      stringr::str_extract_all(pattern = "(?<=Component[[:space:]])\\b\\w*\\b")
+  # keywords can be any length, all other entries should be 1
+  config_lengths <-
+    combined_configs |>
+    filter(.data$entry != "keywords" & .data$config_length > 1)
 
-    # get correct data types for invalid entries
-    valid_datatypes <-
-      purrr::map(invalid_config_entries,
-                 \(x) purrr::pluck(correct_datatypes, x[1], x[2]))
+  # error if any entries contain more than 1 value apart from keywords
+  if (nrow(config_lengths) > 0) {
+    stop(
+      paste0(
+        "Config entries must contain only one value apart from keywords. ",
+        "Please check your config file for these entries: ",
+        paste0(config_lengths$entry, collapse = ", "), "."
+      ),
+      call. = FALSE
+    )
+  }
 
-    # generate error messages for user
-    invalid_config_entries <-
-      mapply(c,
-             invalid_config_entries,
-             valid_datatypes,
-             SIMPLIFY = FALSE)
+  # identify entries with incorrect datatypes and create error messages
+  incorrect_datatypes <-
+    combined_configs |>
+    filter(.data$datatype != .data$config_datatype) |>
+    mutate(
+      across(everything(), ~ stringr::str_replace(.x,
+                                                  "character",
+                                                  "character string")),
+      across(everything(), ~ stringr::str_replace(.x,
+                                                  "integer",
+                                                  "integer value")),
+      error_message = paste0(.data$correct_parent, ":", .data$entry, " is ",
+                             .data$config_datatype, ". It should be ",
+                             .data$datatype, ".")
+    ) |>
+    dplyr::select("error_message")
 
-    invalid_config_entries <-
-      lapply(invalid_config_entries,
-             str_replace_all,
-             pattern = "character",
-             replacement = "character string")
-
-    invalid_config_entries <-
-      lapply(invalid_config_entries,
-             str_replace_all,
-             pattern = "numeric",
-             replacement = "numeric value")
-
-    invalid_config_entries <-
-      invalid_config_entries |>
-      sapply(paste0,
-             sep = c(": ", " should be ", ""),
-             collapse = "")
-
+  # error if any invalid config datatypes
+  if (nrow(incorrect_datatypes) > 0) {
     stop(
       c(
         "Please review the following invalid config entries:\n",
-        paste0(invalid_config_entries, collapse = "\n")
+        paste0(incorrect_datatypes$error_message, collapse = "\n")
       ),
       call. = FALSE
     )

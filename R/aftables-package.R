@@ -24,5 +24,6 @@
 #' @importFrom stringr str_extract
 #' @importFrom stringr str_replace
 #' @importFrom stringr str_replace_all
+#' @importFrom tibble tibble
 ## usethis namespace: end
 NULL
