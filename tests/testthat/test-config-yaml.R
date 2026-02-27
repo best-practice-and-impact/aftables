@@ -111,8 +111,7 @@ test_that("default config.yaml is applied correctly", {
     expect_warning(
       expect_warning(
         wb <- generate_workbook(as_aftable(demo_df),
-                                config_path = paste0(testthat::test_path(), "/test_config.yaml"),
-                                config_name = "default"),
+                                config_path = paste0(testthat::test_path(), "/test_config.yaml")),
         "One of your tables is missing a source statement."
       ),
       "You have blank cells in these tables but haven't provided a reason: Table_1."
@@ -259,8 +258,7 @@ test_that("error when config entries have invalid names or in wrong place", {
       expect_warning(
         expect_warning(
           generate_workbook(as_aftable(demo_df),
-                            config_path = paste0(testthat::test_path(), "/test_wrong_config.yaml"),
-                            config_name = "default"),
+                            config_path = paste0(testthat::test_path(), "/test_wrong_config.yaml")),
           "One of your tables is missing a source statement."
         ),
         "You have blank cells in these tables but haven't provided a reason: Table_1."
