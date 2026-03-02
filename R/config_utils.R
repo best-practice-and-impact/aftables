@@ -37,6 +37,27 @@
 #' `config_name` argument. This allows you to specify settings for a specific
 #' workbook. Custom key settings will be preferred over the `default` settings.
 #'
+#' Keys below workbook_properties will appear in the Excel workbook when it is
+#' saved using \code{\link[openxlsx2]{wb_save}} from openxlsx2. They can be
+#' found in the file properties or the workbook information.
+#'
+#' Keys below workbook_format will be applied to the contents of the workbook.
+#' The keys base_font_name and base_font_size define the default font name and
+#' size used by the workbook. All text not formatted as a table header or sheet
+#' header will use the default settings. Table headers and sheet headers will be
+#' formatted using the table_header_size and sheet_header_size keys
+#' respectively, and will always be formatted as bold.
+#'
+#' The keys cellwidth_default and cellwidth_wider define the width of columns.
+#' The units of these keys are the column width values used by Excel. If the
+#' contents of a column is wider than the cellwidth_default value aftables will
+#' set the column width to the value of cellwidth_wider. The key nchar_break is
+#' the number of characters where column headers have text wrapping applied. If
+#' a column header is long enough to require text wrapping the column will have
+#' its width set to the value of cellwidth_wider. The column contents and column
+#' headers are checked separately, and either can cause a column to be set as a
+#' wide column.
+#'
 #' Not all workbook configuration options need to be set. Required settings are
 #' documented in \code{\link[aftables]{generate_workbook}}.
 #'

@@ -13,23 +13,20 @@
 .style_font <- function(workbook_format) {
 
   base_font_size <-
-    ifelse(!is.null(workbook_format$base_font_size),
-           workbook_format$base_font_size,
-           12)
+    if (!is.null(workbook_format$base_font_size))
+      workbook_format$base_font_size else aftables_default_font$base_font_size
 
   table_header_size <-
-    ifelse(!is.null(workbook_format$table_header_size),
-           workbook_format$table_header_size,
-           14)
+    if (!is.null(workbook_format$table_header_size))
+      workbook_format$table_header_size else aftables_default_font$table_header_size
 
   sheet_header_size <-
-    ifelse(!is.null(workbook_format$sheet_header_size),
-           workbook_format$sheet_header_size,
-           16)
+    if (!is.null(workbook_format$sheet_header_size))
+      workbook_format$sheet_header_size else aftables_default_font$sheet_header_size
 
-  base_font_name <- ifelse(!is.null(workbook_format$base_font_name),
-                           workbook_format$base_font_name,
-                           "Arial")
+  base_font_name <-
+    if (!is.null(workbook_format$base_font_name))
+      workbook_format$base_font_name else aftables_default_font$base_font_name
 
   list(
     bold =  1,
@@ -44,16 +41,15 @@
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @noRd
 
-.style_workbook <- function(wb, workbook_format) {
+.style_workbook <- function(wb, font_ref) {
 
   base_font_size <-
-    ifelse(!is.null(workbook_format$base_font_size),
-           workbook_format$base_font_size,
-           12)
+    if (!is.null(font_ref$base_font_size))
+      font_ref$base_font_size else aftables_default_font$base_font_size
 
-  base_font_name <- ifelse(!is.null(workbook_format$base_font_name),
-                           workbook_format$base_font_name,
-                           "Arial")
+  base_font_name <-
+    if (!is.null(font_ref$base_font_name))
+      font_ref$base_font_name else aftables_default_font$base_font_name
 
   wb$set_base_font(
     font_size = base_font_size,
@@ -96,6 +92,7 @@
 #' @param style_ref List. The style-reference object made with .style_paragraph().
 #' @param font_ref List. The font-reference object made with .style_font().
 #' @noRd
+
 .style_table <- function(wb, content, table_name, style_ref, font_ref, table_formats, workbook_format) {
   content_row <- content[content[["table_name"]] == table_name, ]
   table <- content_row[, "table"][[1]]
@@ -130,7 +127,6 @@
 
   table_height <- nrow(table)
   table_width <- ncol(table)
-
 
   #=============================================================================
   # style table headers, wrap text, left align columns by default
@@ -167,16 +163,6 @@
     name = font_ref[["name"]]
   )
 
-
-  #=============================================================================
-  # set column widths
-  #=============================================================================
-
-  cellwidth_default <- 16
-  cellwidth_wider <- 32
-  nchar_break <- 50
-
-
   # Find indices of columns that should be wider than default
   is_factor_column <- sapply(table, is.factor) # nchar (below) fails on factors
   table[is_factor_column] <- lapply(table[is_factor_column], as.character)
@@ -198,7 +184,6 @@
       widths = cellwidth_wider
     )
   }
-
 
   #=============================================================================
   # right align numeric columns
@@ -329,7 +314,7 @@
 #' @param tab_title Character. The tab in `wb` where the style should be set.
 #' @param style_ref List. The style-reference object made with .style_paragraph().
 #' @noRd
-.style_contents <- function(wb, content, style_ref) {
+.style_contents <- function(wb, content, style_ref, font_ref) {
   tab_title <- content[content[["sheet_type"]] == "contents", "tab_title"][[1]]
   table <- content[content[["sheet_type"]] == "contents", "table"][[1]]
 
@@ -372,7 +357,7 @@
 #' @param tab_title Character. The tab in `wb` where the style should be set.
 #' @param style_ref List. The style-reference object made with .style_paragraph().
 #' @noRd
-.style_notes <- function(wb, content, style_ref) {
+.style_notes <- function(wb, content, font_ref, style_ref) {
   tab_title <- content[content[["sheet_type"]] == "notes", "tab_title"][[1]]
   table <- content[content[["sheet_type"]] == "notes", "table"][[1]]
 
@@ -407,5 +392,12 @@
     dims = wb_dims(rows = seq(start_row, table_height + start_row), cols = seq(table_width)),
     wrap_text = style_ref[["wrap_text"]],
     horizontal = style_ref[["lalign"]]
+  )
+
+  wb$add_font(
+    sheet = tab_title,
+    dims = wb_dims(rows = seq(start_row, table_height + start_row), cols = seq(table_width)),
+    size = font_ref[["base_font_size"]],
+    name = font_ref[["name"]]
   )
 }

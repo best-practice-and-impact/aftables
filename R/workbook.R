@@ -104,6 +104,8 @@ generate_workbook <- function(aftable,
   workbook_properties <- config$workbook_properties
   workbook_format <- config$workbook_format
 
+  font_ref <- .style_font(workbook_format)
+
   # Create a table_name from tab_title (unique, no spaces, no punctuation)
   aftable[["table_name"]] <-
     gsub(" ", "_", tolower(trimws(aftable[["tab_title"]])))
@@ -113,21 +115,21 @@ generate_workbook <- function(aftable,
   # Create workbook, set base style, set properties, add tabs, cover, contents (required for all workbooks)
   wb <- wb_workbook(theme = "Office 2007 - 2010 Theme")
   wb <- .set_workbook_properties(wb, workbook_properties)
-  wb <- .style_workbook(wb, workbook_format)
+  wb <- .style_workbook(wb, font_ref)
   wb <- .add_tabs(wb, aftable)
-  wb <- .add_cover(wb, aftable, workbook_format)
-  wb <- .add_contents(wb, aftable, workbook_format)
+  wb <- .add_cover(wb, aftable, font_ref)
+  wb <- .add_contents(wb, aftable, font_ref, workbook_format)
 
   # There won't always be a notes tab
   if (any(aftable$sheet_type %in% "notes")) {
-    wb <- .add_notes(wb, aftable, workbook_format)
+    wb <- .add_notes(wb, aftable, font_ref, workbook_format)
   }
 
   # Iterable titles for tabs containing tables
   table_sheets <- aftable[aftable$sheet_type == "tables", ][["table_name"]]
 
   for (i in table_sheets) {
-    wb <- .add_tables(wb, aftable, table_name = i, workbook_format)
+    wb <- .add_tables(wb, aftable, table_name = i, font_ref, workbook_format)
   }
 
   wb
