@@ -36,7 +36,6 @@ Contents of example config.yaml:
         - "workbook"
       subject: "aftables example subject"
       category: "aftables example category"
-      modifier: "Analysis Function"
       comments: "aftables example comments"
     workbook_format:
       base_font_name: "Arial"

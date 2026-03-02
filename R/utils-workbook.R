@@ -877,7 +877,6 @@
     title = content$title,
     subject = content$subject,
     category = content$category,
-    modifier = content$modifier,
     keywords = content$keywords,
     comments = content$comments,
     manager = content$manager

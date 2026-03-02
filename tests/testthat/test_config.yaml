@@ -9,7 +9,6 @@ aftables:
         - "workbook"
       subject: "aftables example subject"
       category: "aftables example category"
-      modifier: "Analysis Function"
       comments: "aftables example comments"
     workbook_format:
       base_font_name: "Arial"
@@ -38,7 +37,6 @@ aftables:
         - "mixed-config"
       subject: "aftables example subject config"
       category: "aftables example category config"
-      modifier: "Analysis Function config"
       comments: "aftables example comments config"
     workbook_format:
       base_font_name: "Arial"
@@ -54,7 +52,6 @@ aftables:
       title: 1
       subject: 1
       category: 1
-      modifier: 1
       keywords:
         - 1
         - 2
@@ -89,8 +86,6 @@ aftables:
         - "aftables"
         - "example"
         - "category"
-      modifier:
-        - "Analysis Function"
       comments:
         - "aftables"
         - "example"

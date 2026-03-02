@@ -1,11 +1,5 @@
 test_that("workbook object is created", {
-  expect_warning(
-    expect_warning(
-      wb <- generate_workbook(as_aftable(demo_df)),
-      "One of your tables is missing a source statement."
-    ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
-  )
+  wb <- generate_workbook(as_aftable(demo_df))
 
   expect_s3_class(wb, class = c("wbWorkbook", "R6"))
   expect_identical(class(wb)[1], "wbWorkbook")
@@ -23,13 +17,7 @@ test_that("aftable is passed", {
 test_that(".stop_bad_input works as intended", {
   wb <- openxlsx2::wb_workbook()
 
-  expect_warning(
-    expect_warning(
-      test_aftable <- as_aftable(demo_df),
-      "One of your tables is missing a source statement."
-    ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
-  )
+  test_aftable <- as_aftable(demo_df)
 
   expect_error(.stop_bad_input("wb", test_aftable, "cover"),
                "'wb' must be an openxlsx2 wbWorkbook-class object.")
@@ -39,13 +27,7 @@ test_that(".stop_bad_input works as intended", {
 
 test_that("hyperlinks are generated on the cover page", {
   # demo dataset has two hyperlinks on the cover
-  expect_warning(
-    expect_warning(
-      wb <- generate_workbook(as_aftable(demo_df)),
-      "One of your tables is missing a source statement."
-    ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
-  )
+  wb <- generate_workbook(as_aftable(demo_df))
 
   expect_equal(sum(grepl("HYPERLINK", wb$worksheets[[1]]$sheet_data$cc$f)), 2)
 })

@@ -247,7 +247,7 @@ validate_config <- function(config) {
   correct_datatypes <-
     tibble::tibble(
       correct_parent = c(
-        rep("workbook_properties", 9),
+        rep("workbook_properties", 8),
         rep("workbook_format", 7)
       ),
       entry = c(
@@ -257,7 +257,6 @@ validate_config <- function(config) {
         "company",
         "keywords",
         "manager",
-        "modifier",
         "subject",
         "title",
         "base_font_name",
@@ -269,7 +268,7 @@ validate_config <- function(config) {
         "table_header_size"
       ),
       datatype = c(
-        rep("character", 10),
+        rep("character", 9),
         rep("integer", 6)
       )
     )

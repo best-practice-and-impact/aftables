@@ -90,14 +90,8 @@ test_that("strings are not converted to factors", {
 
 test_that("suitable objects can be coerced", {
 
-  expect_warning(
-    expect_warning(
-      test_aftable <-
-        as_aftable(demo_df),
-      "One of your tables is missing a source statement."
-    ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
-  )
+  test_aftable <-
+    as_aftable(demo_df)
 
   expect_s3_class(test_aftable, class = "aftable")
   expect_identical(class(test_aftable), c("aftable", "tbl", "data.frame"))
@@ -111,15 +105,9 @@ test_that("suitable objects can be coerced", {
 
 test_that("class validation works", {
 
-  expect_warning(
-    expect_warning(
-      expect_length(
-        as_aftable(demo_df),
-        7
-      ),
-      "One of your tables is missing a source statement."
-    ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
+  expect_length(
+    as_aftable(demo_df),
+    7
   )
 
   expect_error(as_aftable(1),
@@ -177,29 +165,18 @@ test_that("class validation works", {
   test_demo_df <- demo_df
   test_demo_df[test_demo_df$tab_title == "Table_2", "tab_title"] <-
     "Lorem_ipsum_dolor_sit_amet__consectetur_adipiscing"
+
   expect_warning(
-    expect_warning(
-      expect_warning(
-        as_aftable(test_demo_df),
-        "These tab_titles have been cleaned automatically:"
-      ),
-      "One of your tables is missing a source statement."
-    ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
+    as_aftable(test_demo_df),
+    "These tab_titles have been cleaned automatically:"
   )
 
   test_demo_df <- demo_df
   test_demo_df[test_demo_df$tab_title == "Table_2", "tab_title"] <- "!?"
 
   expect_warning(
-    expect_warning(
-      expect_warning(
-        as_aftable(test_demo_df),
-        "These tab_titles have been cleaned automatically:"
-      ),
-      "One of your tables is missing a source statement."
-    ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
+    as_aftable(test_demo_df),
+    "These tab_titles have been cleaned automatically:"
   )
 
   test_demo_df <- demo_df
@@ -211,15 +188,10 @@ test_that("class validation works", {
         check.names = FALSE
       )
     )
+
   expect_warning(
-    expect_warning(
-      expect_warning(
-        as_aftable(test_demo_df),
-        "One of your tables is missing a source statement."
-      ),
-      "Some notes are in the tables"
-    ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
+    as_aftable(test_demo_df),
+    "Some notes are in the tables"
   )
 
 })
@@ -235,16 +207,10 @@ test_that("absence of note sheets doesn't prevent aftable formation", {
 
   expect_warning(
     expect_warning(
-      expect_warning(
-        expect_warning(
-          test_aftable <- as_aftable(test_demo_df),
-          "There are 2 tables but 3 in the contents sheet."
-        ),
-        "One of your tables is missing a source statement."
-      ),
-      "You have notes in your tables, but no 'notes' sheet."
+      test_aftable <- as_aftable(test_demo_df),
+      "There are 2 tables but 3 in the contents sheet."
     ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
+    "You have notes in your tables, but no 'notes' sheet."
   )
 
   expect_s3_class(test_aftable, "aftable")
@@ -357,13 +323,7 @@ test_that("Note mismatch is caught", {
   test_demo_df[test_demo_df$sheet_type == "contents", "table"][[1]] <-
     list(data.frame(x = c("x", "y"), y = c("x", "y")))
 
-  expect_warning(
-    expect_warning(
-      as_aftable(demo_df),
-      "One of your tables is missing a source statement."
-    ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
-  )
+  as_aftable(demo_df)
 
   test_demo_df <- demo_df[!demo_df$tab_title == "Table_2", ]
   test_demo_df[test_demo_df$sheet_type == "contents", "table"][[1]] <-
@@ -377,14 +337,8 @@ test_that("Note mismatch is caught", {
   )
 
   expect_warning(
-    expect_warning(
-      expect_warning(
-        as_aftable(test_demo_df),
-        "Some notes are in the notes sheet"
-      ),
-      "One of your tables is missing a source statement."
-    ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
+    as_aftable(test_demo_df),
+    "Some notes are in the notes sheet"
   )
 })
 
@@ -393,25 +347,17 @@ test_that("warning is raised if a source statement is missing", {
   demo_df[demo_df$tab_title == "Table_1", "source"] <- NA_character_
 
   expect_warning(
-    expect_warning(
-      as_aftable(demo_df),
-      "One of your tables is missing a source statement."
-    ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
+    as_aftable(demo_df),
+    "One of your tables is missing a source statement."
   )
 })
 
 test_that("warning is raised if there's no blank cells but there is a reason", {
   demo_df[demo_df$tab_title == "Table_2", "blank_cells"] <- "x"
+
   expect_warning(
-    expect_warning(
-      expect_warning(
-        as_aftable(demo_df),
-        "There's no blank cells in these tables"
-      ),
-      "One of your tables is missing a source statement."
-    ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
+    as_aftable(demo_df),
+    "There's no blank cells in these tables"
   )
 })
 
@@ -458,53 +404,32 @@ test_that("tab titles are cleaned and warnings provided", {
   test_demo_df[1, "tab_title"] <- long_title
 
   expect_warning(
-    expect_warning(
-      expect_warning(
-        as_aftable(test_demo_df),
-        "These tab_titles have been cleaned automatically: X12345678901234567890123456789012 \\(now X123456789012345678901234567890\\)\\."
-      ),
-      "One of your tables is missing a source statement."
-    ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
+    as_aftable(test_demo_df),
+    "These tab_titles have been cleaned automatically: X12345678901234567890123456789012 \\(now X123456789012345678901234567890\\)\\."
   )
 
   test_demo_df <- demo_df
   test_demo_df[1, "tab_title"] <- "Cover!"
   expect_warning(
-    expect_warning(
-      expect_warning(
-        as_aftable(test_demo_df),
-        "These tab_titles have been cleaned automatically: Cover! \\(now Cover\\)\\."
-      ),
-      "One of your tables is missing a source statement."
-    ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
+    as_aftable(test_demo_df),
+    "These tab_titles have been cleaned automatically: Cover! \\(now Cover\\)\\."
   )
 
   test_demo_df <- demo_df
   test_demo_df["tab_title"][5, ] <- long_title
+
+
   expect_warning(
-    expect_warning(
-      expect_warning(
-        .warn_aftable(test_demo_df),
-        "Each tab_title must be shorter than 31 characters."
-      ),
-      "One of your tables is missing a source statement."
-    ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
+    .warn_aftable(test_demo_df),
+    "Each tab_title must be shorter than 31 characters."
   )
 
   test_demo_df <- demo_df
   test_demo_df["tab_title"][5, ] <- "Table-1!"
+
   expect_warning(
-    expect_warning(
-      expect_warning(
-        .warn_aftable(test_demo_df),
-        "Each tab_title must contain only letters, numbers or underscores."
-      ),
-      "One of your tables is missing a source statement."
-    ),
-    "You have blank cells in these tables but haven't provided a reason: Table_1."
+    .warn_aftable(test_demo_df),
+    "Each tab_title must contain only letters, numbers or underscores."
   )
 })
 
