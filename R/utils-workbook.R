@@ -343,17 +343,11 @@
   wb
 }
 
-.insert_table <- function(wb, content, table_name, workbook_format) {
+.insert_table <- function(wb, content, table_name) {
   # convert tibbles to data frames before processing
   table <- as.data.frame(content[content$table_name == table_name, ][["table"]][[1]])
   sheet_type <- content[content$table_name == table_name, "sheet_type"][[1]]
   tab_title <- content[content$table_name == table_name, "tab_title"][[1]]
-
-  if (!is.null(workbook_format$decimal_places)) {
-    decimal_places = workbook_format$decimal_places
-  } else {
-    decimal_places = NULL
-  }
 
   start_row <- .get_start_row_table(
     content,
@@ -623,7 +617,7 @@
   wb
 }
 
-.add_cover <- function(wb, content, workbook_format) {
+.add_cover <- function(wb, content, font_ref) {
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "cover", "tab_title"][[1]]
@@ -633,15 +627,14 @@
   .insert_cover_table(wb, content, table_name) # rather than .insert_table
 
   styles <- .style_paragraph()
-  fonts <- .style_font(workbook_format)
-  .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_cover(wb, content, styles, fonts)
+  .style_sheet_title(wb, tab_title, styles, font_ref)
+  .style_cover(wb, content, styles, font_ref)
   # TODO: needs special handling if list provided
   wb
 }
 
 
-.add_contents <- function(wb, content, workbook_format) {
+.add_contents <- function(wb, content, font_ref, workbook_format) {
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "contents", "tab_title"][[1]]
@@ -650,19 +643,18 @@
   .insert_title(wb, content, tab_title)
   .insert_table_count(wb, content, tab_title)
   .insert_custom_rows(wb, content, tab_title)
-  table_format <- .insert_table(wb, content, table_name, workbook_format)
+  table_format <- .insert_table(wb, content, table_name)
 
   styles <- .style_paragraph()
-  fonts <- .style_font(workbook_format)
-  .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts, table_format, workbook_format)
-  .style_contents(wb, content, styles)
+  .style_sheet_title(wb, tab_title, styles, font_ref)
+  .style_table(wb, content, table_name, styles, font_ref, table_format, workbook_format)
+  .style_contents(wb, content, styles, font_ref)
 
   wb
 }
 
 
-.add_notes <- function(wb, content, workbook_format) {
+.add_notes <- function(wb, content, font_ref, workbook_format) {
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "notes", "tab_title"][[1]]
@@ -671,18 +663,17 @@
   .insert_title(wb, content, tab_title)
   .insert_table_count(wb, content, tab_title)
   .insert_custom_rows(wb, content, tab_title)
-  table_format <- .insert_table(wb, content, table_name, workbook_format)
+  table_format <- .insert_table(wb, content, table_name)
 
   styles <- .style_paragraph()
-  fonts <- .style_font(workbook_format)
-  .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts, table_format, workbook_format)
-  .style_notes(wb, content, styles)
+  .style_sheet_title(wb, tab_title, styles, font_ref)
+  .style_table(wb, content, table_name, styles, font_ref, table_format, workbook_format)
+  .style_notes(wb, content, font_ref, styles)
 
   wb
 }
 
-.add_tables <- function(wb, content, table_name, workbook_format) {
+.add_tables <- function(wb, content, table_name, font_ref, workbook_format) {
   .stop_bad_input(wb, content, table_name)
 
   tab_title <- content[content$table_name == table_name, "tab_title"][[1]]
@@ -693,12 +684,11 @@
   .insert_notes_statement(wb, content, tab_title)
   .insert_blanks_message(wb, content, tab_title)
   .insert_custom_rows(wb, content, tab_title)
-  table_format <- .insert_table(wb, content, table_name, workbook_format)
+  table_format <- .insert_table(wb, content, table_name)
 
   styles <- .style_paragraph()
-  fonts <- .style_font(workbook_format)
-  .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts, table_format, workbook_format)
+  .style_sheet_title(wb, tab_title, styles, font_ref)
+  .style_table(wb, content, table_name, styles, font_ref, table_format, workbook_format)
 
   wb
 }

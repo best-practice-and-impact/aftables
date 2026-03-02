@@ -91,6 +91,14 @@ extract_currency_symbol_regex <- "[\u00A3|\u0024|\u20AC|\u00A5]"
 numeric_regex <- "^\\s*-?\\s*(\\d{1,3}(,\\d{3})+|\\d+)(\\.\\d+)?\\s*$"
 notes_regex <- "^\\s*(\\[[^\\]]+\\]\\s*)+\\s*$"
 
+aftables_default_font <-
+  list(
+    base_font_name = "Arial",
+    base_font_size = 12,
+    table_header_size = 14,
+    sheet_header_size = 16
+  )
+
 # Write to data/
 usethis::use_data(demo_df, overwrite = TRUE)
 usethis::use_data(demo_aftable, overwrite = TRUE)
@@ -100,6 +108,7 @@ usethis::use_data(
   extract_currency_symbol_regex,
   numeric_regex,
   notes_regex,
+  aftables_default_font,
   overwrite = TRUE,
   internal = TRUE
 )
