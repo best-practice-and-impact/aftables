@@ -155,8 +155,35 @@ process_config <- function(user_config, config_path, config_name) {
       .default = list()
     )
 
-    if (!is.list(default_config)) {
-      stop("Default configuration key must be a named list", call. = FALSE)
+    if (!is.list(default_config) ||
+      length(default_config) > 2 ||
+      is.null(names(default_config)) ||
+      !all(
+        names(default_config) %in% c("workbook_properties", "workbook_format")
+      )) {
+      stop(
+        "Default configuration key must be a named list. ",
+        "It can only contain keys `workbook_properties` and `workbook_format`.",
+        call. = FALSE
+      )
+    }
+
+    if (!is.null(default_config$workbook_properties) &&
+          (!is.list(default_config$workbook_properties) ||
+             is.null(names(default_config$workbook_properties)))) {
+      stop(
+        "Configuration Default:workbook_properties must be a named list",
+        call. = FALSE
+      )
+    }
+
+    if (!is.null(default_config$workbook_format) &&
+          (!is.list(default_config$workbook_format) ||
+             is.null(names(default_config$workbook_format)))) {
+      stop(
+        "Configuration Default:workbook_format must be a named list",
+        call. = FALSE
+      )
     }
 
     # Get custom config settings ---------
@@ -177,9 +204,33 @@ process_config <- function(user_config, config_path, config_name) {
         .default = list()
       )
 
-      if (!is.list(custom_config)) {
+      if (!is.list(custom_config)  ||
+        length(custom_config) > 2 ||
+        is.null(names(custom_config)) ||
+        !all(
+          names(custom_config) %in% c("workbook_properties", "workbook_format")
+        )) {
         stop(
-          "Configuration key ", config_name, " must be a named list",
+          "Configuration key ", config_name, " must be a named list. ",
+          "It can only contain keys `workbook_properties` and `workbook_format`.",
+          call. = FALSE
+        )
+      }
+
+      if (!is.null(custom_config$workbook_properties) &&
+            (!is.list(custom_config$workbook_properties) ||
+               is.null(names(custom_config$workbook_properties)))) {
+        stop(
+          "Custom configuration workbook_properties must be a named list",
+          call. = FALSE
+        )
+      }
+
+      if (!is.null(custom_config$workbook_format) &&
+            (!is.list(custom_config$workbook_format) ||
+               is.null(names(custom_config$workbook_format)))) {
+        stop(
+          "Custom configuration workbook_format must be a named list",
           call. = FALSE
         )
       }
@@ -247,14 +298,13 @@ validate_config <- function(config) {
   correct_datatypes <-
     tibble::tibble(
       correct_parent = c(
-        rep("workbook_properties", 8),
+        rep("workbook_properties", 7),
         rep("workbook_format", 7)
       ),
       entry = c(
         "author",
         "category",
         "comments",
-        "company",
         "keywords",
         "manager",
         "subject",
@@ -268,7 +318,7 @@ validate_config <- function(config) {
         "table_header_size"
       ),
       datatype = c(
-        rep("character", 9),
+        rep("character", 8),
         rep("integer", 6)
       )
     )
@@ -282,22 +332,16 @@ validate_config <- function(config) {
                      length(config$workbook_format))),
       entry =  c(names(config$workbook_properties),
                  names(config$workbook_format)),
-      # find the datatype of each entry under workbook_properties and
+      # Find the datatype of each entry under workbook_properties and
       # workbook_format
-      config_datatype = replace(
-        purrr::map_depth(config, 2, typeof) |>
-          unlist(use.names = FALSE),
-        NULL,
-        NA_character_
-      ),
-      # find the length of each entry under workbook_properties and
+      # Replace NULL with character(0) so column is always created
+      config_datatype = purrr::map_depth(config, 2, typeof) |>
+        unlist(use.names = FALSE) %||% character(0),
+      # Find the length of each entry under workbook_properties and
       # workbook_format
-      config_length = replace(
-        purrr::map_depth(config, 2, length) |>
-          unlist(use.names = FALSE),
-        NULL,
-        NA_character_
-      )
+      # Replace NULL with character(0) so column is always created
+      config_length = purrr::map_depth(config, 2, length) |>
+        unlist(use.names = FALSE) %||% character(0)
     )
 
   # Warning if entries in user config are not recognised
@@ -326,10 +370,11 @@ validate_config <- function(config) {
 
   # Combine the configs
   combined_configs <-
-    dplyr::inner_join(correct_datatypes,
-                      config_df,
-                      by = dplyr::join_by("correct_parent" == "parent",
-                                          "entry"))
+    dplyr::inner_join(
+      correct_datatypes,
+      config_df,
+      by = dplyr::join_by("correct_parent" == "parent", "entry")
+    )
 
   # Keywords can be any length, all other entries should be 1
   config_lengths <-
@@ -354,18 +399,17 @@ validate_config <- function(config) {
     filter(.data$datatype != .data$config_datatype) |>
     mutate(
       across(
-        everything(),
+        c("datatype", "config_datatype"),
         \(x) stringr::str_replace(x, "character", "character string")
       ),
       across(
-        everything(),
+        c("datatype", "config_datatype"),
         \(x) stringr::str_replace(x, "integer", "integer value")
       ),
       error_message = paste0(.data$correct_parent, ":", .data$entry, " is ",
                              .data$config_datatype, ". It should be ",
                              .data$datatype, ".")
-    ) |>
-    dplyr::select("error_message")
+    )
 
   # Error if any invalid config datatypes
   if (nrow(incorrect_datatypes) > 0) {
