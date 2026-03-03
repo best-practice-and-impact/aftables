@@ -170,42 +170,47 @@ process_config <- function(user_config, config_path, config_name) {
       )
     }
 
-    default_config <- purrr::pluck(
-      config_file,
-      "aftables", "default",
-      .default = list()
-    )
+    if (purrr::pluck_exists(config_file, "aftables", "default")) {
 
-    if (!is.list(default_config) ||
-      length(default_config) > 2 ||
-      is.null(names(default_config)) ||
-      !all(
-        names(default_config) %in% c("workbook_properties", "workbook_format")
-      )) {
-      stop(
-        "Default configuration key must be a named list. ",
-        "It can only contain keys `workbook_properties` and `workbook_format`.",
-        call. = FALSE
-      )
+      default_config <- purrr::pluck(config_file, "aftables", "default")
+
+      if (!is.list(default_config) ||
+        length(default_config) > 2 ||
+        is.null(names(default_config)) ||
+        !all(
+          names(default_config) %in% c("workbook_properties", "workbook_format")
+        )) {
+        stop(
+          "Default configuration key must be a named list. ",
+          "It can only contain keys `workbook_properties` and `workbook_format`.",
+          call. = FALSE
+        )
+      }
+
+      if (purrr::pluck_exists(default_config, "workbook_properties") &&
+            (!is.list(default_config$workbook_properties) ||
+               is.null(names(default_config$workbook_properties)))) {
+        stop(
+          "Configuration Default:workbook_properties must be a named list",
+          call. = FALSE
+        )
+      }
+
+      if (purrr::pluck_exists(default_config, "workbook_format") &&
+            (!is.list(default_config$workbook_format) ||
+               is.null(names(default_config$workbook_format)))) {
+        stop(
+          "Configuration Default:workbook_format must be a named list",
+          call. = FALSE
+        )
+      }
+
+    } else {
+      # No default config
+      default_config <- list()
     }
 
-    if (!is.null(default_config$workbook_properties) &&
-          (!is.list(default_config$workbook_properties) ||
-             is.null(names(default_config$workbook_properties)))) {
-      stop(
-        "Configuration Default:workbook_properties must be a named list",
-        call. = FALSE
-      )
-    }
 
-    if (!is.null(default_config$workbook_format) &&
-          (!is.list(default_config$workbook_format) ||
-             is.null(names(default_config$workbook_format)))) {
-      stop(
-        "Configuration Default:workbook_format must be a named list",
-        call. = FALSE
-      )
-    }
 
     # Get custom config settings ---------
 
@@ -257,6 +262,7 @@ process_config <- function(user_config, config_path, config_name) {
       }
 
     } else {
+      # No custom config
       custom_config <- list()
     }
 
@@ -276,7 +282,7 @@ process_config <- function(user_config, config_path, config_name) {
   config <-  purrr::list_modify(default_config, !!!custom_config)
   config <-  purrr::list_modify(config, !!!user_config)
 
-  # warning if the config workbook_properties have not been
+  # Warning if the config workbook_properties have not been
   # changed from the internal config.yaml defaults
   if (length(config$workbook_properties) > 0 &&
       any(unlist(config$workbook_properties,
@@ -300,6 +306,7 @@ process_config <- function(user_config, config_path, config_name) {
       call. = FALSE
     )
   }
+
 
   # Validate the final config --------------------------------------------------
   validate_config(config)
