@@ -28,12 +28,12 @@ Contents of example config.yaml:
 \if{html}{\out{<div class="sourceCode xml">}}\preformatted{aftables:
   default:
     workbook_properties:
-      author: "Analysis Function"
+      author: "aftables"
       title: "aftables example workbook"
       keywords:
-        - "aftables"
-        - "example"
-        - "workbook"
+        - "aftables1"
+        - "aftables2"
+        - "aftables3"
       subject: "aftables example subject"
       category: "aftables example category"
       comments: "aftables example comments"
@@ -49,13 +49,13 @@ Contents of example config.yaml:
     workbook_properties:
       category: "aftables workbook 1 category"
       keywords:
-        - "workbook 1"
+        - "aftablesworkbook1"
   workbook2:
     workbook_properties:
       title: "aftables workbook 2"
       category: "aftables workbook 2 category"
       keywords:
-        - "workbook 2"
+        - "aftablesworkbook2"
 
 }\if{html}{\out{</div>}}
 
@@ -83,15 +83,14 @@ header will use the default settings. Table headers and sheet headers will be
 formatted using the table_header_size and sheet_header_size keys
 respectively, and will always be formatted as bold.
 
-The keys cellwidth_default and cellwidth_wider define the width of columns.
-The units of these keys are the column width values used by Excel. If the
-contents of a column is wider than the cellwidth_default value aftables will
-set the column width to the value of cellwidth_wider. The key nchar_break is
-the number of characters where column headers have text wrapping applied. If
-a column header is long enough to require text wrapping the column will have
-its width set to the value of cellwidth_wider. The column contents and column
-headers are checked separately, and either can cause a column to be set as a
-wide column.
+The keys cellwidth_default, cellwidth_wider and nchar_break are used to
+define column widths. The units of the cellwidth_default and cellwidth_wider
+keys are the column width values used by Excel. All columns widths are set by
+default to use the cellwidth_default value. If the number of characters in a
+column header or the contents of a column exceeds the value of nchar_break
+aftables will set the column width to the value of cellwidth_wider. Users can
+avoid text wrapping in columns or column headers by setting the value of
+nchar_break based on their data or the content of their column headers.
 
 Not all workbook configuration options need to be set. Required settings are
 documented in \code{\link[aftables]{generate_workbook}}.

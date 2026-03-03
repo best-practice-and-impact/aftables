@@ -48,15 +48,14 @@
 #' formatted using the table_header_size and sheet_header_size keys
 #' respectively, and will always be formatted as bold.
 #'
-#' The keys cellwidth_default and cellwidth_wider define the width of columns.
-#' The units of these keys are the column width values used by Excel. If the
-#' contents of a column is wider than the cellwidth_default value aftables will
-#' set the column width to the value of cellwidth_wider. The key nchar_break is
-#' the number of characters where column headers have text wrapping applied. If
-#' a column header is long enough to require text wrapping the column will have
-#' its width set to the value of cellwidth_wider. The column contents and column
-#' headers are checked separately, and either can cause a column to be set as a
-#' wide column.
+#' The keys cellwidth_default, cellwidth_wider and nchar_break are used to
+#' define column widths. The units of the cellwidth_default and cellwidth_wider
+#' keys are the column width values used by Excel. All columns widths are set by
+#' default to use the cellwidth_default value. If the number of characters in a
+#' column header or the contents of a column exceeds the value of nchar_break
+#' aftables will set the column width to the value of cellwidth_wider. Users can
+#' avoid text wrapping in columns or column headers by setting the value of
+#' nchar_break based on their data or the content of their column headers.
 #'
 #' Not all workbook configuration options need to be set. Required settings are
 #' documented in \code{\link[aftables]{generate_workbook}}.
@@ -287,14 +286,18 @@ create_config_yaml <- function(path = getwd(),
   if (length(config$workbook_properties) > 0 &&
       any(unlist(config$workbook_properties,
                  use.names = FALSE) %in%
-          c("Analysis Function",
+          c("aftables",
             "aftables example workbook",
-            "aftables",
-            "example",
-            "workbook",
+            "aftables workbook 2",
+            "aftables1",
+            "aftables2",
+            "aftables3",
             "aftables example subject",
             "aftables example category",
-            "Analysis Function",
+            "aftables workbook 1 category",
+            "aftablesworkbook1",
+            "aftables workbook 2 category",
+            "aftablesworkbook2",
             "aftables example comments")
       )
   ) {
@@ -324,7 +327,7 @@ create_config_yaml <- function(path = getwd(),
   correct_datatypes <-
     tibble::tibble(
       correct_parent = c(
-        rep("workbook_properties", 7),
+        rep("workbook_properties", 6),
         rep("workbook_format", 7)
       ),
       entry = c(
@@ -332,7 +335,6 @@ create_config_yaml <- function(path = getwd(),
         "category",
         "comments",
         "keywords",
-        "manager",
         "subject",
         "title",
         "base_font_name",
@@ -344,7 +346,7 @@ create_config_yaml <- function(path = getwd(),
         "table_header_size"
       ),
       datatype = c(
-        rep("character", 8),
+        rep("character", 7),
         rep("integer", 6)
       )
     )

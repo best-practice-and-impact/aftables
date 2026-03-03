@@ -1,7 +1,7 @@
 aftables:
   default:
     workbook_properties:
-      author: "Analysis Function"
+      author: "aftables"
       base_font_size: 12
       table_header_size: 14
       sheet_header_size: 16
@@ -12,9 +12,9 @@ aftables:
       base_font_name: "Arial"
       title: "aftables example workbook"
       keywords:
-        - "aftables"
-        - "example"
-        - "workbook"
+        - "aftables1"
+        - "aftables2"
+        - "aftables3"
       subject: "aftables example subject"
       category: "aftables example category"
       comments: "aftables example comments"

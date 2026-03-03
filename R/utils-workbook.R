@@ -868,8 +868,7 @@
     subject = content$subject,
     category = content$category,
     keywords = content$keywords,
-    comments = content$comments,
-    manager = content$manager
+    comments = content$comments
   )
 
   wb

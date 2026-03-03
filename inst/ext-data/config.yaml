@@ -1,12 +1,12 @@
 aftables:
   default:
     workbook_properties:
-      author: "Analysis Function"
+      author: "aftables"
       title: "aftables example workbook"
       keywords:
-        - "aftables"
-        - "example"
-        - "workbook"
+        - "aftables1"
+        - "aftables2"
+        - "aftables3"
       subject: "aftables example subject"
       category: "aftables example category"
       comments: "aftables example comments"
@@ -22,10 +22,10 @@ aftables:
     workbook_properties:
       category: "aftables workbook 1 category"
       keywords:
-        - "workbook 1"
+        - "aftablesworkbook1"
   workbook2:
     workbook_properties:
       title: "aftables workbook 2"
       category: "aftables workbook 2 category"
       keywords:
-        - "workbook 2"
+        - "aftablesworkbook2"

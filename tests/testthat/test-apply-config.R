@@ -26,11 +26,11 @@ test_that("default config.yaml is applied correctly", {
 
   wb_properties <- openxlsx2::wb_get_properties(wb)
 
-  expect_equal(wb_properties["creator"], c("creator" = "Analysis Function"))
-  expect_equal(wb_properties["modifier"], c("modifier" = "Analysis Function"))
+  expect_equal(wb_properties["creator"], c("creator" = "aftables"))
+  expect_equal(wb_properties["modifier"], c("modifier" = "aftables"))
   expect_equal(wb_properties["title"], c("title" = "aftables example workbook"))
   expect_equal(wb_properties["subject"], c("subject" = "aftables example subject"))
-  expect_equal(wb_properties["keywords"], c("keywords" = "aftables, example, workbook"))
+  expect_equal(wb_properties["keywords"], c("keywords" = "aftables1, aftables2, aftables3"))
   expect_equal(wb_properties["comments"], c("comments" = "aftables example comments"))
   expect_equal(wb_properties["category"], c("category" = "aftables example category"))
 })
@@ -39,7 +39,7 @@ test_that("minimum properties are applied correctly via arguments", {
   expect_warning(
     wb <- generate_workbook(
       as_aftable(demo_df),
-      author = "Analysis Function",
+      author = "aftables",
       title = "example workbook",
       keywords =  c("example", "demonstration", "config.yaml"),
       config_path = NULL
@@ -60,7 +60,7 @@ test_that("minimum properties are applied correctly via arguments", {
 
   # minimum properties
   expect_equal(wb_properties["creator"],
-               c("creator" = "Analysis Function"))
+               c("creator" = "aftables"))
   expect_equal(wb_properties["title"],
                c("title" = "example workbook"))
   expect_equal(wb_properties["keywords"],
@@ -68,7 +68,7 @@ test_that("minimum properties are applied correctly via arguments", {
 
   # if modifier is blank it is populated with value for author
   expect_equal(wb_properties["modifier"],
-               c("modifier" = "Analysis Function"))
+               c("modifier" = "aftables"))
 
 })
 
