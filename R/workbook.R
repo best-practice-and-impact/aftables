@@ -99,7 +99,7 @@ generate_workbook <- function(aftable,
     workbook_format = list()
   )
 
-  config <- process_config(user_config, config_path, config_name)
+  config <- .process_config(user_config, config_path, config_name)
 
   workbook_properties <- config$workbook_properties
   workbook_format <- config$workbook_format

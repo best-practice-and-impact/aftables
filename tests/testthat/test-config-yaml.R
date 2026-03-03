@@ -43,7 +43,7 @@ test_that("error if invalid config file", {
       author = NULL,
       title = NULL,
       keywords = NULL,
-      config_path = paste0(testthat::test_path(), "/test_missing_aftable_config.yaml"),
+      config_path = testthat::test_path("test_missing_aftable_config.yaml"),
       config_name = NULL
     ),
     "does not contain an aftables key"
@@ -55,7 +55,7 @@ test_that("error if invalid config file", {
       author = NULL,
       title = NULL,
       keywords = NULL,
-      config_path = paste0(testthat::test_path(), "/test_missing_default_config.yaml"),
+      config_path = testthat::test_path("test_missing_default_config.yaml"),
       config_name = NULL
     ),
     "does not contain a default aftables configuration and a custom key is not being used"
@@ -67,7 +67,7 @@ test_that("error if invalid config file", {
       author = NULL,
       title = NULL,
       keywords = NULL,
-      config_path = paste0(testthat::test_path(), "/test_missing_default_config.yaml"),
+      config_path = testthat::test_path("test_missing_default_config.yaml"),
       config_name = NULL
     ),
     "does not contain a default aftables configuration and a custom key is not being used"
@@ -79,7 +79,7 @@ test_that("default config.yaml is applied correctly", {
 
   expect_warning(
     wb <- generate_workbook(as_aftable(demo_df),
-                            config_path = paste0(testthat::test_path(), "/test_config.yaml")),
+                            config_path = testthat::test_path("test_config.yaml")),
     "Your config file contains values identical to the aftables example config. Please check your config file."
   )
 
@@ -134,7 +134,7 @@ test_that("properties from config.yaml are ignored when properties arguments are
                           author = "Analysis Function argument",
                           title = "aftables example workbook argument",
                           keywords =  c("keywords" = "aftables, example, keywords, argument"),
-                          config_path = paste0(testthat::test_path(), "/test_config.yaml"),
+                          config_path = testthat::test_path("test_config.yaml"),
                           config_name = "mixed-config")
 
   wb_properties <- openxlsx2::wb_get_properties(wb)
@@ -153,7 +153,7 @@ test_that("error when values in config.yaml are wrong datatype (character/numeri
   expect_error(
     expect_warning(
       generate_workbook(as_aftable(demo_df),
-                        config_path = paste0(testthat::test_path(), "/test_config.yaml"),
+                        config_path = testthat::test_path("test_config.yaml"),
                         config_name = "wrong-datatypes"),
       "The config file contains values identical to the aftables example config. Please check your config file."
     ),
@@ -166,7 +166,7 @@ test_that("error when aftables cannot find default config requested by user", {
   expect_error(
     expect_warning(
       generate_workbook(as_aftable(demo_df),
-                        config_path = paste0(testthat::test_path(), "/test_config_warnings.yaml"),
+                        config_path = testthat::test_path("test_config_warnings.yaml"),
                         config_name = "default"),
       "The config file contains values identical to the aftables example config. Please check your config file."
     ),
@@ -179,7 +179,7 @@ test_that("error when entries apart from keywords have more than 1 value", {
   expect_error(
     expect_warning(
       generate_workbook(as_aftable(demo_df),
-                        config_path = paste0(testthat::test_path(), "/test_config.yaml"),
+                        config_path = testthat::test_path("test_config.yaml"),
                         config_name = "wrong-lengths"),
       "Your config file contains values identical to the aftables example config. Please check your config file."
     ),
@@ -191,7 +191,7 @@ test_that("error when config entries have invalid names or in wrong place", {
   expect_warning(
     expect_warning(
       generate_workbook(as_aftable(demo_df),
-                        config_path = paste0(testthat::test_path(), "/test_wrong_config.yaml")),
+                        config_path = testthat::test_path("test_wrong_config.yaml")),
       "Your config file contains values identical to the aftables example config. Please check your config file."
     ),
     "Some entries in your config file could not be processed."

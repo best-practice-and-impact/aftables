@@ -119,7 +119,7 @@ create_config_yaml <- function(path = getwd(),
 
 
 # Process config arguments
-process_config <- function(user_config, config_path, config_name) {
+.process_config <- function(user_config, config_path, config_name) {
 
   # Get settings from config file if exists ------------------------------------
 
@@ -309,15 +309,13 @@ process_config <- function(user_config, config_path, config_name) {
 
 
   # Validate the final config --------------------------------------------------
-  validate_config(config)
+  .validate_config(config)
 
   config
 }
 
-
-
 # check config field datatypes
-validate_config <- function(config) {
+.validate_config <- function(config) {
 
   # The config may contain any of these entries and they should be these
   # datatypes. If the config contains any extra entries they won't be used by
@@ -354,12 +352,15 @@ validate_config <- function(config) {
   # Turn config list into dataframe
   config_df <-
     tibble::tibble(
-      parent = c(rep("workbook_properties",
-                     length(config$workbook_properties)),
-                 rep("workbook_format",
-                     length(config$workbook_format))),
-      entry =  c(names(config$workbook_properties),
-                 names(config$workbook_format)),
+      # create vector of workbook_properties and workbook_format
+      # with length equal to number of entries under each
+      parent = rep(purrr::map_depth(config, 0, names) |>
+                     unlist(use.names = FALSE) %||% character(0),
+                   purrr::map_depth(config, 1, length) |>
+                     unlist(use.names = FALSE) %||% 0),
+      # get names of each entry under workbook_properties and workbook_format
+      entry =  purrr::map_depth(config, 1, names) |>
+        unlist(use.names = FALSE) %||% character(0),
       # Find the datatype of each entry under workbook_properties and
       # workbook_format
       # Replace NULL with character(0) so column is always created

@@ -43,17 +43,9 @@
 
 .style_workbook <- function(wb, font_ref) {
 
-  base_font_size <-
-    if (!is.null(font_ref$base_font_size))
-      font_ref$base_font_size else aftables_default_font$base_font_size
-
-  base_font_name <-
-    if (!is.null(font_ref$base_font_name))
-      font_ref$base_font_name else aftables_default_font$base_font_name
-
   wb$set_base_font(
-    font_size = base_font_size,
-    font_name = base_font_name
+    font_size = font_ref$base_font_size,
+    font_name = font_ref$name
   )
 
   wb
@@ -162,6 +154,10 @@
     size = font_ref[["table_header_size"]],
     name = font_ref[["name"]]
   )
+
+  #=============================================================================
+  # Set column widths
+  #=============================================================================
 
   # Find indices of columns that should be wider than default
   is_factor_column <- sapply(table, is.factor) # nchar (below) fails on factors
@@ -394,10 +390,4 @@
     horizontal = style_ref[["lalign"]]
   )
 
-  wb$add_font(
-    sheet = tab_title,
-    dims = wb_dims(rows = seq(start_row, table_height + start_row), cols = seq(table_width)),
-    size = font_ref[["base_font_size"]],
-    name = font_ref[["name"]]
-  )
 }
