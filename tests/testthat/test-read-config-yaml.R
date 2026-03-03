@@ -156,5 +156,3 @@ test_that("error when values in config.yaml are wrong datatype (character/numeri
   )
 
 })
-
-
