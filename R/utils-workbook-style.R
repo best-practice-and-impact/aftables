@@ -85,7 +85,14 @@
 #' @param font_ref List. The font-reference object made with .style_font().
 #' @noRd
 
-.style_table <- function(wb, content, table_name, style_ref, font_ref, table_formats, workbook_format) {
+.style_table <- function(wb,
+                         content,
+                         table_name,
+                         style_ref,
+                         font_ref,
+                         table_formats,
+                         workbook_format) {
+
   content_row <- content[content[["table_name"]] == table_name, ]
   table <- content_row[, "table"][[1]]
   tab_title <- content_row[, "tab_title"][[1]]
@@ -310,7 +317,7 @@
 #' @param tab_title Character. The tab in `wb` where the style should be set.
 #' @param style_ref List. The style-reference object made with .style_paragraph().
 #' @noRd
-.style_contents <- function(wb, content, style_ref, font_ref) {
+.style_contents <- function(wb, content, style_ref) {
   tab_title <- content[content[["sheet_type"]] == "contents", "tab_title"][[1]]
   table <- content[content[["sheet_type"]] == "contents", "table"][[1]]
 
@@ -353,7 +360,7 @@
 #' @param tab_title Character. The tab in `wb` where the style should be set.
 #' @param style_ref List. The style-reference object made with .style_paragraph().
 #' @noRd
-.style_notes <- function(wb, content, font_ref, style_ref) {
+.style_notes <- function(wb, content, style_ref) {
   tab_title <- content[content[["sheet_type"]] == "notes", "tab_title"][[1]]
   table <- content[content[["sheet_type"]] == "notes", "table"][[1]]
 

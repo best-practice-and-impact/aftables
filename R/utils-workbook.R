@@ -648,7 +648,7 @@
   styles <- .style_paragraph()
   .style_sheet_title(wb, tab_title, styles, font_ref)
   .style_table(wb, content, table_name, styles, font_ref, table_format, workbook_format)
-  .style_contents(wb, content, styles, font_ref)
+  .style_contents(wb, content, styles)
 
   wb
 }
@@ -668,7 +668,7 @@
   styles <- .style_paragraph()
   .style_sheet_title(wb, tab_title, styles, font_ref)
   .style_table(wb, content, table_name, styles, font_ref, table_format, workbook_format)
-  .style_notes(wb, content, font_ref, styles)
+  .style_notes(wb, content, styles)
 
   wb
 }
