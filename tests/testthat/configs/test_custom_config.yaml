@@ -1,0 +1,23 @@
+aftables:
+  default:
+    workbook_properties:
+      author: "aftables test"
+      title: "aftables example workbooktest"
+      keywords:
+        - "aftables1test"
+        - "aftables2test"
+        - "aftables3test"
+      subject: "Subject default config test"
+      category: "aftables example category test"
+      comments: "aftables example comments test"
+    workbook_format:
+      base_font_name: "Arial"
+      base_font_size: 12
+      table_header_size: 14
+      sheet_header_size: 16
+      cellwidth_default: 16
+      cellwidth_wider: 32
+      nchar_break: 50
+  custom-config:
+    workbook_properties:
+      author: "Author custom config"

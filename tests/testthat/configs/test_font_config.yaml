@@ -1,0 +1,7 @@
+aftables:
+  default:
+    workbook_format:
+      base_font_name: "Arial"
+      base_font_size: 12
+      table_header_size: 14
+      sheet_header_size: 16

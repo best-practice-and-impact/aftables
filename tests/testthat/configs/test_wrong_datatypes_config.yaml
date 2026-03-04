@@ -1,0 +1,12 @@
+aftables:
+  wrong-datatypes:
+    workbook_properties:
+      author: 1
+      keywords:
+        - 1
+        - 2
+        - 3
+    workbook_format:
+      base_font_name: 1
+      base_font_size: "12"
+

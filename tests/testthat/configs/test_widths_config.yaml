@@ -1,0 +1,6 @@
+aftables:
+  default:
+    workbook_format:
+      cellwidth_default: 16
+      cellwidth_wider: 32
+      nchar_break: 50
