@@ -76,25 +76,27 @@ test_that("properties from config.yaml are ignored when properties arguments are
 
   wb <- generate_workbook(
     as_aftable(demo_df),
-    author = "Analysis Function argument",
-    title = "aftables example workbook argument",
-    keywords =  c("keywords" = "aftables, example, keywords, argument"),
+    author = NULL,
+    title = "title fun argument",
+    keywords =  c("keywords", "fun", "argument"),
     config_path = testthat::test_path("test_config.yaml"),
-    config_name = "mixed-config"
+    config_name = "custom-config"
   )
 
   wb_properties <- openxlsx2::wb_get_properties(wb)
 
   # Properties from function arguments
-  expect_equal(wb_properties["creator"],
-               c("creator" = "Analysis Function argument"))
   expect_equal(wb_properties["title"],
-               c("title" = "aftables example workbook argument"))
+               c("title" = "title fun argument"))
   expect_equal(wb_properties["keywords"],
-               c("keywords" = "aftables, example, keywords, argument"))
+               c("keywords" = "keywords, fun, argument"))
+
+  # Properties from custom config
+  expect_equal(wb_properties["creator"],
+               c("creator" = "Author custom config"))
 
   # Properties from default config
   expect_equal(wb_properties["subject"],
-               c("subject" = "aftables example subject config"))
+               c("subject" = "Subject default config"))
 
 })
