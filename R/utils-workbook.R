@@ -412,7 +412,7 @@
     currency_formats <-
       data.frame(
         cell_reference = currencies_cell_references,
-        cell_format = paste0(currency_units, "#,##0.00")
+        cell_format = paste0(currency_units, "#,##0")
       )
 
     #===========================================================================
@@ -434,7 +434,7 @@
     numeric_formats <-
       data.frame(
         cell_reference = numeric_cell_references,
-        cell_format = "#,##0.00"
+        cell_format = "#,##0"
       )
 
   } else {

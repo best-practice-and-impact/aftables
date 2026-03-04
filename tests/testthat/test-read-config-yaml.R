@@ -236,7 +236,9 @@ test_that(".process_config correctly combines config options", {
 
   expected_config_custom <- list(
     workbook_properties = list(
-      author = "custom config author"
+      author = "custom config author",
+      title = "custom config title",
+      keywords = c("customconfig1", "customconfig2")
     ),
     workbook_format = list(
       sheet_header_size = 50
@@ -247,6 +249,15 @@ test_that(".process_config correctly combines config options", {
 
 
   # user only ------------------------------------------------------------------
+  # this test needs title to be set to avoid recommended properties warning
+  user_config <- list(
+    workbook_properties = list(
+      author = "user author",
+      title = "user title",
+      keywords = c("user", "keywords")
+    ),
+    workbook_format = list()
+  )
 
   config_user <- .process_config(
     user_config = user_config,
@@ -257,6 +268,7 @@ test_that(".process_config correctly combines config options", {
   expected_config_user <- list(
     workbook_properties = list(
       author =  "user author",
+      title =  "user title",
       keywords = c("user", "keywords")
     ),
     workbook_format = list()
@@ -304,4 +316,15 @@ test_that("error when values in config.yaml are wrong datatype (character/numeri
     "Please review the following invalid config entries"
   )
 
+})
+
+test_that("Warn users when they haven't provided AF recommended workbook properties", {
+  expect_warning(
+    generate_workbook(
+      as_aftable(demo_df),
+      author = "aftables test",
+      config_path = testthat::test_path("configs/test_missing_arguments_config.yaml")
+    ),
+    "Some of the recommended workbook properties are missing. Analysis Function guidance recommends completing the author, title and keywords fields."
+  )
 })

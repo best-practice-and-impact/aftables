@@ -2,6 +2,7 @@ aftables:
   wrong-datatypes:
     workbook_properties:
       author: 1
+      title: 1
       keywords:
         - 1
         - 2

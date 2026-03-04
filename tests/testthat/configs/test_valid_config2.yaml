@@ -2,5 +2,9 @@ aftables:
   custom:
     workbook_properties:
       author: "custom config author"
+      title: "custom config title"
+      keywords:
+        - "customconfig1"
+        - "customconfig2"
     workbook_format:
        sheet_header_size: 50

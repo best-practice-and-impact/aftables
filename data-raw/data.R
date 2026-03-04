@@ -95,7 +95,7 @@ aftables_default_font <-
   list(
     base_font_name = "Arial",
     base_font_size = 12,
-    table_header_size = 14,
+    table_header_size = 12,
     sheet_header_size = 16
   )
 

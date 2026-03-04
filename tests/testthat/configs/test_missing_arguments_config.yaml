@@ -1,0 +1,7 @@
+aftables:
+  default:
+    workbook_properties:
+      keywords:
+        - "aftables1 test"
+        - "aftables2 test"
+        - "aftables3 test"
