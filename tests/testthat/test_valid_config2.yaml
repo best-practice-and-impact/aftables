@@ -1,0 +1,6 @@
+aftables:
+  custom:
+    workbook_properties:
+      author: "custom config author"
+    workbook_format:
+       sheet_header_size: 50

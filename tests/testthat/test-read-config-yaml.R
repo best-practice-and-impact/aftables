@@ -156,6 +156,119 @@ test_that("error if custom workbook format is not a named list", {
 
 })
 
+test_that(".process_config correctly combines config options", {
+
+  # User + default + custom config ---------------------------------------------
+
+  user_config <- list(
+    workbook_properties = list(
+      author = "user author",
+      title = NULL,
+      keywords = c("user", "keywords")
+    ),
+    workbook_format = list()
+  )
+
+  config_all <- .process_config(
+    user_config = user_config,
+    config_path = testthat::test_path("test_valid_config.yaml"),
+    config_name = "custom"
+  )
+
+  expected_config_all <- list(
+    workbook_properties = list(
+      author = "user author",
+      title = "default config title",
+      keywords = c("user", "keywords"),
+      subject = "default config subject",
+      category = "default config category",
+      comments = "default config comments"
+    ),
+    workbook_format = list(
+      base_font_name = "default font",
+      base_font_size = 1,
+      table_header_size = 1,
+      sheet_header_size = 50,
+      cellwidth_default = 1,
+      cellwidth_wider = 1,
+      nchar_break = 1
+    )
+  )
+
+  expect_equal(config, expected_config_all)
+
+
+  # User + default config ------------------------------------------------------
+
+  config_default <- .process_config(
+    user_config = user_config,
+    config_path = testthat::test_path("test_valid_config.yaml"),
+    config_name = NULL
+  )
+
+  expected_config_default <- list(
+    workbook_properties = list(
+      author = "user author",
+      title = "default config title",
+      keywords = c("user", "keywords"),
+      subject = "default config subject",
+      category = "default config category",
+      comments = "default config comments"
+    ),
+    workbook_format = list(
+      base_font_name = "default font",
+      base_font_size = 1,
+      table_header_size = 1,
+      sheet_header_size = 1,
+      cellwidth_default = 1,
+      cellwidth_wider = 1,
+      nchar_break = 1
+    )
+  )
+
+  expect_equal(config_default, expected_config_default)
+
+
+  # Custom config only ---------------------------------------------------------
+
+  config_custom <- .process_config(
+    user_config = list(workbook_properties = list(), workbook_format = list()),
+    config_path = testthat::test_path("test_valid_config2.yaml"),
+    config_name = "custom"
+  )
+
+  expected_config_custom <- list(
+    workbook_properties = list(
+      author = "custom config author"
+    ),
+    workbook_format = list(
+      sheet_header_size = 50
+    )
+  )
+
+  expect_equal(config_custom, expected_config_custom)
+
+
+  # user only ------------------------------------------------------------------
+
+  config_user <- .process_config(
+    user_config = user_config,
+    config_path = NULL,
+    config_name = NULL
+  )
+
+  expected_config_user <- list(
+    workbook_properties = list(
+      author =  "user author",
+      keywords = c("user", "keywords")
+    ),
+    workbook_format = list()
+  )
+
+  expect_equal(config_user, expected_config_user)
+
+})
+
 
 # Test .validate_config --------------------------------------------------------
 

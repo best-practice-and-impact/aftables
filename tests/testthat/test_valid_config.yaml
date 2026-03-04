@@ -1,0 +1,25 @@
+aftables:
+  default:
+    workbook_properties:
+      author: "default config author"
+      title: "default config title"
+      keywords:
+        - "default config keyword_1"
+        - "default config keyword_2"
+        - "default config keyword_3"
+      subject: "default config subject"
+      category: "default config category"
+      comments: "default config comments"
+    workbook_format:
+      base_font_name: "default font"
+      base_font_size: 1
+      table_header_size: 1
+      sheet_header_size: 1
+      cellwidth_default: 1
+      cellwidth_wider: 1
+      nchar_break: 1
+  custom:
+    workbook_properties:
+      author: "custom confi gauthor"
+    workbook_format:
+       sheet_header_size: 50
