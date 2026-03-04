@@ -190,7 +190,7 @@ create_config_yaml <- function(path = getwd(),
             (!is.list(default_config$workbook_properties) ||
                is.null(names(default_config$workbook_properties)))) {
         stop(
-          "Configuration Default:workbook_properties must be a named list",
+          "Default configuration workbook_properties must be a named list",
           call. = FALSE
         )
       }
@@ -199,7 +199,7 @@ create_config_yaml <- function(path = getwd(),
             (!is.list(default_config$workbook_format) ||
                is.null(names(default_config$workbook_format)))) {
         stop(
-          "Configuration Default:workbook_format must be a named list",
+          "Default configuration workbook_format must be a named list",
           call. = FALSE
         )
       }

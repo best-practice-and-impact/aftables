@@ -75,7 +75,7 @@ test_that("error if default workbook properties is not a named list", {
       as_aftable(demo_df),
       config_path = testthat::test_path("test_wrong_default3.yaml")
     ),
-    "Configuration Default:workbook_properties must be a named list"
+    "Default configuration workbook_properties must be a named list"
   )
 
 })
@@ -87,7 +87,7 @@ test_that("error if default workbook format is not a named list", {
       as_aftable(demo_df),
       config_path = testthat::test_path("test_wrong_default4.yaml")
     ),
-    "Configuration Default:workbook_format must be a named list"
+    "Default configuration workbook_format must be a named list"
   )
 
 })
@@ -104,6 +104,54 @@ test_that("error if aftables cannot find custom config requested by user", {
       "The config file contains values identical to the aftables example config. Please check your config file."
     ),
     "does not contain key `MISSING_custom`"
+  )
+
+})
+
+test_that("error if custom config not a named list", {
+
+  expect_error(
+    generate_workbook(
+      as_aftable(demo_df),
+      config_path = testthat::test_path("test_wrong_custom.yaml"),
+      config_name = "custom"
+    ),
+    "Configuration key custom must be a named list. It can only contain keys `workbook_properties` and `workbook_format`."
+  )
+
+  expect_error(
+    generate_workbook(
+      as_aftable(demo_df),
+      config_path = testthat::test_path("test_wrong_custom2.yaml"),
+      config_name = "custom"
+    ),
+    "Configuration key custom must be a named list. It can only contain keys `workbook_properties` and `workbook_format`."
+  )
+
+})
+
+test_that("error if custom workbook properties is not a named list", {
+
+  expect_error(
+    generate_workbook(
+      as_aftable(demo_df),
+      config_path = testthat::test_path("test_wrong_custom3.yaml"),
+      config_name = "custom"
+    ),
+    "Custom configuration workbook_properties must be a named list"
+  )
+
+})
+
+test_that("error if custom workbook format is not a named list", {
+
+  expect_error(
+    generate_workbook(
+      as_aftable(demo_df),
+      config_path = testthat::test_path("test_wrong_custom4.yaml"),
+      config_name = "custom"
+    ),
+    "Custom configuration workbook_format must be a named list"
   )
 
 })
