@@ -312,9 +312,9 @@ create_config_yaml <- function(path = getwd(),
 
   # warning if any config provided and any of recommended properties author,
   # title or keywords are missing from config
-  if(length(config$workbook_properties) > 0 &&
-     !all(c("author", "keywords", "title") %in%
-          purrr::pluck(config, "workbook_properties", names))) {
+  if (length(config$workbook_properties) > 0 &&
+        !all(c("author", "keywords", "title") %in%
+               purrr::pluck(config, "workbook_properties", names))) {
     warning(paste0("Some of the recommended workbook properties are missing. ",
                    "Analysis Function guidance recommends completing the ",
                    "author, title and keywords fields."),
