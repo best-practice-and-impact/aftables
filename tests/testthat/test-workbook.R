@@ -1,5 +1,8 @@
 test_that("workbook object is created", {
-  wb <- generate_workbook(as_aftable(demo_df))
+  expect_warning(
+    wb <- generate_workbook(as_aftable(demo_df)),
+    "Some of the recommended workbook properties are missing."
+  )
 
   expect_s3_class(wb, class = c("wbWorkbook", "R6"))
   expect_identical(class(wb)[1], "wbWorkbook")
@@ -27,7 +30,10 @@ test_that(".stop_bad_input works as intended", {
 
 test_that("hyperlinks are generated on the cover page", {
   # demo dataset has two hyperlinks on the cover
-  wb <- generate_workbook(as_aftable(demo_df))
+  expect_warning(
+    wb <- generate_workbook(as_aftable(demo_df)),
+    "Some of the recommended workbook properties are missing."
+  )
 
   expect_equal(sum(grepl("HYPERLINK", wb$worksheets[[1]]$sheet_data$cc$f)), 2)
 })

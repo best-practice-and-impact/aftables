@@ -215,7 +215,10 @@ test_that("absence of note sheets doesn't prevent aftable formation", {
 
   expect_s3_class(test_aftable, "aftable")
 
-  test_wb <- generate_workbook(test_aftable)
+  expect_warning(
+    test_wb <- generate_workbook(test_aftable),
+    "Some of the recommended workbook properties are missing."
+  )
 
   expect_s3_class(test_wb, c("wbWorkbook", "R6"))
 })

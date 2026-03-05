@@ -140,7 +140,7 @@ create_config_yaml <- function(path = getwd(),
     config_file <- yaml::read_yaml(config_path)
 
     if (config_path != "config.yaml" &&
-          !purrr::pluck_exists(config_file, "aftables")) {
+          !pluck_exists(config_file, "aftables")) {
       stop(
         "Config file ", config_path, " does not contain an aftables key",
         call. = FALSE
@@ -148,7 +148,7 @@ create_config_yaml <- function(path = getwd(),
     }
 
     if (config_path == "config.yaml" &&
-          !purrr::pluck_exists(config_file, "aftables")) {
+          !pluck_exists(config_file, "aftables")) {
       warning(
         "Config file ", config_path,
         " does not contain an aftables key and will therefore be ignored",
@@ -160,8 +160,8 @@ create_config_yaml <- function(path = getwd(),
     # Get default config settings ---------
 
     if (is.null(config_name) &&
-          purrr::pluck_exists(config_file, "aftables") &&
-          !purrr::pluck_exists(config_file, "aftables", "default")) {
+          pluck_exists(config_file, "aftables") &&
+          !pluck_exists(config_file, "aftables", "default")) {
       stop(
         "Config file ", config_path,
         " does not contain a default aftables configuration and a custom key is not being used",
@@ -169,9 +169,9 @@ create_config_yaml <- function(path = getwd(),
       )
     }
 
-    if (purrr::pluck_exists(config_file, "aftables", "default")) {
+    if (pluck_exists(config_file, "aftables", "default")) {
 
-      default_config <- purrr::pluck(config_file, "aftables", "default")
+      default_config <- pluck(config_file, "aftables", "default")
 
       if (!is.list(default_config) ||
         length(default_config) > 2 ||
@@ -186,7 +186,7 @@ create_config_yaml <- function(path = getwd(),
         )
       }
 
-      if (purrr::pluck_exists(default_config, "workbook_properties") &&
+      if (pluck_exists(default_config, "workbook_properties") &&
             (!is.list(default_config$workbook_properties) ||
                is.null(names(default_config$workbook_properties)))) {
         stop(
@@ -195,7 +195,7 @@ create_config_yaml <- function(path = getwd(),
         )
       }
 
-      if (purrr::pluck_exists(default_config, "workbook_format") &&
+      if (pluck_exists(default_config, "workbook_format") &&
             (!is.list(default_config$workbook_format) ||
                is.null(names(default_config$workbook_format)))) {
         stop(
@@ -215,7 +215,7 @@ create_config_yaml <- function(path = getwd(),
 
     if (!is.null(config_name)) {
 
-      if (!purrr::pluck_exists(config_file, "aftables", config_name)) {
+      if (!pluck_exists(config_file, "aftables", config_name)) {
         stop(
           "Config file ", config_path, " does not contain key `",
           config_name, "`",
@@ -223,7 +223,7 @@ create_config_yaml <- function(path = getwd(),
         )
       }
 
-      custom_config <- purrr::pluck(
+      custom_config <- pluck(
         config_file,
         "aftables", config_name,
         .default = list()
@@ -275,11 +275,11 @@ create_config_yaml <- function(path = getwd(),
 
   # Combine config options -----------------------------------------------------
   # Remove null options in user config - these are default function argument
-  user_config <- purrr::map_depth(user_config, 1, purrr::compact)
+  user_config <- map_depth(user_config, 1, compact)
 
   # Combine config settings, user config has highest priority, default config lowest
-  config <-  purrr::list_modify(default_config, !!!custom_config)
-  config <-  purrr::list_modify(config, !!!user_config)
+  config <-  list_modify(default_config, !!!custom_config)
+  config <-  list_modify(config, !!!user_config)
 
   # Warning if the config workbook_properties have not been
   # changed from the internal config.yaml defaults
@@ -310,19 +310,19 @@ create_config_yaml <- function(path = getwd(),
     )
   }
 
+  # Validate the final config --------------------------------------------------
+  .validate_config(config)
+
   # warning if any config provided and any of recommended properties author,
   # title or keywords are missing from config
-  if (length(config$workbook_properties) > 0 &&
-        !all(c("author", "keywords", "title") %in%
-               purrr::pluck(config, "workbook_properties", names))) {
+  if (!all(c(pluck_exists(config, "workbook_properties", "author"),
+             pluck_exists(config, "workbook_properties", "keywords"),
+             pluck_exists(config, "workbook_properties", "title")))) {
     warning(paste0("Some of the recommended workbook properties are missing. ",
                    "Analysis Function guidance recommends completing the ",
                    "author, title and keywords fields."),
             call. = FALSE)
   }
-
-  # Validate the final config --------------------------------------------------
-  .validate_config(config)
 
   config
 }
@@ -366,22 +366,22 @@ create_config_yaml <- function(path = getwd(),
     tibble::tibble(
       # create vector of workbook_properties and workbook_format
       # with length equal to number of entries under each
-      parent = rep(purrr::map_depth(config, 0, names) |>
+      parent = rep(map_depth(config, 0, names) |>
                      unlist(use.names = FALSE) %||% character(0),
-                   purrr::map_depth(config, 1, length) |>
+                   map_depth(config, 1, length) |>
                      unlist(use.names = FALSE) %||% 0),
       # get names of each entry under workbook_properties and workbook_format
-      entry =  purrr::map_depth(config, 1, names) |>
+      entry =  map_depth(config, 1, names) |>
         unlist(use.names = FALSE) %||% character(0),
       # Find the datatype of each entry under workbook_properties and
       # workbook_format
       # Replace NULL with character(0) so column is always created
-      config_datatype = purrr::map_depth(config, 2, typeof) |>
+      config_datatype = map_depth(config, 2, typeof) |>
         unlist(use.names = FALSE) %||% character(0),
       # Find the length of each entry under workbook_properties and
       # workbook_format
       # Replace NULL with character(0) so column is always created
-      config_length = purrr::map_depth(config, 2, length) |>
+      config_length = map_depth(config, 2, length) |>
         unlist(use.names = FALSE) %||% character(0)
     )
 
@@ -441,11 +441,11 @@ create_config_yaml <- function(path = getwd(),
     mutate(
       across(
         c("datatype", "config_datatype"),
-        \(x) stringr::str_replace(x, "character", "character string")
+        \(x) str_replace(x, "character", "character string")
       ),
       across(
         c("datatype", "config_datatype"),
-        \(x) stringr::str_replace(x, "integer", "integer value")
+        \(x) str_replace(x, "integer", "integer value")
       ),
       error_message = paste0(.data$correct_parent, ":", .data$entry, " is ",
                              .data$config_datatype, ". It should be ",
