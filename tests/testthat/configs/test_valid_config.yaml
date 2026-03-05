@@ -20,6 +20,6 @@ aftables:
       nchar_break: 1
   custom:
     workbook_properties:
-      author: "custom confi gauthor"
+      author: "custom config author"
     workbook_format:
        sheet_header_size: 50

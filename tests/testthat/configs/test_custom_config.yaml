@@ -2,7 +2,7 @@ aftables:
   default:
     workbook_properties:
       author: "aftables test"
-      title: "aftables example workbooktest"
+      title: "aftables example workbook test"
       keywords:
         - "aftables1test"
         - "aftables2test"
