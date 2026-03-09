@@ -9,7 +9,7 @@ aftables:
         - "default config keyword_3"
     workbook_format:
       base_font_name: "Arial"
-      base_font_size: 12
+      base_font_size: 8
       table_header_size: 14
       sheet_subheading_size: 14
       sheet_heading_size: 16

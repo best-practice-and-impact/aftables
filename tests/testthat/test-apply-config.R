@@ -85,11 +85,14 @@ test_that("properties from config.yaml are ignored when properties arguments are
 
 })
 
-test_that("Default cell formats are set properly", {
+test_that("Cell formats are set properly when no config set", {
 
   wb <- generate_workbook(
     as_aftable(demo_df),
-    config_path = testthat::test_path("configs/test_font_config.yaml")
+    config_path = NULL,
+    author = "test author",
+    title = "test tile",
+    keywords = "test keywords"
   )
 
   wb_fonts <- wb$styles_mgr$font
@@ -197,11 +200,11 @@ test_that("Cell formats are set properly from default and custom configs combine
   expect_true(stringr::str_detect(cell_format, "<name val=\"Calibri\"/>")) # custom Calibri
   expect_true(stringr::str_detect(cell_format, "<sz val=\"16\"/>")) # custom size 16
 
-  # default font Calibri size 12
+  # default font Calibri size 8
   # get properties with wb_get_base_font
   base_font <- openxlsx2::wb_get_base_font(wb)
 
-  expect_equal(base_font$size$val, "12")
+  expect_equal(base_font$size$val, "8")
 
   expect_equal(base_font$name$val, "Calibri")
 
