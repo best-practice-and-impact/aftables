@@ -314,16 +314,17 @@ create_config_yaml <- function(path = getwd(),
   # Validate the final config --------------------------------------------------
   .validate_config(config)
 
-
-  # warning if any config provided and any of recommended properties author,
-  # title or keywords are missing from config
+  # Warning if recommended properties author, title or keywords are
+  # missing from config
   if (!all(c(pluck_exists(config, "workbook_properties", "author"),
              pluck_exists(config, "workbook_properties", "keywords"),
              pluck_exists(config, "workbook_properties", "title")))) {
-    warning(paste0("Some of the recommended workbook properties are missing. ",
-                   "Analysis Function guidance recommends completing the ",
-                   "author, title and keywords fields."),
-            call. = FALSE)
+    warning(
+      paste0("Some of the recommended workbook properties are missing. ",
+             "Analysis Function guidance recommends completing the ",
+             "author, title and keywords fields."),
+      call. = FALSE
+    )
   }
 
   config

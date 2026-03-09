@@ -335,7 +335,7 @@ test_that("error when values in config.yaml are wrong datatype (character/numeri
 
 test_that("Warn users when they haven't provided AF recommended workbook properties", {
 
-  # warn if config from file is missing recommended entries
+  # Warn if config from file is missing recommended entries
   expect_warning(
     generate_workbook(
       as_aftable(demo_df),
@@ -345,17 +345,13 @@ test_that("Warn users when they haven't provided AF recommended workbook propert
     "Some of the recommended workbook properties are missing. Analysis Function guidance recommends completing the author, title and keywords fields."
   )
 
-  # warn if user does not provide all recommended arguments
+  # Warn if user does not provide all recommended arguments
   expect_warning(
-    generate_workbook(as_aftable(demo_df),
-                      author = "aftables test"),
-    "Some of the recommended workbook properties are missing. Analysis Function guidance recommends completing the author, title and keywords fields."
-  )
-
-  # warn if user does not provide any recommended arguments or provide config file
-  # this situation will apply to all users on release of v2
-  expect_warning(
-    generate_workbook(as_aftable(demo_df)),
+    generate_workbook(
+      as_aftable(demo_df),
+      author = "aftables test",
+      config_path = NULL
+    ),
     "Some of the recommended workbook properties are missing. Analysis Function guidance recommends completing the author, title and keywords fields."
   )
 

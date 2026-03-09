@@ -1,11 +1,12 @@
 test_that("no config is applied without config.yaml or function arguments", {
   expect_warning(
-                 wb <-
-                   generate_workbook(
-                     as_aftable(demo_df),
-                     config_path = NULL
-                   ),
-                 "Some of the recommended workbook properties are missing.")
+    wb <-
+      generate_workbook(
+        as_aftable(demo_df),
+        config_path = NULL
+      ),
+    "Some of the recommended workbook properties are missing."
+  )
 
   wb_properties <- openxlsx2::wb_get_properties(wb)
 
