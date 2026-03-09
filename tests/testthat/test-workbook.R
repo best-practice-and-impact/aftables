@@ -18,10 +18,9 @@ test_that("aftable is passed", {
 })
 
 
-test_that(
-  "Error if workbook properties arguments are not correct type", {
+test_that("Error if workbook properties arguments are not correct type", {
 
-   expect_error(
+  expect_error(
     generate_workbook(demo_aftable, author = 1),
     "author must be a character vector of length 1"
   )
