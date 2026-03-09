@@ -17,6 +17,28 @@ test_that("aftable is passed", {
   expect_error(generate_workbook(data.frame()))
 })
 
+
+test_that("Error if workbook properties arguments are not correct type", {
+
+  expect_error(
+    generate_workbook(demo_aftable, author = 1),
+    "author must be a character vector of length 1"
+  )
+
+  expect_error(
+    generate_workbook(demo_aftable, title = c("a", "b")),
+    "title must be a character vector of length 1"
+  )
+
+  expect_error(
+    generate_workbook(demo_aftable, keywords = 2),
+    "keywords must be a character vector"
+  )
+
+})
+
+
+
 test_that(".stop_bad_input works as intended", {
   wb <- openxlsx2::wb_workbook()
 
