@@ -1,0 +1,5 @@
+aftables:
+  default:
+    workbook_properties:
+      - "a"
+      - 3

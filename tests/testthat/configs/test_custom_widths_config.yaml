@@ -1,0 +1,18 @@
+aftables:
+  default:
+    workbook_properties:
+      author: "default config author"
+      title: "default config title"
+      keywords:
+        - "default config keyword_1"
+        - "default config keyword_2"
+        - "default config keyword_3"
+    workbook_format:
+      cellwidth_default: 16
+      cellwidth_wider: 32
+      nchar_break: 50
+  workbook1:
+    workbook_format:
+      cellwidth_default: 10
+      cellwidth_wider: 14
+      nchar_break: 50

@@ -182,6 +182,7 @@ create_aftable <- function(tab_titles,
                            sources = NA_character_,
                            custom_rows = list(NA_character_),
                            tables) {
+
   x <- data.frame(
     tab_title = unlist(tab_titles),
     sheet_type = unlist(sheet_types),

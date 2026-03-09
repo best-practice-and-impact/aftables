@@ -1,0 +1,11 @@
+aftables:
+  custom:
+    workbook_properties:
+      author: "custom config author"
+      title: "custom config title"
+      keywords:
+        - "customconfig1"
+        - "customconfig2"
+    workbook_format:
+      sheet_subheading_size: 26
+      sheet_heading_size: 50

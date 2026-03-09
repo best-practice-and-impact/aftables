@@ -1,0 +1,21 @@
+aftables:
+  default:
+    workbook_properties:
+      author: "default config author"
+      title: "default config title"
+      keywords:
+        - "default config keyword_1"
+        - "default config keyword_2"
+        - "default config keyword_3"
+    workbook_format:
+      base_font_name: "Arial"
+      base_font_size: 8
+      table_header_size: 14
+      sheet_subheading_size: 14
+      sheet_heading_size: 16
+  workbook1:
+    workbook_format:
+      base_font_name: "Calibri"
+      table_header_size: 16
+      sheet_subheading_size: 18
+      sheet_heading_size: 20

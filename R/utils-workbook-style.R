@@ -10,13 +10,35 @@
 
 #' Set up a list of common font styles
 #' @noRd
-.style_font <- function() {
+.style_font <- function(workbook_format) {
+
+  base_font_size <-
+    if (!is.null(workbook_format$base_font_size))
+      workbook_format$base_font_size else aftables_default_font$base_font_size
+
+  table_header_size <-
+    if (!is.null(workbook_format$table_header_size))
+      workbook_format$table_header_size else aftables_default_font$table_header_size
+
+  sheet_heading_size <-
+    if (!is.null(workbook_format$sheet_heading_size))
+      workbook_format$sheet_heading_size else aftables_default_font$sheet_heading_size
+
+  sheet_subheading_size <-
+    if (!is.null(workbook_format$sheet_subheading_size))
+      workbook_format$sheet_subheading_size else aftables_default_font$sheet_subheading_size
+
+  base_font_name <-
+    if (!is.null(workbook_format$base_font_name))
+      workbook_format$base_font_name else aftables_default_font$base_font_name
+
   list(
     bold =  1,
-    pt12 = 12,
-    pt14 = 14,
-    pt16 = 16,
-    name = "Arial"
+    base_font_size = base_font_size,
+    table_header_size = table_header_size,
+    sheet_heading_size = sheet_heading_size,
+    sheet_subheading_size = sheet_subheading_size,
+    name = base_font_name
   )
 }
 
@@ -24,10 +46,11 @@
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @noRd
 
-.style_workbook <- function(wb) {
+.style_workbook <- function(wb, font_ref) {
+
   wb$set_base_font(
-    font_size = 12,
-    font_name = "Arial"
+    font_size = font_ref$base_font_size,
+    font_name = font_ref$name
   )
 
   wb
@@ -36,16 +59,17 @@
 #' Apply Styles to a Sheet Title
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
-#' @param style_ref List. The style-reference object made with [.style_paragraph()].
-#' @param font_ref List. The font-reference object made with [.style_font()].
+#' @param style_ref List. The style-reference object made with .style_paragraph().
+#' @param font_ref List. The font-reference object made with .style_font().
 #' @noRd
 .style_sheet_title <- function(wb, tab_title, style_ref, font_ref) {
-  # Sheet titles are BOLD and 16PT
-
+  # Sheet titles are BOLD and 16PT by default
+  # .style_font() checks the config.yaml file for user preferences
+  # which are then included here in font_ref
   wb$add_font(
     sheet = tab_title,
     dims = "A1",
-    size = font_ref[["pt16"]],
+    size = font_ref[["sheet_heading_size"]],
     bold = font_ref[["bold"]],
     name = font_ref[["name"]]
   )
@@ -62,13 +86,39 @@
 #' Apply Styles to a Table
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param table_name Character. The table to which styles should be applied.
-#' @param style_ref List. The style-reference object made with [.style_paragraph()].
-#' @param font_ref List. The font-reference object made with [.style_font()].
+#' @param style_ref List. The style-reference object made with .style_paragraph().
+#' @param font_ref List. The font-reference object made with .style_font().
 #' @noRd
-.style_table <- function(wb, content, table_name, style_ref, font_ref, table_formats) {
+
+.style_table <- function(wb,
+                         content,
+                         table_name,
+                         style_ref,
+                         font_ref,
+                         table_formats,
+                         workbook_format) {
+
   content_row <- content[content[["table_name"]] == table_name, ]
   table <- content_row[, "table"][[1]]
   tab_title <- content_row[, "tab_title"][[1]]
+
+  if (!is.null(workbook_format$cellwidth_default)) {
+    cellwidth_default <- workbook_format$cellwidth_default
+  } else {
+    cellwidth_default <- 16
+  }
+
+  if (!is.null(workbook_format$cellwidth_wider)) {
+    cellwidth_wider <- workbook_format$cellwidth_wider
+  } else {
+    cellwidth_wider <- 32
+  }
+
+  if (!is.null(workbook_format$nchar_break)) {
+    nchar_break <- workbook_format$nchar_break
+  } else {
+    nchar_break <- 50
+  }
 
   start_row <- .get_start_row_table(
     content,
@@ -81,7 +131,6 @@
 
   table_height <- nrow(table)
   table_width <- ncol(table)
-
 
   #=============================================================================
   # style table headers, wrap text, left align columns by default
@@ -108,23 +157,19 @@
   )
 
   # Table headers are bold
+  # .style_font() checks the config.yaml file for user preferences
+  # which are then included here in font_ref
   wb$add_font(
     sheet = tab_title,
     dims = wb_dims(rows = start_row, cols = seq(table_width)),
     bold = font_ref[["bold"]],
-    size = font_ref[["pt12"]],
+    size = font_ref[["table_header_size"]],
     name = font_ref[["name"]]
   )
 
-
   #=============================================================================
-  # set column widths
+  # Set column widths
   #=============================================================================
-
-  cellwidth_default <- 16
-  cellwidth_wider <- 32
-  nchar_break <- 50
-
 
   # Find indices of columns that should be wider than default
   is_factor_column <- sapply(table, is.factor) # nchar (below) fails on factors
@@ -148,7 +193,6 @@
     )
   }
 
-
   #=============================================================================
   # right align numeric columns
   #=============================================================================
@@ -167,7 +211,6 @@
       horizontal = style_ref[["ralign"]]
     )
   }
-
 
   #=============================================================================
   # insert currency symbols and format numbers
@@ -203,8 +246,8 @@
 #' Apply Styles to the Cover Sheet
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
-#' @param style_ref List. The style-reference object made with [.style_paragraph()].
-#' @param font_ref List. The font-reference object made with [.style_font()].
+#' @param style_ref List. The style-reference object made with .style_paragraph().
+#' @param font_ref List. The font-reference object made with .style_font().
 #' @noRd
 .style_cover <- function(wb, content, style_ref, font_ref) {
   content_row <- content[content[["sheet_type"]] == "cover", ]
@@ -255,7 +298,7 @@
     subheader_rows <- seq(2, table_height * 2, 2)
   }
 
-  # Section header rows also have LARGER ROW HEIGHT, are BOLD and 14PT
+  # Section header rows also have LARGER ROW HEIGHT, are BOLD and 14PT by default
 
   wb$set_row_heights(
     sheet = tab_name,
@@ -267,7 +310,7 @@
     sheet = tab_name,
     dims = wb_dims(rows = subheader_rows, cols = 1),
     bold = font_ref[["bold"]],
-    size = font_ref[["pt14"]],
+    size = font_ref[["sheet_subheading_size"]],
     name = font_ref[["name"]]
   )
 
@@ -277,7 +320,7 @@
 #' Apply Styles to the Contents Sheet
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
-#' @param style_ref List. The style-reference object made with [.style_paragraph()].
+#' @param style_ref List. The style-reference object made with .style_paragraph().
 #' @noRd
 .style_contents <- function(wb, content, style_ref) {
   tab_title <- content[content[["sheet_type"]] == "contents", "tab_title"][[1]]
@@ -320,7 +363,7 @@
 #' Apply Styles to the Notes Sheet
 #' @param wb An 'openxlsx2' wbWorkbook object.
 #' @param tab_title Character. The tab in `wb` where the style should be set.
-#' @param style_ref List. The style-reference object made with [.style_paragraph()].
+#' @param style_ref List. The style-reference object made with .style_paragraph().
 #' @noRd
 .style_notes <- function(wb, content, style_ref) {
   tab_title <- content[content[["sheet_type"]] == "notes", "tab_title"][[1]]
@@ -358,28 +401,5 @@
     wrap_text = style_ref[["wrap_text"]],
     horizontal = style_ref[["lalign"]]
   )
-}
 
-.determine_decimal_places <- function(x) {
-  # length zero input
-  if (length(x) == 0) {
-    return(numeric())
-  }
-
-  x <- x |>
-    .extract_numeric_values()
-
-  # count decimals
-  x_nchr <- x |>
-    abs() |>
-    as.character() |>
-    nchar() |>
-    as.numeric()
-  x_int <- floor(x) |>
-    abs() |>
-    nchar()
-  x_nchr <- x_nchr - 1 - x_int
-  x_nchr[x_nchr < 0] <- 0
-
-  max(x_nchr, na.rm = TRUE)
 }

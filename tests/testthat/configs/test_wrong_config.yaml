@@ -1,0 +1,21 @@
+aftables:
+  default:
+    workbook_properties:
+      author: "aftables author"
+      title: "aftables test workbook"
+      keywords:
+        - "testaftables1"
+        - "testaftables2"
+        - "testaftables3"
+      base_font_size: 12
+      table_header_size: 14
+      sheet_subheading_size: 14
+      sheet_heading_size: 16
+      cellwidth_default: 16
+      cellwidth_wider: 32
+      nchar_break: 50
+    workbook_format:
+      base_font_name: "Arial"
+      subject: "aftables test subject"
+      category: "aftables test category"
+      comments: "aftables test comments"

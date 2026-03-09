@@ -1,0 +1,10 @@
+aftables:
+  wrong-lengths:
+    workbook_properties:
+      author:
+        - "testaftables"
+        - "testauthor"
+      title:
+        - "testaftables"
+        - "testtitle"
+      keywords: "customconfig1"

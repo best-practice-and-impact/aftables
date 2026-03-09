@@ -25,16 +25,18 @@ Imports:
     purrr,
     dplyr,
     stringr,
-    rlang,
     tidyselect,
-    tidyr
+    tidyr,
+    rlang,
+    utils,
+    yaml,
+    tibble
 Suggests: 
     covr,
     knitr,
     rmarkdown,
     rstudioapi,
-    testthat (>= 3.0.0),
-    tibble
+    testthat (>= 3.0.0)
 VignetteBuilder: 
     knitr
 Config/testthat/edition: 3

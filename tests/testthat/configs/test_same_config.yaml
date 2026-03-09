@@ -1,0 +1,32 @@
+aftables:
+  default:
+    workbook_properties:
+      author: "aftables"
+      title: "aftables example workbook"
+      keywords:
+        - "aftables1"
+        - "aftables2"
+        - "aftables3"
+      subject: "aftables example subject"
+      category: "aftables example category"
+      comments: "aftables example comments"
+    workbook_format:
+      base_font_name: "Arial"
+      base_font_size: 12
+      table_header_size: 12
+      sheet_subheading_size: 14
+      sheet_heading_size: 16
+      cellwidth_default: 16
+      cellwidth_wider: 32
+      nchar_break: 50
+  workbook1:
+    workbook_properties:
+      category: "aftables workbook 1 category"
+      keywords:
+        - "aftablesworkbook1"
+  workbook2:
+    workbook_properties:
+      title: "aftables workbook 2"
+      category: "aftables workbook 2 category"
+      keywords:
+        - "aftablesworkbook2"

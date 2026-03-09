@@ -5,13 +5,23 @@
 # roxygen namespace tags. Modify with care!
 ## usethis namespace: start
 #' @import openxlsx2
-#' @importFrom dplyr across mutate everything filter all_of
+#' @importFrom dplyr across
+#' @importFrom dplyr mutate
+#' @importFrom dplyr everything
+#' @importFrom dplyr filter
+#' @importFrom dplyr all_of
+#' @importFrom tidyselect where
+#' @importFrom rlang .data
 #' @importFrom pillar tbl_sum
 #' @importFrom purrr pwalk
-#' @importFrom rlang .data
+#' @importFrom purrr pluck
+#' @importFrom purrr pluck_exists
+#' @importFrom purrr list_modify
+#' @importFrom purrr map_depth
+#' @importFrom purrr compact
 #' @importFrom stringr str_extract
 #' @importFrom stringr str_replace
 #' @importFrom stringr str_replace_all
-#' @importFrom tidyselect where
+#' @importFrom tibble tibble
 ## usethis namespace: end
 NULL

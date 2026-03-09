@@ -1,0 +1,5 @@
+aftables:
+  default:
+    abc:
+      - "a"
+      - 3

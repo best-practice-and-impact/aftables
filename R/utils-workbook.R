@@ -412,7 +412,7 @@
     currency_formats <-
       data.frame(
         cell_reference = currencies_cell_references,
-        cell_format = paste0(currency_units, "#,##0.00")
+        cell_format = paste0(currency_units, "#,##0")
       )
 
     #===========================================================================
@@ -434,7 +434,7 @@
     numeric_formats <-
       data.frame(
         cell_reference = numeric_cell_references,
-        cell_format = "#,##0.00"
+        cell_format = "#,##0"
       )
 
   } else {
@@ -617,7 +617,7 @@
   wb
 }
 
-.add_cover <- function(wb, content) {
+.add_cover <- function(wb, content, font_ref) {
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "cover", "tab_title"][[1]]
@@ -627,15 +627,14 @@
   .insert_cover_table(wb, content, table_name) # rather than .insert_table
 
   styles <- .style_paragraph()
-  fonts <- .style_font()
-  .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_cover(wb, content, styles, fonts)
+  .style_sheet_title(wb, tab_title, styles, font_ref)
+  .style_cover(wb, content, styles, font_ref)
   # TODO: needs special handling if list provided
   wb
 }
 
 
-.add_contents <- function(wb, content) {
+.add_contents <- function(wb, content, font_ref, workbook_format) {
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "contents", "tab_title"][[1]]
@@ -647,16 +646,15 @@
   table_format <- .insert_table(wb, content, table_name)
 
   styles <- .style_paragraph()
-  fonts <- .style_font()
-  .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts, table_format)
+  .style_sheet_title(wb, tab_title, styles, font_ref)
+  .style_table(wb, content, table_name, styles, font_ref, table_format, workbook_format)
   .style_contents(wb, content, styles)
 
   wb
 }
 
 
-.add_notes <- function(wb, content) {
+.add_notes <- function(wb, content, font_ref, workbook_format) {
   .stop_bad_input(wb, content)
 
   tab_title <- content[content$sheet_type == "notes", "tab_title"][[1]]
@@ -668,15 +666,14 @@
   table_format <- .insert_table(wb, content, table_name)
 
   styles <- .style_paragraph()
-  fonts <- .style_font()
-  .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts, table_format)
+  .style_sheet_title(wb, tab_title, styles, font_ref)
+  .style_table(wb, content, table_name, styles, font_ref, table_format, workbook_format)
   .style_notes(wb, content, styles)
 
   wb
 }
 
-.add_tables <- function(wb, content, table_name) {
+.add_tables <- function(wb, content, table_name, font_ref, workbook_format) {
   .stop_bad_input(wb, content, table_name)
 
   tab_title <- content[content$table_name == table_name, "tab_title"][[1]]
@@ -690,9 +687,8 @@
   table_format <- .insert_table(wb, content, table_name)
 
   styles <- .style_paragraph()
-  fonts <- .style_font()
-  .style_sheet_title(wb, tab_title, styles, fonts)
-  .style_table(wb, content, table_name, styles, fonts, table_format)
+  .style_sheet_title(wb, tab_title, styles, font_ref)
+  .style_table(wb, content, table_name, styles, font_ref, table_format, workbook_format)
 
   wb
 }
@@ -858,4 +854,22 @@
     )
 
   table
+}
+
+.set_workbook_properties <- function(wb, content) {
+
+  if (!is.null(content$keywords)) {
+    content$keywords <- paste0(content$keywords, collapse = ", ")
+  }
+
+  wb$set_properties(
+    creator = content$author,
+    title = content$title,
+    subject = content$subject,
+    category = content$category,
+    keywords = content$keywords,
+    comments = content$comments
+  )
+
+  wb
 }

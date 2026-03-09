@@ -3,7 +3,6 @@
 
 # demo_df and demo_aftable (as of v0.3) ---------------------------------
 
-
 set.seed(1066)
 
 cover_list <- list(
@@ -79,12 +78,27 @@ demo_aftable <- create_aftable(
 
 demo_df <- as.data.frame(demo_aftable)
 
-demo_workbook <- generate_workbook(demo_aftable)
+demo_workbook <- generate_workbook(
+  demo_aftable,
+  author = "Example author",
+  title = "example workbook",
+  keywords = c("keyword1", "keyword2", "keyword3"),
+  config_path = NULL
+)
 
 detect_currency_regex <- "^\\s*((-?\\s*[\u00A3\u0024\u20AC\u00A5]|[\u00A3\u0024\u20AC\u00A5]\\s*-?)\\s*(\\d{1,3}(,\\d{3})+|\\d+)(\\.\\d+)?|-?\\s*(\\d{1,3}(,\\d{3})+|\\d+)(\\.\\d+)?\\s*[\u00A3\u0024\u20AC\u00A5])\\s*$"
 extract_currency_symbol_regex <- "[\u00A3|\u0024|\u20AC|\u00A5]"
 numeric_regex <- "^\\s*-?\\s*(\\d{1,3}(,\\d{3})+|\\d+)(\\.\\d+)?\\s*$"
 notes_regex <- "^\\s*(\\[[^\\]]+\\]\\s*)+\\s*$"
+
+aftables_default_font <-
+  list(
+    base_font_name = "Arial",
+    base_font_size = 12,
+    table_header_size = 12,
+    sheet_subheading_size = 14,
+    sheet_heading_size = 16
+  )
 
 # Write to data/
 usethis::use_data(demo_df, overwrite = TRUE)
@@ -95,6 +109,7 @@ usethis::use_data(
   extract_currency_symbol_regex,
   numeric_regex,
   notes_regex,
+  aftables_default_font,
   overwrite = TRUE,
   internal = TRUE
 )

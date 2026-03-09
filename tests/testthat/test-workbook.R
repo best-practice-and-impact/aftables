@@ -1,29 +1,61 @@
 test_that("workbook object is created", {
-  x <- suppressWarnings(generate_workbook(as_aftable(demo_df)))
+  expect_warning(
+    wb <- generate_workbook(as_aftable(demo_df)),
+    "Some of the recommended workbook properties are missing."
+  )
 
-  expect_s3_class(x, class = c("wbWorkbook", "R6"))
-  expect_identical(class(x)[1], "wbWorkbook")
+  expect_s3_class(wb, class = c("wbWorkbook", "R6"))
+  expect_identical(class(wb)[1], "wbWorkbook")
 })
 
 test_that("aftable is passed", {
-  x <- suppressWarnings(as_aftable(demo_df))
+  wb <- suppressWarnings(as_aftable(demo_df))
 
-  expect_error(generate_workbook("x"))
+  expect_error(generate_workbook("wb"))
   expect_error(generate_workbook(1))
   expect_error(generate_workbook(list()))
   expect_error(generate_workbook(data.frame()))
 })
 
+
+test_that("Error if workbook properties arguments are not correct type", {
+
+  expect_error(
+    generate_workbook(demo_aftable, author = 1),
+    "author must be a character vector of length 1"
+  )
+
+  expect_error(
+    generate_workbook(demo_aftable, title = c("a", "b")),
+    "title must be a character vector of length 1"
+  )
+
+  expect_error(
+    generate_workbook(demo_aftable, keywords = 2),
+    "keywords must be a character vector"
+  )
+
+})
+
+
+
 test_that(".stop_bad_input works as intended", {
   wb <- openxlsx2::wb_workbook()
-  aftable <- as_aftable(demo_df)
 
-  expect_error(.stop_bad_input("x", aftable, "cover"))
-  expect_error(.stop_bad_input(wb, aftable, 1))
+  test_aftable <- as_aftable(demo_df)
+
+  expect_error(.stop_bad_input("wb", test_aftable, "cover"),
+               "'wb' must be an openxlsx2 wbWorkbook-class object.")
+  expect_error(.stop_bad_input(wb, test_aftable, 1),
+               "'table_name' must be a string of length 1")
 })
 
 test_that("hyperlinks are generated on the cover page", {
   # demo dataset has two hyperlinks on the cover
-  y <- suppressWarnings(generate_workbook(as_aftable(demo_df)))
-  expect_equal(sum(grepl("HYPERLINK", y$worksheets[[1]]$sheet_data$cc$f)), 2)
+  expect_warning(
+    wb <- generate_workbook(as_aftable(demo_df)),
+    "Some of the recommended workbook properties are missing."
+  )
+
+  expect_equal(sum(grepl("HYPERLINK", wb$worksheets[[1]]$sheet_data$cc$f)), 2)
 })
