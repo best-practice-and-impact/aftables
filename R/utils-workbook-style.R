@@ -20,13 +20,13 @@
     if (!is.null(workbook_format$table_header_size))
       workbook_format$table_header_size else aftables_default_font$table_header_size
 
-  sheet_subheading_size <-
-    if (!is.null(workbook_format$sheet_subheading_size))
-      workbook_format$sheet_subheading_size else aftables_default_font$sheet_subheading_size
-
   sheet_heading_size <-
     if (!is.null(workbook_format$sheet_heading_size))
       workbook_format$sheet_heading_size else aftables_default_font$sheet_heading_size
+
+  sheet_subheading_size <-
+    if (!is.null(workbook_format$sheet_subheading_size))
+      workbook_format$sheet_subheading_size else aftables_default_font$sheet_subheading_size
 
   base_font_name <-
     if (!is.null(workbook_format$base_font_name))
@@ -36,8 +36,8 @@
     bold =  1,
     base_font_size = base_font_size,
     table_header_size = table_header_size,
-    sheet_subheading_size = sheet_subheading_size,
     sheet_heading_size = sheet_heading_size,
+    sheet_subheading_size = sheet_subheading_size,
     name = base_font_name
   )
 }
