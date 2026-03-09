@@ -185,7 +185,8 @@ test_that(".process_config correctly combines config options", {
       base_font_name = "default font",
       base_font_size = 1,
       table_header_size = 1,
-      sheet_header_size = 50,
+      sheet_subheading_size = 26,
+      sheet_heading_size = 50,
       cellwidth_default = 1,
       cellwidth_wider = 1,
       nchar_break = 1
@@ -216,7 +217,8 @@ test_that(".process_config correctly combines config options", {
       base_font_name = "default font",
       base_font_size = 1,
       table_header_size = 1,
-      sheet_header_size = 1,
+      sheet_subheading_size = 1,
+      sheet_heading_size = 1,
       cellwidth_default = 1,
       cellwidth_wider = 1,
       nchar_break = 1
@@ -241,7 +243,8 @@ test_that(".process_config correctly combines config options", {
       keywords = c("customconfig1", "customconfig2")
     ),
     workbook_format = list(
-      sheet_header_size = 50
+      sheet_subheading_size = 26,
+      sheet_heading_size = 50
     )
   )
 

@@ -43,10 +43,11 @@
 #'
 #' Keys below workbook_format will be applied to the contents of the workbook.
 #' The keys base_font_name and base_font_size define the default font name and
-#' size used by the workbook. All text not formatted as a table header or sheet
-#' header will use the default settings. Table headers and sheet headers will be
-#' formatted using the table_header_size and sheet_header_size keys
-#' respectively, and will always be formatted as bold.
+#' size used by the workbook. All text not formatted as a table header, sheet
+#' subheading or sheet heading will use the default settings. Font sizes of
+#' sheet headings, sheet subheadings, and table header rows can be set using the
+#' sheet_heading_size, sheet_subheading_size and table_header_size keys
+#' respectively, and they will additionally be formatted as bold.
 #'
 #' The keys cellwidth_default, cellwidth_wider and nchar_break are used to
 #' define column widths. The units of the cellwidth_default and cellwidth_wider
@@ -340,7 +341,7 @@ create_config_yaml <- function(path = getwd(),
     tibble::tibble(
       correct_parent = c(
         rep("workbook_properties", 6),
-        rep("workbook_format", 7)
+        rep("workbook_format", 8)
       ),
       entry = c(
         "author",
@@ -354,12 +355,13 @@ create_config_yaml <- function(path = getwd(),
         "cellwidth_default",
         "cellwidth_wider",
         "nchar_break",
-        "sheet_header_size",
+        "sheet_heading_size",
+        "sheet_subheading_size",
         "table_header_size"
       ),
       datatype = c(
         rep("character", 7),
-        rep("integer", 6)
+        rep("integer", 7)
       )
     )
 

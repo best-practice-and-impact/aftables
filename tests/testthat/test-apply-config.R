@@ -96,7 +96,7 @@ test_that("Default cell formats are set properly", {
 
   wb_xf <- wb$styles_mgr$xf
 
-  # Sheet header
+  # Sheet heading
   xf_font_id <- openxlsx2::wb_get_cell_style(wb, "Table_1", "A1") |> as.integer()
 
   font_id <- (wb_xf |> filter(id == xf_font_id))$name
@@ -109,20 +109,7 @@ test_that("Default cell formats are set properly", {
   expect_true(stringr::str_detect(cell_format, "<name val=\"Arial\"/>")) # Arial
   expect_true(stringr::str_detect(cell_format, "<sz val=\"16\"/>")) # size 16
 
-  # table header
-  xf_font_id <- openxlsx2::wb_get_cell_style(wb, "Table_1", "A8") |> as.integer()
-
-  font_id <- (wb_xf |> filter(id == xf_font_id))$name
-
-  font_id <- sub(".*fontId=\"([0-9]+)\".*", "\\1", font_id) |> as.numeric()
-
-  cell_format <- (wb_fonts |> filter(id == font_id))$name
-
-  expect_true(stringr::str_detect(cell_format, "<b val=\"1\"/>")) # bold
-  expect_true(stringr::str_detect(cell_format, "<name val=\"Arial\"/>")) # Arial
-  expect_true(stringr::str_detect(cell_format, "<sz val=\"14\"/>")) # size 14
-
-  # heading 2 (same as table header but applied outside table)
+  # Sheet subheading
   xf_font_id <- openxlsx2::wb_get_cell_style(wb, "Cover", "A2") |> as.integer()
 
   font_id <- (wb_xf |> filter(id == xf_font_id))$name
@@ -135,10 +122,26 @@ test_that("Default cell formats are set properly", {
   expect_true(stringr::str_detect(cell_format, "<name val=\"Arial\"/>")) # Arial
   expect_true(stringr::str_detect(cell_format, "<sz val=\"14\"/>")) # size 14
 
-  # default font Arial size 12 has no id
-  xf_font_id <- openxlsx2::wb_get_cell_style(wb, "Table_1", "A2") |> as.integer()
+  # table header
+  xf_font_id <- openxlsx2::wb_get_cell_style(wb, "Table_1", "A8") |> as.integer()
 
-  expect_true(is.na(xf_font_id))
+  font_id <- (wb_xf |> filter(id == xf_font_id))$name
+
+  font_id <- sub(".*fontId=\"([0-9]+)\".*", "\\1", font_id) |> as.numeric()
+
+  cell_format <- (wb_fonts |> filter(id == font_id))$name
+
+  expect_true(stringr::str_detect(cell_format, "<b val=\"1\"/>")) # bold
+  expect_true(stringr::str_detect(cell_format, "<name val=\"Arial\"/>")) # Arial
+  expect_true(stringr::str_detect(cell_format, "<sz val=\"12\"/>")) # size 12
+
+  # default font Arial size 12
+  # get properties with wb_get_base_font
+  base_font <- openxlsx2::wb_get_base_font(wb)
+
+  expect_equal(base_font$size$val, "12")
+
+  expect_equal(base_font$name$val, "Arial")
 
 })
 
@@ -155,8 +158,21 @@ test_that("Cell formats are set properly from default and custom configs combine
 
   wb_xf <- wb$styles_mgr$xf
 
-  # Sheet header
+  # Sheet heading
   xf_font_id <- openxlsx2::wb_get_cell_style(wb, "Table_1", "A1") |> as.integer()
+
+  font_id <- (wb_xf |> filter(id == xf_font_id))$name
+
+  font_id <- sub(".*fontId=\"([0-9]+)\".*", "\\1", font_id) |> as.numeric()
+
+  cell_format <- (wb_fonts |> filter(id == font_id))$name
+
+  expect_true(stringr::str_detect(cell_format, "<b val=\"1\"/>")) # bold
+  expect_true(stringr::str_detect(cell_format, "<name val=\"Calibri\"/>")) # custom Calibri
+  expect_true(stringr::str_detect(cell_format, "<sz val=\"20\"/>")) # custom size 20
+
+  # Sheet subheading
+  xf_font_id <- openxlsx2::wb_get_cell_style(wb, "Cover", "A2") |> as.integer()
 
   font_id <- (wb_xf |> filter(id == xf_font_id))$name
 
@@ -181,23 +197,13 @@ test_that("Cell formats are set properly from default and custom configs combine
   expect_true(stringr::str_detect(cell_format, "<name val=\"Calibri\"/>")) # custom Calibri
   expect_true(stringr::str_detect(cell_format, "<sz val=\"16\"/>")) # custom size 16
 
-  # heading 2 (same as table header but applied outside table)
-  xf_font_id <- openxlsx2::wb_get_cell_style(wb, "Cover", "A2") |> as.integer()
+  # default font Calibri size 12
+  # get properties with wb_get_base_font
+  base_font <- openxlsx2::wb_get_base_font(wb)
 
-  font_id <- (wb_xf |> filter(id == xf_font_id))$name
+  expect_equal(base_font$size$val, "12")
 
-  font_id <- sub(".*fontId=\"([0-9]+)\".*", "\\1", font_id) |> as.numeric()
-
-  cell_format <- (wb_fonts |> filter(id == font_id))$name
-
-  expect_true(stringr::str_detect(cell_format, "<b val=\"1\"/>")) # bold
-  expect_true(stringr::str_detect(cell_format, "<name val=\"Calibri\"/>")) # custom Calibri
-  expect_true(stringr::str_detect(cell_format, "<sz val=\"16\"/>")) # size 16
-
-  # default font Arial size 12 has no id
-  xf_font_id <- openxlsx2::wb_get_cell_style(wb, "Table_1", "A2") |> as.integer()
-
-  expect_true(is.na(xf_font_id))
+  expect_equal(base_font$name$val, "Calibri")
 
 })
 

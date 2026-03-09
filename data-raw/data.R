@@ -96,7 +96,8 @@ aftables_default_font <-
     base_font_name = "Arial",
     base_font_size = 12,
     table_header_size = 12,
-    sheet_header_size = 16
+    sheet_subheading_size = 14,
+    sheet_heading_size = 16
   )
 
 # Write to data/
