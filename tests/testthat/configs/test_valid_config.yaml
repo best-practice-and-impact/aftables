@@ -14,12 +14,14 @@ aftables:
       base_font_name: "default font"
       base_font_size: 1
       table_header_size: 1
-      sheet_header_size: 1
+      sheet_subheading_size: 1
+      sheet_heading_size: 1
       cellwidth_default: 1
       cellwidth_wider: 1
       nchar_break: 1
   custom:
     workbook_properties:
-      author: "custom confi gauthor"
+      author: "custom config author"
     workbook_format:
-       sheet_header_size: 50
+      sheet_subheading_size: 26
+      sheet_heading_size: 50

@@ -240,6 +240,22 @@ test_that("tab_titles with starting numeral will error", {
   )
 })
 
+test_that("tbl output looks as intended", {
+  x <- create_aftable(
+    tab_titles = LETTERS[1:3],
+    sheet_types = c("cover", "contents", "tables"),
+    sheet_titles = LETTERS[1:3],
+    sources = c(NA_character_, NA_character_, "Source"),
+    tables = list(
+      data.frame(x = "x"),
+      data.frame(tab = "x", title = "x"),
+      mtcars
+    )
+  )
+
+  expect_snapshot_output(as_aftable(x))
+})
+
 test_that("non-conforming tab_titles are cleaned", {
   expect_warning(
     create_aftable(

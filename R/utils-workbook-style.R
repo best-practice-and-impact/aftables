@@ -20,9 +20,13 @@
     if (!is.null(workbook_format$table_header_size))
       workbook_format$table_header_size else aftables_default_font$table_header_size
 
-  sheet_header_size <-
-    if (!is.null(workbook_format$sheet_header_size))
-      workbook_format$sheet_header_size else aftables_default_font$sheet_header_size
+  sheet_subheading_size <-
+    if (!is.null(workbook_format$sheet_subheading_size))
+      workbook_format$sheet_subheading_size else aftables_default_font$sheet_subheading_size
+
+  sheet_heading_size <-
+    if (!is.null(workbook_format$sheet_heading_size))
+      workbook_format$sheet_heading_size else aftables_default_font$sheet_heading_size
 
   base_font_name <-
     if (!is.null(workbook_format$base_font_name))
@@ -32,7 +36,8 @@
     bold =  1,
     base_font_size = base_font_size,
     table_header_size = table_header_size,
-    sheet_header_size = sheet_header_size,
+    sheet_subheading_size = sheet_subheading_size,
+    sheet_heading_size = sheet_heading_size,
     name = base_font_name
   )
 }
@@ -64,7 +69,7 @@
   wb$add_font(
     sheet = tab_title,
     dims = "A1",
-    size = font_ref[["sheet_header_size"]],
+    size = font_ref[["sheet_heading_size"]],
     bold = font_ref[["bold"]],
     name = font_ref[["name"]]
   )
@@ -305,7 +310,7 @@
     sheet = tab_name,
     dims = wb_dims(rows = subheader_rows, cols = 1),
     bold = font_ref[["bold"]],
-    size = font_ref[["table_header_size"]],
+    size = font_ref[["sheet_subheading_size"]],
     name = font_ref[["name"]]
   )
 

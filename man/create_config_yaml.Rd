@@ -41,7 +41,8 @@ Contents of example config.yaml:
       base_font_name: "Arial"
       base_font_size: 12
       table_header_size: 12
-      sheet_header_size: 16
+      sheet_subheading_size: 16
+      sheet_heading_size: 16
       cellwidth_default: 16
       cellwidth_wider: 32
       nchar_break: 50
@@ -78,9 +79,10 @@ found in the file properties or the workbook information.
 
 Keys below workbook_format will be applied to the contents of the workbook.
 The keys base_font_name and base_font_size define the default font name and
-size used by the workbook. All text not formatted as a table header or sheet
-header will use the default settings. Table headers and sheet headers will be
-formatted using the table_header_size and sheet_header_size keys
+size used by the workbook. All text not formatted as a table header, sheet
+subheading or sheet heading will use the default settings. Sheet headings,
+sheet subheadings, and table headers can be formatted using the
+sheet_heading_size, sheet_subheading_size and table_header_size keys
 respectively, and will always be formatted as bold.
 
 The keys cellwidth_default, cellwidth_wider and nchar_break are used to
