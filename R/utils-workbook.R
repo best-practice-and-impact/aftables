@@ -381,6 +381,21 @@
 
   table_cell_references <- t(outer(table_cell_references$col, table_cell_references$row, paste0))
 
+  colnames(table_cell_references) <- names(table)
+
+  number_cell_references <-
+    wb_dims(
+      x = table,
+      from_row = start_row,
+      cols = numeric_columns
+    )
+
+  number_cell_references <- dims_to_rowcol(number_cell_references)
+
+  number_cell_references <- t(outer(number_cell_references$col, number_cell_references$row, paste0))
+
+  colnames(number_cell_references) <- numeric_columns
+
   #===========================================================================
   # clean mixed columns by removing notes
   #===========================================================================
@@ -397,28 +412,43 @@
 
   table[note_cells] <- ""
 
-  #=============================================================================
-  # set numeric and currency formats to pass to .style_table
-  #=============================================================================
+  if (length(numeric_columns) > 0) {
+    #===========================================================================
+    # extract currency symbols from numeric columns for number formatting
+    #===========================================================================
+    currency_units <- .extract_currency_units(table,
+                                              numeric_columns)
 
-  number_formats <- .determine_number_formats(table,
-                                              numeric_columns,
-                                              table_cell_references)
+    #===========================================================================
+    # clean table removing currency symbols
+    #===========================================================================
+    table <- .replace_currency_units(table,
+                                     numeric_columns)
+
+    #===========================================================================
+    # convert numeric and currency columns to numeric
+    #===========================================================================
+    table <- .clean_numeric_data(table, numeric_columns)
+
+    #===========================================================================
+    # determine decimal places from data for number formatting
+    #===========================================================================
+    decimal_places <- .determine_decimal_places(table, numeric_columns)
+
+    #===========================================================================
+    # create number formats from currency units
+    # and decimal places to pass to .style_table
+    #===========================================================================
+
+    number_formats <- .determine_number_formats(currency_units,
+                                                decimal_places,
+                                                number_cell_references)
+  } else {
+    number_formats <- NULL
+  }
 
   #=============================================================================
-  # clean table removing currency symbols
-  #=============================================================================
-
-  table[currency_cells] <- .replace_currency_units(table, currency_cells)
-
-  #=============================================================================
-  # convert numeric and currency columns to numeric
-  #=============================================================================
-
-  table <- .clean_numeric_data(table, numeric_columns)
-
-  #=============================================================================
-  # insert cleaned data table into workbook
+  # insert data table into workbook
   #=============================================================================
 
   wb$add_data_table(
@@ -798,17 +828,41 @@
   numeric_values
 }
 
-.extract_currency_units <- function(table, currency_cells) {
-  currency_units <-
-    str_extract(table[currency_cells], extract_currency_symbol_regex)
-
-  currency_units
-}
-
-.replace_currency_units <- function(table, currency_cells) {
+.extract_currency_units <- function(table,
+                                    numeric_columns) {
 
   output <-
-    str_replace(table[currency_cells], extract_currency_symbol_regex, "")
+    table |>
+    dplyr::select(all_of(numeric_columns)) |>
+    mutate(
+      across(
+        everything(),
+        \(x) {
+          tidyr::replace_na(str_extract(x,
+                                        extract_currency_symbol_regex),
+                            "")
+        }
+      )
+    )
+
+  output
+}
+
+.replace_currency_units <- function(table,
+                                    numeric_columns) {
+
+  output <-
+    table |>
+    mutate(
+      across(
+        all_of(numeric_columns),
+        \(x) {
+          str_replace(x,
+                      extract_currency_symbol_regex,
+                      "")
+        }
+      )
+    )
 
   output
 
@@ -845,83 +899,62 @@
   wb
 }
 
-.determine_number_formats <- function(table,
-                                      numeric_columns,
-                                      table_cell_references) {
+.determine_decimal_places <- function(table, numeric_columns) {
 
-  # switch off scientific notation
-  old <- options(scipen = 999)
-  on.exit(options(old), add = TRUE)
-
-  # extract currency units from all numeric columns
-  currency_units <-
+  x_nchr <-
     table |>
-    mutate(
-      across(
-        all_of(numeric_columns),
-        \(x) stringr::str_extract(x, extract_currency_symbol_regex)
-      )
-    )
+    dplyr::select(all_of(numeric_columns)) |>
+    mutate(across(everything(), \(x) abs(x)),
+           across(everything(), \(x) as.character(x)),
+           across(everything(), \(x) nchar(x)),
+           across(everything(), \(x) as.numeric(x)))
 
-  # set non-numeric columns to NA
-  currency_units[!names(currency_units) %in% numeric_columns] <- NA_character_
+  x_int <-
+    table |>
+    dplyr::select(all_of(numeric_columns)) |>
+    mutate(across(everything(), \(x) floor(x)),
+           across(everything(), \(x) abs(x)),
+           across(everything(), \(x) nchar(x)))
 
-  # convert to vector and replace NAs
-  currency_units <-
-    currency_units |>
-    unlist(use.names = FALSE) |>
-    tidyr::replace_na("")
+  x_nchr <- x_nchr - 1 - x_int
+  x_nchr[x_nchr < 0] <- 0
 
-  # extract cleaned numeric data
-  decimal_places <-
-    table |> mutate(
-      across(all_of(numeric_columns), \(x) {
-        abs(
-          as.numeric(
-            str_replace_all(
-                            str_replace(x,
-                                        extract_currency_symbol_regex,
-                                        ""),
-                            ",|\\s", "")
+  output <-
+    x_nchr |>
+    mutate(across(everything(), \(x) max(x, na.rm = TRUE))) |>
+    unique()
+
+  output
+
+}
+
+.determine_number_formats <- function(currency_units,
+                                      decimal_places,
+                                      number_cell_references) {
+
+  output <-
+    list(
+      cell_reference = as.vector(number_cell_references),
+      # combine currency units (by table cell)
+      # with decimal places (by numeric table column)
+      cell_format = purrr::map2(
+        currency_units,
+        purrr::map(colnames(number_cell_references),
+                   \(x) purrr::pluck(decimal_places, x)),
+        \(currency_unit, decimal_length) {
+          paste0(
+            currency_unit,
+            # default formatting with thousand separator
+            "#,##0",
+            # add decimal point if required
+            if (decimal_length > 0) ".",
+            # add number of digits after decimal point from decimal_length
+            paste0(rep("0", decimal_length),
+                   collapse = "")
           )
-        )
-      })
+        }
+      ) |> unlist(use.names = FALSE)
     )
-
-  # set non-numeric columns to NA
-  decimal_places[!names(decimal_places) %in% numeric_columns] <- NA_integer_
-
-  # calculate difference between values as integers and values with decimal
-  #  places to determine which values need to be formatted with decimal places
-  decimal_places <- abs(decimal_places |>
-                          mutate(across(everything(), \(x) as.integer(x))) -
-                          decimal_places)
-
-  decimal_places <-
-    decimal_places |>
-    mutate(
-      across(everything(),
-             \(x) x > 0 & x < 1)
-    )
-
-  # if any of the columns contain values which need decimal places
-  # every value in the column needs to be formatted with decimal places
-  decimal_places <-
-    decimal_places |>
-    mutate(across(all_of(numeric_columns), \(x) any(x, na.rm = TRUE)))
-
-  decimal_places <- unlist(decimal_places, use.names = FALSE)
-
-  decimal_places <- dplyr::case_when(decimal_places ~  "#,##0.00",
-                                     !decimal_places ~ "#,##0") |>
-    tidyr::replace_na("")
-
-  # add the currency units and create the final number formats
-  # removing cells with no formatting
-  output <- tibble::tibble(
-    cell_reference = as.vector(table_cell_references),
-    cell_format = paste0(currency_units, decimal_places)
-  ) |> filter(.data$cell_format != "")
 
   output
 }

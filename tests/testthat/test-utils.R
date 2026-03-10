@@ -135,22 +135,13 @@ test_that("table cleaning functions work as intended", {
     col2 = c(" €19,000.12", "£12.30", "£12 ")
   )
 
-  # Remove currency from all cells except 1
-  table_currency_cells <- data.frame(
-    col1 = rep(TRUE, 3),
-    col2 = c(TRUE, FALSE, TRUE)
-  ) |>
-    as.matrix()
-
   expected_currency_df <- data.frame(
     col1 = c("12.30", " 13 ", "   123,123.1234"),
-    col2 = c(" 19,000.12", "£12.30", "12 ")
+    col2 = c(" 19,000.12", "12.30", "12 ")
   )
 
-  currency_df[table_currency_cells] <- .replace_currency_units(
-    currency_df,
-    table_currency_cells
-  )
+  currency_df <- .replace_currency_units(currency_df,
+                                         c("col1", "col2"))
 
   expect_equal(currency_df, expected_currency_df)
 
