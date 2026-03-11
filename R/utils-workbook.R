@@ -358,7 +358,7 @@
     .has_source(content, tab_title)
   )
 
-  # initial cleaning of table
+  # Determine cell / column types
 
   table_datatypes <- .determine_table_datatypes(table)
 
@@ -416,14 +416,12 @@
     #===========================================================================
     # extract currency symbols from numeric columns for number formatting
     #===========================================================================
-    currency_units <- .extract_currency_units(table,
-                                              numeric_columns)
+    currency_units <- .extract_currency_units(table, numeric_columns)
 
     #===========================================================================
     # clean table removing currency symbols
     #===========================================================================
-    table <- .replace_currency_units(table,
-                                     numeric_columns)
+    table <- .replace_currency_units(table, numeric_columns)
 
     #===========================================================================
     # convert numeric and currency columns to numeric
@@ -440,9 +438,12 @@
     # and decimal places to pass to .style_table
     #===========================================================================
 
-    number_formats <- .determine_number_formats(currency_units,
-                                                decimal_places,
-                                                number_cell_references)
+    number_formats <- .determine_number_formats(
+      currency_units,
+      decimal_places,
+      number_cell_references
+    )
+
   } else {
     number_formats <- NULL
   }
@@ -901,26 +902,27 @@
 
 .determine_decimal_places <- function(table, numeric_columns) {
 
-  x_nchr <-
-    table |>
+  x_nchr <- table |>
     dplyr::select(all_of(numeric_columns)) |>
-    mutate(across(everything(), \(x) abs(x)),
-           across(everything(), \(x) as.character(x)),
-           across(everything(), \(x) nchar(x)),
-           across(everything(), \(x) as.numeric(x)))
+    mutate(
+      across(everything(), \(x) abs(x)),
+      across(everything(), \(x) as.character(x)),
+      across(everything(), \(x) nchar(x)),
+      across(everything(), \(x) as.numeric(x))
+    )
 
-  x_int <-
-    table |>
+  x_int <- table |>
     dplyr::select(all_of(numeric_columns)) |>
-    mutate(across(everything(), \(x) floor(x)),
-           across(everything(), \(x) abs(x)),
-           across(everything(), \(x) nchar(x)))
+    mutate(
+      across(everything(), \(x) floor(x)),
+      across(everything(), \(x) abs(x)),
+      across(everything(), \(x) nchar(x))
+    )
 
   x_nchr <- x_nchr - 1 - x_int
   x_nchr[x_nchr < 0] <- 0
 
-  output <-
-    x_nchr |>
+  output <- x_nchr |>
     mutate(across(everything(), \(x) max(x, na.rm = TRUE))) |>
     unique()
 
@@ -932,29 +934,29 @@
                                       decimal_places,
                                       number_cell_references) {
 
-  output <-
-    list(
-      cell_reference = as.vector(number_cell_references),
-      # combine currency units (by table cell)
-      # with decimal places (by numeric table column)
-      cell_format = purrr::map2(
-        currency_units,
-        purrr::map(colnames(number_cell_references),
-                   \(x) purrr::pluck(decimal_places, x)),
-        \(currency_unit, decimal_length) {
-          paste0(
-            currency_unit,
-            # default formatting with thousand separator
-            "#,##0",
-            # add decimal point if required
-            if (decimal_length > 0) ".",
-            # add number of digits after decimal point from decimal_length
-            paste0(rep("0", decimal_length),
-                   collapse = "")
-          )
-        }
-      ) |> unlist(use.names = FALSE)
-    )
+  output <- list(
+    cell_reference = as.vector(number_cell_references),
+    # combine currency units (by table cell)
+    # with decimal places (by numeric table column)
+    cell_format = purrr::map2(
+      currency_units,
+      purrr::map(colnames(number_cell_references),
+                 \(x) purrr::pluck(decimal_places, x)),
+      \(currency_unit, decimal_length) {
+        paste0(
+          currency_unit,
+          # default formatting with thousand separator
+          "#,##0",
+          # add decimal point if required
+          if (decimal_length > 0) ".",
+          # add number of digits after decimal point from decimal_length
+          paste0(rep("0", decimal_length),
+                 collapse = "")
+        )
+      }
+    ) |>
+      unlist(use.names = FALSE)
+  )
 
   output
 }
