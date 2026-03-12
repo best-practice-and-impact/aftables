@@ -127,21 +127,19 @@ test_that(".determine functions correctly identify cells", {
 
 test_that("table cleaning functions work as intended", {
 
-
   # .replace_currency_units ----------------------------------------------------
 
   currency_df <- data.frame(
-    col1 = c("£12.30", " 13$ ", "   £123,123.1234"),
+    col1 = c("£12.30", " 13$ ", "   €123,123.1234"),
     col2 = c(" €19,000.12", "£12.30", "£12 ")
   )
 
   expected_currency_df <- data.frame(
     col1 = c("12.30", " 13 ", "   123,123.1234"),
-    col2 = c(" 19,000.12", "12.30", "12 ")
+    col2 = c(" €19,000.12", "£12.30", "£12 ")
   )
 
-  currency_df <- .replace_currency_units(currency_df,
-                                         c("col1", "col2"))
+  currency_df <- .replace_currency_units(currency_df, "col1")
 
   expect_equal(currency_df, expected_currency_df)
 
@@ -166,8 +164,7 @@ test_that("table cleaning functions work as intended", {
   # Clean 3 of the 4 columns
   # Col 1 and 2 should be converted to numeric. Col 3 and 4 should remain the
   # same.
-  cleaned_df <- .clean_numeric_data(
-    df, c("col1", "col2", "col3")
+  cleaned_df <- .clean_numeric_data(df, c("col1", "col2", "col3")
   )
 
   expect_equal(cleaned_df, cleaned_df_expected)
