@@ -430,7 +430,8 @@
     # and decimal places to pass to .style_table
     #===========================================================================
 
-    number_cell_references <- table_cell_references[, numeric_columns]
+    number_cell_references <-
+      table_cell_references[, numeric_columns, drop = FALSE]
 
     number_formats <- .determine_number_formats(
       currency_units,
@@ -945,8 +946,7 @@
           # add decimal point if required
           if (decimal_length > 0) ".",
           # add number of digits after decimal point from decimal_length
-          paste0(rep("0", decimal_length),
-                 collapse = "")
+          paste0(rep("0", decimal_length), collapse = "")
         )
       }
     ) |>
