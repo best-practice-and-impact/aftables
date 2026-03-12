@@ -344,6 +344,7 @@
 }
 
 .insert_table <- function(wb, content, table_name) {
+
   # convert tibbles to data frames before processing
   table <- as.data.frame(content[content$table_name == table_name, ][["table"]][[1]])
   sheet_type <- content[content$table_name == table_name, "sheet_type"][[1]]
@@ -370,6 +371,9 @@
 
   note_cells <- table_datatypes$note_cells
 
+
+  # Get table cell reference positions
+
   table_cell_references <-
     wb_dims(
       x = table,
@@ -383,60 +387,50 @@
 
   colnames(table_cell_references) <- names(table)
 
-  number_cell_references <-
-    wb_dims(
-      x = table,
-      from_row = start_row,
-      cols = numeric_columns
-    )
 
-  number_cell_references <- dims_to_rowcol(number_cell_references)
+  if (length(numeric_columns) > 0) {
 
-  number_cell_references <- t(outer(number_cell_references$col, number_cell_references$row, paste0))
+    #===========================================================================
+    # Clean mixed columns by removing notes
+    #===========================================================================
 
-  colnames(number_cell_references) <- numeric_columns
+    note_values <- table[note_cells]
+    note_cell_references <- table_cell_references[note_cells]
 
-  #===========================================================================
-  # clean mixed columns by removing notes
-  #===========================================================================
-
-  # extract notes from mixed columns
-  note_values <- table[note_cells]
-  note_cell_references <- table_cell_references[note_cells]
-
-  notes_replacement <-
-    data.frame(
+    notes_replacement <- data.frame(
       cell_reference = note_cell_references,
       cell_text = note_values
     )
 
-  table[note_cells] <- ""
+    table[note_cells] <- ""
 
-  if (length(numeric_columns) > 0) {
+
     #===========================================================================
-    # extract currency symbols from numeric columns for number formatting
+    # Extract currency symbols from numeric columns for number formatting
     #===========================================================================
     currency_units <- .extract_currency_units(table, numeric_columns)
 
     #===========================================================================
-    # clean table removing currency symbols
+    # Clean table removing currency symbols
     #===========================================================================
     table <- .replace_currency_units(table, numeric_columns)
 
     #===========================================================================
-    # convert numeric and currency columns to numeric
+    # Convert numeric and currency columns to numeric
     #===========================================================================
     table <- .clean_numeric_data(table, numeric_columns)
 
     #===========================================================================
-    # determine decimal places from data for number formatting
+    # Determine decimal places from data for number formatting
     #===========================================================================
     decimal_places <- .determine_decimal_places(table, numeric_columns)
 
     #===========================================================================
-    # create number formats from currency units
+    # Create number formats from currency units
     # and decimal places to pass to .style_table
     #===========================================================================
+
+    number_cell_references <- table_cell_references[, numeric_columns]
 
     number_formats <- .determine_number_formats(
       currency_units,
@@ -445,6 +439,12 @@
     )
 
   } else {
+    notes_replacement <-
+      data.frame(
+        cell_reference = character(0),
+        cell_text = character(0)
+      )
+
     number_formats <- NULL
   }
 
@@ -832,46 +832,41 @@
 .extract_currency_units <- function(table,
                                     numeric_columns) {
 
-  output <-
-    table |>
+  output <- table |>
     dplyr::select(all_of(numeric_columns)) |>
     mutate(
       across(
         everything(),
         \(x) {
-          tidyr::replace_na(str_extract(x,
-                                        extract_currency_symbol_regex),
-                            "")
+          tidyr::replace_na(str_extract(x, extract_currency_symbol_regex), "")
         }
       )
     )
 
   output
+
 }
 
 .replace_currency_units <- function(table,
                                     numeric_columns) {
 
-  output <-
-    table |>
+  output <- table |>
     mutate(
       across(
-        all_of(numeric_columns),
+        where(\(x) !is.numeric(x)) & all_of(numeric_columns),
         \(x) {
-          str_replace(x,
-                      extract_currency_symbol_regex,
-                      "")
+          str_replace(x, extract_currency_symbol_regex, "")
         }
       )
     )
 
   output
-
 }
 
-.clean_numeric_data <- function(table, numeric_columns) {
+.clean_numeric_data <- function(table,
+                                numeric_columns) {
 
-  table <- table |>
+  output <- table |>
     mutate(
       across(
         where(\(x) !is.numeric(x)) & all_of(numeric_columns),
@@ -879,7 +874,7 @@
       )
     )
 
-  table
+  output
 }
 
 .set_workbook_properties <- function(wb, content) {
@@ -902,15 +897,16 @@
 
 .determine_decimal_places <- function(table, numeric_columns) {
 
+  # Total number of digits (including +1 for decimal place)
   x_nchr <- table |>
     dplyr::select(all_of(numeric_columns)) |>
     mutate(
       across(everything(), \(x) abs(x)),
       across(everything(), \(x) as.character(x)),
-      across(everything(), \(x) nchar(x)),
-      across(everything(), \(x) as.numeric(x))
+      across(everything(), \(x) nchar(x))
     )
 
+  # Number of digits before decimal point
   x_int <- table |>
     dplyr::select(all_of(numeric_columns)) |>
     mutate(
@@ -919,12 +915,11 @@
       across(everything(), \(x) nchar(x))
     )
 
-  x_nchr <- x_nchr - 1 - x_int
-  x_nchr[x_nchr < 0] <- 0
+  n_decimal <- x_nchr - 1 - x_int
+  n_decimal[n_decimal < 0] <- 0
 
-  output <- x_nchr |>
-    mutate(across(everything(), \(x) max(x, na.rm = TRUE))) |>
-    unique()
+  output <- n_decimal |>
+    dplyr::summarise(across(everything(), \(x) max(x, na.rm = TRUE)))
 
   output
 
