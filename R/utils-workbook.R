@@ -898,13 +898,17 @@
 
 .determine_decimal_places <- function(table, numeric_columns) {
 
-  output <-
-    table |>
+  # switch off scientific notation
+  old <- options(scipen = 999)
+  on.exit(options(old), add = TRUE)
+
+  output <- table |>
     dplyr::select(all_of(numeric_columns)) |>
-    mutate(across(everything(), \(x) nchar(abs(x)) - 1 - nchar(floor(abs(x)))),
-           across(everything(), \(x) ifelse(x < 0, 0, x)),
-           across(everything(), \(x) max(x, na.rm = TRUE))) |>
-    unique()
+    mutate(
+      across(everything(), \(x) nchar(abs(x)) - 1 - nchar(floor(abs(x)))),
+      across(everything(), \(x) ifelse(x < 0, 0, x))
+    ) |>
+    dplyr::summarise(across(everything(), \(x) max(x, na.rm = TRUE)))
 
   output
 
