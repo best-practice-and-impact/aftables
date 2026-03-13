@@ -898,29 +898,13 @@
 
 .determine_decimal_places <- function(table, numeric_columns) {
 
-  # Total number of digits (including +1 for decimal place)
-  x_nchr <- table |>
+  output <-
+    table |>
     dplyr::select(all_of(numeric_columns)) |>
-    mutate(
-      across(everything(), \(x) abs(x)),
-      across(everything(), \(x) as.character(x)),
-      across(everything(), \(x) nchar(x))
-    )
-
-  # Number of digits before decimal point
-  x_int <- table |>
-    dplyr::select(all_of(numeric_columns)) |>
-    mutate(
-      across(everything(), \(x) floor(x)),
-      across(everything(), \(x) abs(x)),
-      across(everything(), \(x) nchar(x))
-    )
-
-  n_decimal <- x_nchr - 1 - x_int
-  n_decimal[n_decimal < 0] <- 0
-
-  output <- n_decimal |>
-    dplyr::summarise(across(everything(), \(x) max(x, na.rm = TRUE)))
+    mutate(across(everything(), \(x) nchar(abs(x)) - 1 - nchar(floor(abs(x)))),
+           across(everything(), \(x) ifelse(x < 0, 0, x)),
+           across(everything(), \(x) max(x, na.rm = TRUE))) |>
+    unique()
 
   output
 
