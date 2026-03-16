@@ -40,11 +40,11 @@ There are several self-assessed indicators used in the 'status' column of the ta
 | Remove merged cells, split cells and nested tables | Yes | Met | {aftables} doesn't create these features |
 | Remove blank rows and columns within tables | Yes | Partly/user’s responsibility | A warning is supplied to a user if cells in the table are blank but no explanation has been provided in the `blank_cells` column of the provided aftables object |
 | All tables should have one tagged header row | Yes | Met | R's data.frame class only allows for one header row, which must have unique names; the header row is tagged when marked-up as a table |
-| Wrap text within cells | Yes | Met | `generate_workbook()` wraps content by default; there's a simple check in {aftables} to widen a column if it contains long strings |
+| Wrap text within cells | Yes | Met | `generate_workbook()` wraps content by default; there's a simple check in {aftables} to widen a column if it contains long strings. Users can control text wrapping by using a config file. |
 | Avoid adding filters and freeze panes | No | Met | Filters and freezing aren't supported by {aftables} |
 | Only leave cells with no data empty in certain circumstances | Yes | User's responsibility | The user should describe why there are blank cells in the `blank_cells` column of their aftables object |
 | Avoid hiding rows or columns | No | Met | Hiding isn't supported by {aftables} |
-| Columns should be a sensible width | No | Partly | {aftables} uses a fixed default column width for data tables (16), which is doubled (32) if the length of the content exceeds a threshold number of characters (50) |
+| Columns should be a sensible width | No | Partly | {aftables} uses a fixed default column width for data tables (16), which is doubled (32) if the length of the content exceeds a threshold number of characters (50). Users can set the desired column widths and threshold number of characters by using a config file. |
 
 ### Footnotes
 
@@ -89,7 +89,7 @@ There are several self-assessed indicators used in the 'status' column of the ta
 | :-- | :- | :- | :---- |
 | Run a spelling and grammar check | Yes | User's responsibility | These checks aren't supported by {aftables}; the user should check using their own software |
 | Use the accessibility checker | No | User's responsibility | These checks aren't supported by {aftables}; the user should check using their own software |
-| Add document information | Yes | User's responsibility | Not yet possible with {aftables}; users must do this manually |
+| Add document information | Yes | Met | {aftables} supports setting document properties by providing arguments or a config file to `generate_workbook()` |
 | Ensure the cursor is in cell A1 of the first worksheet when doing your final save | Yes | Met | Occurs automatically |
 
 # Contribute

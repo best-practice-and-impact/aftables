@@ -54,28 +54,10 @@ guidance.
 
 ## Installation
 
-### Install from CRAN
-
 Install the latest release version of aftables directly from CRAN:
 
 ``` r
 install.packages("aftables")
-```
-
-### Install from GitHub
-
-Install the package [from
-GitHub](https://github.com/best-practice-and-impact/aftables) using
-[{remotes}](https://remotes.r-lib.org/).
-
-``` r
-install.packages("remotes") # if not already installed
-
-remotes::install_github(
-  repo = "best-practice-and-impact/aftables", # GitHub user/repository
-  dependencies = TRUE, # install required/suggested packages
-  build_vignettes = TRUE # generate vignette documentation
-)
 ```
 
 ## How to install a11ytables
@@ -123,6 +105,10 @@ or run `browseVignettes("aftables")` to read the:
   vignette](https://best-practice-and-impact.github.io/aftables/articles/terminology)
   to understand the nomenclature of spreadsheet terms as used in this
   package
+- [config file
+  vignette](https://best-practice-and-impact.github.io/aftables/articles/config-file)
+  to understand how to use config files to set workbook properties and
+  formatting
 - [package structure
   vignette](https://best-practice-and-impact.github.io/aftables/articles/structure)
   to see how the package works under the hood
@@ -152,7 +138,7 @@ Conduct](https://best-practice-and-impact.github.io/aftables/CODE_OF_CONDUCT.htm
 
 ## Copyright and Licensing
 
-© Crown Copyright, 2023.
+© Crown Copyright, 2026.
 
 This work is [Crown
 Copyright](https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/).

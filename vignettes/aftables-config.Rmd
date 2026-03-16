@@ -1,0 +1,88 @@
+---
+title: "Config files"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Config files}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#"
+)
+```
+
+## Purpose
+
+This vignette provides an overview of how to use a config file with the {aftables} package to set workbook properties and formatting.
+
+## Workbook properties and formatting which can be set in a config file
+
+Workbook properties:
+
+ - Author
+ - Title
+ - Keywords
+ - Subject
+ - Category
+ - Comments
+
+Analysis Function guidance advises workbooks should have the author, title, keywords and language document properties completed. aftables provides functionality to set the author, title and keywords properties. See ['Releasing statistics in spreadsheets'](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/) for more information including how to set the workbook language.
+
+Workbook formatting:
+
+ - Font
+ - Base font size
+ - Table header font size
+ - Sheet heading font size
+ - Sheet subheading font size
+ - Default column widths
+ - Wider column widths
+ - Text wrapping
+
+## Structure of a config file
+
+The config file must include an `aftables` entry. {aftables} will only look for workbook configs below the `aftables` entry. The config file may include any other entries. This allows for {aftables} config files to be combined with other config files for multiple purposes.
+
+The `aftables` config file supports multiple entries. There must be at least one config below the `aftables` entry, which could be named `default` or be user-specified. 
+
+Each config must contain at least one of `workbook_properties` and `workbook_format`. Each value below `workbook_properties` must be a character string apart from `keywords`, which is a list. The `base_font_name` value of `workbook_format` must be a character string, and each other value must be an integer. {aftables} checks all values to ensure they are character strings or integers as required to process them correctly.
+
+This is the contents of the example config file included with {aftables}:
+
+```{r results='asis', echo = FALSE}
+cat('```xml\n')
+cat(readLines(system.file("ext-data",
+                          "config.yaml",
+                          package = "aftables")),
+    sep = "\n")
+cat('\n```\n')
+```
+
+The `create_config_yaml()` function outputs a copy of this config file to a location of the users choice. The default location is the current working directory. We recommend using the example config file as a basis for developing your own {aftables} config file.
+
+## Applying a config file with `generate_workbook()`
+
+The `generate_workbook()` function has two arguments for config files: `config_path` and `config_name`. Both arguments are optional, and {aftables} will take different action based on which arguments are provided.
+
+If neither `config_path` or `config_name` is provided (the default behaviour), {aftables} will look in the current working directory for a config file named `config.yaml`, and will look in that config file for an `aftables` entry with a `default` config to process.
+
+If `config_path` is provided without `config_name`, {aftables} will use `config_path` to find a config file, and will look in that config file for an `aftables` entry to process. The `default` config will be processed and its `workbook_properties` and `worbook_format` values applied to the workbook created.
+
+If `config_name` is provided without `config_path` {aftables} will look in the current working directory for a config file named `config.yaml`, and will look in that config file for an `aftables` entry to process. {aftables} will look for a custom config matching `config_name`, as well as any `default` config. A combined config is generated from the `default` config and the `config_name` custom config, with values specified in the `config_name` custom config preferred over the `default` config. If no `default` config exists all values are taken from the `config_name` custom config.
+
+If both `config_path` and `config_name` are provided, {aftables} will use `config_path` to find a config file, and will look in that config file for an `aftables` entry to process. {aftables} will look for a custom config matching `config_name`, as well as any `default` config. A combined config is generated from the `default` config and the `config_name` custom config, with values specified in the `config_name` custom config preferred over the `default` config. If no `default` config exists all values are taken from the `config_name` custom config.
+
+Example using the `workbook1` config from the {aftables} example config file:
+
+```{r create-af-wb, eval = FALSE}
+my_wb <- aftables::generate_workbook(demo_aftable,
+                                     config_path = system.file("ext-data",
+                                                               "config.yaml",
+                                                               package = "aftables"),
+                                     config_name = "workbook1")
+```
+
+Running this code would produce an {openxlsx2} wbWorkbook object named `my_wb` using the `workbook1` config in the {aftables} example config file. The `default` config and the `workbook1` config would be combined. The `category` value in the `default` config would not be used, and instead the `category` value from the `workbook1` config would be used. The `keywords` value from the `workbook1` config is appended to the 3 values from the `default` config.

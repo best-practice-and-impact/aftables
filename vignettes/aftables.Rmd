@@ -20,14 +20,14 @@ This vignette demonstrates how to use {aftables} to generate a spreadsheet outpu
 
 ## Installation
 
-Install the package [from GitHub](https://github.com/best-practice-and-impact/aftables) using [{remotes}](https://remotes.r-lib.org/).
+Install the latest release version of aftables directly from CRAN:
 
-```{r install, eval=FALSE}
-install.packages("remotes") # if not already installed
-remotes::install_github("best-practice-and-impact/aftables")
+``` {r install from CRAN, eval=FALSE}
+install.packages("aftables")
 ```
 
-The package depends on [{openxlsx2}](https://janmarvin.github.io/openxlsx2/) and [{pillar}](https://pillar.r-lib.org/), which are also installed with {aftables}.
+The package depends on [{openxlsx2}](https://janmarvin.github.io/openxlsx2/), [{pillar}](https://pillar.r-lib.org/), [{stringr}](https://stringr.tidyverse.org/), [{purrr}](https://purrr.tidyverse.org/), [{tidyselect}](https://tidyselect.r-lib.org/) and [{rlang}](https://rlang.r-lib.org/), which are also installed with {aftables}.
+
 
 ## Workflow
 
@@ -237,7 +237,7 @@ You could also open a temporary copy of the workbook with `my_wb$open()`, which 
 The content of your output spreadsheet will end up looking something like this:
 
 <div class="figure">
-<img src="../man/figures/vignette-workbook.gif" alt="Gif of a simple Excel workbook created using the aftables package, revealing tabs for cover, contents, notes and a table." width="100%"/>
+<img src="../man/figures/vignette-workbook.gif" alt="Gif of a simple Excel workbook created using the aftables package, revealing tabs for cover, contents, notes and tables." width="100%"/>
 </div>
 
 You'll notice that various best-practice formatting (e.g. Arial size 12 font for body text) and mark-up (e.g. tables, donated by a marker in the lower-right corner of the lower-right cell of each one) have been applied throughout.
@@ -250,11 +250,7 @@ It's your responsibility to check and amend the output from {aftables} to ensure
 
 You can apply some final tweaks to the output xlsx file if the defaults don't quite meet your requirements (e.g. some column widths), though it's advisable to keep changes to a minimum for reproducibility purposes and because you may undo some of the compliant structuring and formatting that {aftables} provides.
 
-At time of writing (v0.3.0) you might want to address manually some other [accessibility requirements](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/) that are not yet covered by the package:
-
-1. Fill in the document properties, which you are likely to find under 'File' then 'Properties' in your spreadsheet software
-3. Convert to an ODS file rather than the proprietary xlsx format
-4. Various number-formatting issues, like padding decimal places with zeroes
+At time of writing (v2.0.0) you might want to address manually some other [accessibility requirements](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/) that are not yet covered by the package such as converting the output to an ODS file rather than the proprietary xlsx format.
 
 We're trying to address a number of these limitations. Please [see the issues on GitHub](https://github.com/best-practice-and-impact/aftables/issues) for the current status.
 
