@@ -216,21 +216,9 @@
   # insert currency symbols and format numbers
   #=============================================================================
 
-  if (!is.null(table_formats$numeric_formats)) {
-    # apply numeric formatting to numeric cells
-    table_formats$numeric_formats |>
-      pwalk(\(cell_reference, cell_format) {
-        wb$add_numfmt(
-          sheet = tab_title,
-          dims = cell_reference,
-          numfmt = cell_format
-        )
-      })
-  }
-
-  if (!is.null(table_formats$currency_formats)) {
-    # apply numeric formatting to numeric cells
-    table_formats$currency_formats |>
+  if (!is.null(table_formats$number_formats)) {
+    # apply numeric formatting to entire table
+    table_formats$number_formats |>
       pwalk(\(cell_reference, cell_format) {
         wb$add_numfmt(
           sheet = tab_title,
