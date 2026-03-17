@@ -26,9 +26,6 @@ Install the latest release version of aftables directly from CRAN:
 install.packages("aftables")
 ```
 
-The package depends on [{openxlsx2}](https://janmarvin.github.io/openxlsx2/), [{pillar}](https://pillar.r-lib.org/), [{stringr}](https://stringr.tidyverse.org/), [{purrr}](https://purrr.tidyverse.org/), [{tidyselect}](https://tidyselect.r-lib.org/) and [{rlang}](https://rlang.r-lib.org/), which are also installed with {aftables}.
-
-
 ## Workflow
 
 Having installed the {aftables} package, there are three steps to generating a compliant spreadsheet:
@@ -250,7 +247,7 @@ It's your responsibility to check and amend the output from {aftables} to ensure
 
 You can apply some final tweaks to the output xlsx file if the defaults don't quite meet your requirements (e.g. some column widths), though it's advisable to keep changes to a minimum for reproducibility purposes and because you may undo some of the compliant structuring and formatting that {aftables} provides.
 
-At time of writing (v2.0.0) you might want to address manually some other [accessibility requirements](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/) that are not yet covered by the package such as converting the output to an ODS file rather than the proprietary xlsx format.
+You will need to manually address some other [accessibility requirements](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/) that are not yet covered by the package such as converting the output to an ODS file rather than the proprietary xlsx format.
 
 We're trying to address a number of these limitations. Please [see the issues on GitHub](https://github.com/best-practice-and-impact/aftables/issues) for the current status.
 

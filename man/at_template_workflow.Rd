@@ -2,7 +2,7 @@
 % Please edit documentation in R/addin.R
 \name{at_template_workflow}
 \alias{at_template_workflow}
-\title{Insert Full Demo 'aftables' Template Workflow}
+\title{Insert full 'aftables' template workflow}
 \usage{
 at_template_workflow()
 }

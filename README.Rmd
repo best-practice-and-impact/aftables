@@ -40,10 +40,25 @@ To contribute, please add [an issue](https://github.com/best-practice-and-impact
 
 ## Installation
 
+### Install from CRAN
+
 Install the latest release version of aftables directly from CRAN:
 
 ``` {r install from CRAN, eval=FALSE}
 install.packages("aftables")
+```
+
+### Install from GitHub
+
+aftables can be installed directly from GitHub.
+
+``` {r install from GitHub, eval=FALSE}
+remotes::install_github(
+  "best-practice-and-impact/aftables",
+  upgrade = "never",
+  build_vignettes = TRUE,
+  dependencies = TRUE
+)
 ```
 
 ## How to install a11ytables
@@ -75,9 +90,9 @@ Run `?function_name` or visit [the package website](https://best-practice-and-im
 
 * [introductory vignette](https://best-practice-and-impact.github.io/aftables/articles/aftables.html) to get started
 * [accessibility checklist vignette](https://best-practice-and-impact.github.io/aftables/articles/checklist.html) to see how the package complies with best-practice guidance
-* [terminology vignette](https://best-practice-and-impact.github.io/aftables/articles/terminology) to understand the nomenclature of spreadsheet terms as used in this package
-* [config file vignette](https://best-practice-and-impact.github.io/aftables/articles/config-file) to understand how to use config files to set workbook properties and formatting
-* [package structure vignette](https://best-practice-and-impact.github.io/aftables/articles/structure) to see how the package works under the hood
+* [terminology vignette](https://best-practice-and-impact.github.io/aftables/articles/terminology.html) to understand the nomenclature of spreadsheet terms as used in this package
+* [config file vignette](https://best-practice-and-impact.github.io/aftables/articles/configfiles.html) to understand how to use config files to set workbook properties and formatting
+* [package structure vignette](https://best-practice-and-impact.github.io/aftables/articles/structure.html) to see how the package works under the hood
 
 This package also includes [an RStudio Addin](https://rstudio.github.io/rstudioaddins/) that inserts pre-filled demo skeletons of the {aftables} workflow.
 

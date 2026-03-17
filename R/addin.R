@@ -1,7 +1,7 @@
-#' Insert Demo 'create_aftable' Template
+#' Insert 'create_aftable' template
 #'
 #' Insert at the cursor a template for \code{\link{create_aftable}} from the
-#' 'aftable' package, pre-filled with demo data.
+#' 'aftables' package, pre-filled with demo data.
 #'
 #' @return Empty list. Function is used for side effect.
 #'
@@ -10,7 +10,7 @@ at_template_aftable <- function() {
   rstudioapi::insertText(string_create_aftable())
 }
 
-#' Insert Full Demo 'aftables' Template Workflow
+#' Insert full 'aftables' template workflow
 #'
 #' Insert at the cursor (a) demo templates for cover, contents and notes
 #' tables, and (b) a call to \code{\link{create_aftable}} pre-filled with
