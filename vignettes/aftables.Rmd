@@ -58,8 +58,6 @@ Rather than pass a big list of dataframes directly to the `tables` argument of `
 
 Below are some demo tables that we will later pass to `create_aftable()`. I've used `tibble::tribble()` for human-readable row-by-row dataframe construction, but you can just use `data.frame()` if you want.
 
-Note that you can use the RStudio Addin 'Insert table templates using 'tibble'' and 'Insert table templates using 'data.frame'' to insert a demo skeleton into your R script.
-
 ##### Meta-sheets
 
 The cover can accept either a list or a data.frame (the latter was the only acceptable input prior to version 0.2.0). We recommend a list so that you can have multiple rows per section on the cover. This also means you can dedicate certain rows to be hyperlinks to web URLs or mailto links that will open an email client. Here's a demo list for the contents page (required):

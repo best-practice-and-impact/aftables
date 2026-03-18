@@ -68,9 +68,9 @@ The `create_config_yaml()` function outputs a copy of this config file to a loca
 
 The `generate_workbook()` function has two arguments for config files: `config_path` and `config_name`. Both arguments are optional, and {aftables} will take different action based on which arguments are provided.
 
-{aftables} will look for a config file using the `config_path` argument. By default {aftables} will look in the current working directory for a config file named `config.yaml`, or will look for a config file at the user-specified path. `config_path` can be set to NULL and {aftables} will not look for a config file.
+{aftables} will look for a config file using the `config_path` argument. By default {aftables} will look in the current working directory for a config file named `config.yaml`. `config_path` can be set to NULL and {aftables} will not look for a config file.
 
-{aftables} will only use the `config_name` argument if a config file is found, either by default or at the user-specified path. {aftables} config files must have an `aftables` entry containing one or more configs. These configs can be a `default` config and/or any user-specified custom configs. Users can set up multiple custom configs to produce multiple workbooks from a single config file. Settings common to all workbooks would be set in the `default` config, and settings specific to each workbook would be set in separate custom configs. The `default` config is optional, and custom configs can be used to specify all workbook properties and formatting. When a config file contains both a `default` config and a user-specified custom config matching the `custom_name` argument a combined config is generated from the `default` config and the `config_name` custom config. Values specified in the `config_name` custom config are preferred over the `default` config.
+{aftables} will only use the `config_name` argument if a config file is found. {aftables} config files must have an `aftables` entry containing one or more configs. These configs can be a `default` config and/or any user-specified custom configs. Users can set up multiple custom configs to produce multiple workbooks from a single config file. Settings common to all workbooks would be set in the `default` config, and settings specific to each workbook would be set in separate custom configs. The `default` config is optional, and custom configs can be used to specify all workbook properties and formatting. When a config file contains both a `default` config and a user-specified custom config matching the `custom_name` argument a combined config is generated from the `default` config and the `config_name` custom config. Values specified in the `config_name` custom config are preferred over the `default` config.
 
 ### Example 1: No config arguments in generate_workbook
 
@@ -84,8 +84,10 @@ When the user does not provide any config arguments to {aftables} it will look i
 ### Example 2: Using a custom config
 
 ```{r config example 2, eval = FALSE}
-my_wb <- generate_workbook(aftable = demo_aftable,
-                           config_name = "workbook1")
+my_wb <- generate_workbook(
+  aftable = demo_aftable,
+  config_name = "workbook1"
+)
 
 ```
 
@@ -94,10 +96,10 @@ my_wb <- generate_workbook(aftable = demo_aftable,
 ### Example 3: Using a custom config file
 
 ```{r config example 3, eval = FALSE}
-my_wb <- generate_workbook(aftable = demo_aftable,
-                           config_path = system.file("ext-data",
-                                                     "config.yaml",
-                                                     package = "aftables"))
+my_wb <- generate_workbook(
+  aftable = demo_aftable,
+  config_path = system.file("ext-data","config.yaml", package = "aftables")
+)
 
 ```
 
@@ -106,11 +108,11 @@ my_wb <- generate_workbook(aftable = demo_aftable,
 ### Example 4: Using a custom config file with a custom config
 
 ```{r config example 4, eval = FALSE}
-my_wb <- generate_workbook(aftable = demo_aftable,
-                           config_path = system.file("ext-data",
-                                                     "config.yaml",
-                                                     package = "aftables"),
-                           config_name = "workbook1")
+my_wb <- generate_workbook(
+  aftable = demo_aftable,
+  config_path = system.file("ext-data", "config.yaml", package = "aftables"),
+  config_name = "workbook1"
+)
 ```
 
 {aftables} will look for the user-specified config file from `config_path` and import the `aftables` entry. It will look for the `workbook1` config as well as a `default` config. If there is no `aftables` entry or `workbook1` config, {aftables} will stop with an error. If both the `default` and `workbook1` configs exist {aftables} will combine them, preferring values specified in the `config_name` custom config over those in the `default` config. If there is no `default` config all values will be taken from the `workbook1` config. {aftables} will generate an {openxlsx2} wbWorkbook object named `my_wb` with the `workbook1` or combined config applied.
