@@ -96,9 +96,15 @@ my_wb <- generate_workbook(
 ### Example 3: Using a custom config file
 
 ```{r config example 3, eval = FALSE}
+
+create_config_yaml(
+  path = "/user_path/custom_user_config.yaml",
+  open_config = FALSE
+)
+
 my_wb <- generate_workbook(
   aftable = demo_aftable,
-  config_path = system.file("ext-data","config.yaml", package = "aftables")
+  config_path = "/user_path/custom_user_config.yaml"
 )
 
 ```
@@ -108,9 +114,14 @@ my_wb <- generate_workbook(
 ### Example 4: Using a custom config file with a custom config
 
 ```{r config example 4, eval = FALSE}
+create_config_yaml(
+  path = "/user_path/custom_user_config.yaml",
+  open_config = FALSE
+)
+
 my_wb <- generate_workbook(
   aftable = demo_aftable,
-  config_path = system.file("ext-data", "config.yaml", package = "aftables"),
+  config_path = "/user_path/custom_user_config.yaml"
   config_name = "workbook1"
 )
 ```
