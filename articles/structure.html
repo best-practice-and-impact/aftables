@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">aftables</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/checklist.html">Accessibility guidance checklist</a></li>
+    <li><a class="dropdown-item" href="../articles/configfiles.html">Config files</a></li>
     <li><a class="dropdown-item" href="../articles/structure.html">Package structure</a></li>
     <li><a class="dropdown-item" href="../articles/terminology.html">Spreadsheet terminology</a></li>
   </ul>
@@ -68,7 +69,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Package structure</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/best-practice-and-impact/aftables/blob/main/vignettes/structure.Rmd" class="external-link"><code>vignettes/structure.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/best-practice-and-impact/aftables/blob/v2.0.0/vignettes/structure.Rmd" class="external-link"><code>vignettes/structure.Rmd</code></a></small>
       <div class="d-none name"><code>structure.Rmd</code></div>
     </div>
 
@@ -92,9 +93,9 @@ create a spreadsheet output, as well as check the validity of the
 structure and provide errors or warnings</li>
 <li>
 <code><a href="../reference/generate_workbook.html">generate_workbook()</a></code> to convert the output from
-<code><a href="../reference/create_aftable.html">create_aftable()</a></code> to an <a href="https://ycphs.github.io/openxlsx/" class="external-link">{openxlsx}</a> Workbook-class
-object, ready for writing to an xlsx file with
-<code><a href="https://rdrr.io/pkg/openxlsx/man/saveWorkbook.html" class="external-link">openxlsx::saveWorkbook()</a></code>
+<code><a href="../reference/create_aftable.html">create_aftable()</a></code> to an <a href="https://janmarvin.github.io/openxlsx2/" class="external-link">{openxlsx2}</a>
+wbWorkbook-class object, ready for writing to an xlsx file with
+<code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_save.html" class="external-link">openxlsx2::wb_save()</a></code>
 </li>
 </ul>
 <p>This simplicity is a feature, not a bug. It’s designed to greatly
@@ -272,15 +273,15 @@ aftable.</p>
 <div class="section level3">
 <h3 id="to-create-workbooks">To create workbooks<a class="anchor" aria-label="anchor" href="#to-create-workbooks"></a>
 </h3>
-<p>The <code><a href="../reference/generate_workbook.html">generate_workbook()</a></code> function sets up an <a href="https://ycphs.github.io/openxlsx/" class="external-link">{openxlsx}</a> Workbook-class
-object and fills it by iterating over a user-supplied the aftable-class
-object.</p>
+<p>The <code><a href="../reference/generate_workbook.html">generate_workbook()</a></code> function sets up an <a href="https://janmarvin.github.io/openxlsx2/" class="external-link">{openxlsx2}</a>
+wbWorkbook-class object and fills it by iterating over a user-supplied
+the aftable-class object.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_workbook.html">generate_workbook</a></span><span class="op">(</span><span class="va">my_aftable</span><span class="op">)</span></span>
+<span><span class="co"># Warning: Some of the recommended workbook properties are missing. Analysis</span></span>
+<span><span class="co"># Function guidance recommends completing the author, title and keywords fields.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">my_wb</span><span class="op">)</span></span>
-<span><span class="co"># [1] "Workbook"</span></span>
-<span><span class="co"># attr(,"package")</span></span>
-<span><span class="co"># [1] "openxlsx"</span></span></code></pre></div>
+<span><span class="co"># [1] "wbWorkbook" "R6"</span></span></code></pre></div>
 <p>You can see how the Workbook-class object carries information that
 will determine the structure and style of the final spreadsheet
 output.</p>
@@ -289,42 +290,8 @@ output.</p>
 <span><span class="co"># A Workbook object.</span></span>
 <span><span class="co">#  </span></span>
 <span><span class="co"># Worksheets:</span></span>
-<span><span class="co">#  Sheet 1: "Cover"</span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co">#   Custom row heights (row: height)</span></span>
-<span><span class="co">#    2: 34, 5: 34, 7: 34 </span></span>
-<span><span class="co">#   Custom column widths (column: width)</span></span>
-<span><span class="co">#     1: 72 </span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co"># </span></span>
-<span><span class="co">#  Sheet 2: "Contents"</span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co">#   Custom column widths (column: width)</span></span>
-<span><span class="co">#     1: 16, 2: 56 </span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co"># </span></span>
-<span><span class="co">#  Sheet 3: "Notes"</span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co">#   Custom column widths (column: width)</span></span>
-<span><span class="co">#     1: 16, 2: 56 </span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co"># </span></span>
-<span><span class="co">#  Sheet 4: "Table_1"</span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co">#   Custom column widths (column: width)</span></span>
-<span><span class="co">#     1: 16, 2: 16, 3: 16, 4: 16, 5: 16, 6: 32, 7: 16 </span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co"># </span></span>
-<span><span class="co">#  Sheet 5: "Table_2"</span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co">#   Custom column widths (column: width)</span></span>
-<span><span class="co">#     1: 16, 2: 16 </span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co"># </span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co">#  Worksheet write order: 1, 2, 3, 4, 5</span></span>
-<span><span class="co">#  Active Sheet 1: "Cover" </span></span>
-<span><span class="co">#   Position: 1</span></span></code></pre></div>
+<span><span class="co">#  Sheets: Cover, Contents, Notes, Table_1, Table_2 </span></span>
+<span><span class="co">#  Write order: 1, 2, 3, 4, 5</span></span></code></pre></div>
 <p>Several internal sub-functions within
 <code><a href="../reference/generate_workbook.html">generate_workbook()</a></code>—<code>.add_*()</code>,
 <code>.insert_*()</code> and <code>.style_*()</code>—are responsible for
@@ -334,14 +301,14 @@ respectively.</p>
 <h4 id="add-sheets">Add sheets<a class="anchor" aria-label="anchor" href="#add-sheets"></a>
 </h4>
 <p>A Workbook-class object is first created with
-<code><a href="https://rdrr.io/pkg/openxlsx/man/createWorkbook.html" class="external-link">openxlsx::createWorkbook()</a></code> and then sheets are added based
-on the contents of the user-supplied aftable.</p>
+<code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_workbook.html" class="external-link">openxlsx2::wb_workbook()</a></code> and then sheets are added based on
+the contents of the user-supplied aftable.</p>
 <p>The following functions add sheets and sheet elements into the
 workbook:</p>
 <ul>
 <li>
 <code>.add_tabs()</code> adds the required number of tabs into the
-workbook with <code><a href="https://rdrr.io/pkg/openxlsx/man/addWorksheet.html" class="external-link">openxlsx::addWorksheet()</a></code> (as per the
+workbook with <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_worksheet.html" class="external-link">openxlsx2::wb_add_worksheet()</a></code> (as per the
 <code>tab_title</code> column of the supplied aftable)</li>
 <li>
 <code>.add_cover()</code> and <code>.add_contents()</code> add the
@@ -431,9 +398,11 @@ and apply them on the basis of the <code>sheet_type</code> provided in
 the aftable.</p>
 <ul>
 <li>
-<code>.style_create()</code> creates an easily-referenced lookup of
-styles, which is created with <code><a href="https://rdrr.io/pkg/openxlsx/man/createStyle.html" class="external-link">openxlsx::createStyle()</a></code>
-</li>
+<code>.style_paragraph()</code> creates an easily-referenced lookup
+of paragraph styles.</li>
+<li>
+<code>.style_font()</code> creates an easily-referenced lookup of
+font styles</li>
 <li>
 <code>.style_workbook()</code> applies defaults for <em>the whole
 workbook</em> (i.e. to set the font style to Arial size 12)</li>
@@ -471,7 +440,7 @@ guidance.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

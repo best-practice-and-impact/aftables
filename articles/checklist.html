@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">aftables</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/checklist.html">Accessibility guidance checklist</a></li>
+    <li><a class="dropdown-item" href="../articles/configfiles.html">Config files</a></li>
     <li><a class="dropdown-item" href="../articles/structure.html">Package structure</a></li>
     <li><a class="dropdown-item" href="../articles/terminology.html">Spreadsheet terminology</a></li>
   </ul>
@@ -68,7 +69,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Accessibility guidance checklist</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/best-practice-and-impact/aftables/blob/main/vignettes/checklist.Rmd" class="external-link"><code>vignettes/checklist.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/best-practice-and-impact/aftables/blob/v2.0.0/vignettes/checklist.Rmd" class="external-link"><code>vignettes/checklist.Rmd</code></a></small>
       <div class="d-none name"><code>checklist.Rmd</code></div>
     </div>
 
@@ -90,7 +91,7 @@ spreadsheets accessible: checklist of the basics’</a> guidance.</p>
 unedited output from a typical {aftables} workflow, i.e. use
 <code><a href="../reference/create_aftable.html">create_aftable()</a></code> to make an aftable that’s passed to
 <code><a href="../reference/generate_workbook.html">generate_workbook()</a></code> and then written with
-<code><a href="https://rdrr.io/pkg/openxlsx/man/saveWorkbook.html" class="external-link">openxlsx::saveWorkbook()</a></code>.</p>
+<code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_save.html" class="external-link">openxlsx2::wb_save()</a></code>.</p>
 <p>There are several self-assessed indicators used in the ‘status’
 column of the tables below:</p>
 <ul>
@@ -165,7 +166,7 @@ a table</td>
 <td align="left">
 <code><a href="../reference/generate_workbook.html">generate_workbook()</a></code> wraps content by
 default; there’s a simple check in {aftables} to widen a column if it
-contains long strings</td>
+contains long strings.</td>
 </tr>
 <tr class="odd">
 <td align="left">Avoid adding filters and freeze panes</td>
@@ -191,10 +192,11 @@ the <code>blank_cells</code> column of their aftables object</td>
 <tr class="even">
 <td align="left">Columns should be a sensible width</td>
 <td align="left">No</td>
-<td align="left">Partly</td>
+<td align="left">Partly/user’s responsibility</td>
 <td align="left">{aftables} uses a fixed default column width for data
 tables (16), which is doubled (32) if the length of the content exceeds
-a threshold number of characters (50)</td>
+a threshold number of characters (50). Users can set these values by
+using a config file.</td>
 </tr>
 </tbody>
 </table>
@@ -457,9 +459,11 @@ should check using their own software</td>
 <tr class="odd">
 <td align="left">Add document information</td>
 <td align="left">Yes</td>
-<td align="left">User’s responsibility</td>
-<td align="left">Not yet possible with {aftables}; users must do this
-manually</td>
+<td align="left">Partly/user’s responsibility</td>
+<td align="left">{aftables} supports setting most document properties by
+providing arguments or a config file to
+<code><a href="../reference/generate_workbook.html">generate_workbook()</a></code>. Setting document language is not
+currently supported by {aftables} and should be set by users.</td>
 </tr>
 <tr class="even">
 <td align="left">Ensure the cursor is in cell A1 of the first worksheet
@@ -492,7 +496,7 @@ guidance.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

@@ -1,0 +1,106 @@
+# Accessibility guidance checklist
+
+### Purpose
+
+This vignette shows you how {aftables} meets accessibility best
+practice.
+
+### Checklists
+
+This page shows how the features of the {aftables} package meet the
+Analysis Function’s [‘Making spreadsheets accessible: checklist of the
+basics’](https://analysisfunction.civilservice.gov.uk/policy-store/making-spreadsheets-accessible-a-brief-checklist-of-the-basics/)
+guidance.
+
+The assessments in the table below are based on generating an unedited
+output from a typical {aftables} workflow, i.e. use
+[`create_aftable()`](https://best-practice-and-impact.github.io/aftables/reference/create_aftable.md)
+to make an aftable that’s passed to
+[`generate_workbook()`](https://best-practice-and-impact.github.io/aftables/reference/generate_workbook.md)
+and then written with
+[`openxlsx2::wb_save()`](https://janmarvin.github.io/openxlsx2/reference/wb_save.html).
+
+There are several self-assessed indicators used in the ‘status’ column
+of the tables below:
+
+- ‘met’ means that {aftables} contains a feature (or the absence of a
+  feature) to help meet the requirement
+- ‘user’s responsibility’ means that the user must make a decision about
+  how to meet the requirement
+- ‘partly’ means that {aftables} contains a feature to help meet the
+  requirement, but the user may need to provide additional input
+- ‘not applicable’ means the checklist item does not need to be met due
+  to the way in which {aftables} works
+
+#### Tables
+
+| Description                                                  | Essential? | Status                       | Explanation                                                                                                                                                                                                               |
+|:-------------------------------------------------------------|:-----------|:-----------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Mark up tables                                               | Yes        | Met                          | Provided automatically by [`generate_workbook()`](https://best-practice-and-impact.github.io/aftables/reference/generate_workbook.md)                                                                                     |
+| Give tables meaningful names                                 | No         | Met                          | Unique table names are generated from the `tab_titles` argument in [`create_aftable()`](https://best-practice-and-impact.github.io/aftables/reference/create_aftable.md)                                                  |
+| Remove merged cells, split cells and nested tables           | Yes        | Met                          | {aftables} doesn’t create these features                                                                                                                                                                                  |
+| Remove blank rows and columns within tables                  | Yes        | Partly/user’s responsibility | A warning is supplied to a user if cells in the table are blank but no explanation has been provided in the `blank_cells` column of the provided aftables object                                                          |
+| All tables should have one tagged header row                 | Yes        | Met                          | R’s data.frame class only allows for one header row, which must have unique names; the header row is tagged when marked-up as a table                                                                                     |
+| Wrap text within cells                                       | Yes        | Met                          | [`generate_workbook()`](https://best-practice-and-impact.github.io/aftables/reference/generate_workbook.md) wraps content by default; there’s a simple check in {aftables} to widen a column if it contains long strings. |
+| Avoid adding filters and freeze panes                        | No         | Met                          | Filters and freezing aren’t supported by {aftables}                                                                                                                                                                       |
+| Only leave cells with no data empty in certain circumstances | Yes        | User’s responsibility        | The user should describe why there are blank cells in the `blank_cells` column of their aftables object                                                                                                                   |
+| Avoid hiding rows or columns                                 | No         | Met                          | Hiding isn’t supported by {aftables}                                                                                                                                                                                      |
+| Columns should be a sensible width                           | No         | Partly/user’s responsibility | {aftables} uses a fixed default column width for data tables (16), which is doubled (32) if the length of the content exceeds a threshold number of characters (50). Users can set these values by using a config file.   |
+
+#### Footnotes
+
+| Description                                            | Essential? | Status                    | Explanation                                                                                                                            |
+|:-------------------------------------------------------|:-----------|:--------------------------|:---------------------------------------------------------------------------------------------------------------------------------------|
+| Do not use symbols or superscript to signpost to notes | Yes        | Met/user’s responsibility | Notes are detected automatically as digits in square brackets; superscript is not supported by {aftables}                              |
+| Use the word ‘note’ when referring to footnotes        | No         | User’s responsibility     | Notes are detected in the form ‘\[note 1\]’; the user should be consistent about this wording                                          |
+| Avoid putting note markers in specific cells           | No         | User’s responsibility     | Columns named ‘Notes’ and note markers in column headers are detected, the user should not put these elsewhere                         |
+| Put note text in a notes table on a notes worksheet    | No         | Met                       | [`create_aftable()`](https://best-practice-and-impact.github.io/aftables/reference/create_aftable.md) expects the `sheet_type` ‘notes’ |
+
+#### Formatting
+
+| Description                                                                           | Essential? | Status                       | Explanation                                                                                                                       |
+|:--------------------------------------------------------------------------------------|:-----------|:-----------------------------|:----------------------------------------------------------------------------------------------------------------------------------|
+| All written content needs to meet the accessibility guidelines                        | No         | User’s responsibility        | {aftables} does not check the validity of user-supplied text                                                                      |
+| Links must be accessible                                                              | Yes        | User’s responsibility        | {aftables} does not check the validity of user-supplied text                                                                      |
+| Format text to make it accessible                                                     | No         | Met                          | [`generate_workbook()`](https://best-practice-and-impact.github.io/aftables/reference/generate_workbook.md) auto-formats the text |
+| All worksheets should have descriptive titles which are properly tagged and formatted | Yes        | Partly/user’s responsibility | {aftables} does not check user-supplied text nor data; the package handles formatting but not yet mark-up for headings            |
+| Avoid using symbols in general                                                        | No         | User’s responsibility        | {aftables} does not check the validity of user-supplied text                                                                      |
+| Do not use headers and footers, floating text boxes or floating toolbars              | Yes        | Met                          | These features aren’t supported by {aftables}                                                                                     |
+| Do not use visual devices to divide data regions                                      | No         | Met                          | Colours and patterns aren’t supported by {aftables}                                                                               |
+| Do not use a background fill                                                          | No         | Met                          | Fills aren’t supported by {aftables}                                                                                              |
+| Do not use colour as the only way to convey a message                                 | Yes        | Met                          | Colour is not supported by {aftables}                                                                                             |
+| When using colour for emphasis check the contrast                                     | Yes        | Not applicable               | Colour is not supported by {aftables}, so a check is not required                                                                 |
+| Avoid images in spreadsheets                                                          | No         | Met                          | Images aren’t supported by {aftables}                                                                                             |
+| Remove macros                                                                         | No         | Met                          | Macros aren’t supported by {aftables}                                                                                             |
+
+#### Structure
+
+| Description                                               | Essential? | Status                | Explanation                                                                                                                                                                                                             |
+|:----------------------------------------------------------|:-----------|:----------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Give worksheets unique names or numbers                   | Yes        | User’s responsibility | Supply `tab_titles` to [`create_aftable()`](https://best-practice-and-impact.github.io/aftables/reference/create_aftable.md), which gives a warning if any names match                                                  |
+| Remove blank worksheets                                   | Yes        | Met                   | [`create_aftable()`](https://best-practice-and-impact.github.io/aftables/reference/create_aftable.md) will error if expected argument content is missing                                                                |
+| Use cells in column A wisely                              | Yes        | Met                   | [`generate_workbook()`](https://best-practice-and-impact.github.io/aftables/reference/generate_workbook.md) inserts the sheet title, table count, notes statement, source statement and tables into column A by default |
+| Position tables against the left-hand edges of each sheet | Yes        | Met                   | [`generate_workbook()`](https://best-practice-and-impact.github.io/aftables/reference/generate_workbook.md) inserts automatically the tables into column A                                                              |
+| Avoid putting content below a table                       | No         | Met                   | [`generate_workbook()`](https://best-practice-and-impact.github.io/aftables/reference/generate_workbook.md) adds information to rows above tables only                                                                  |
+| Avoid worksheets with multiple tables                     | No         | Met                   | The package supports only one table per sheet (for now)                                                                                                                                                                 |
+
+#### Before publishing
+
+| Description                                                                       | Essential? | Status                       | Explanation                                                                                                                                                                                                                                                                                                 |
+|:----------------------------------------------------------------------------------|:-----------|:-----------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Run a spelling and grammar check                                                  | Yes        | User’s responsibility        | These checks aren’t supported by {aftables}; the user should check using their own software                                                                                                                                                                                                                 |
+| Use the accessibility checker                                                     | No         | User’s responsibility        | These checks aren’t supported by {aftables}; the user should check using their own software                                                                                                                                                                                                                 |
+| Add document information                                                          | Yes        | Partly/user’s responsibility | {aftables} supports setting most document properties by providing arguments or a config file to [`generate_workbook()`](https://best-practice-and-impact.github.io/aftables/reference/generate_workbook.md). Setting document language is not currently supported by {aftables} and should be set by users. |
+| Ensure the cursor is in cell A1 of the first worksheet when doing your final save | Yes        | Met                          | Occurs automatically                                                                                                                                                                                                                                                                                        |
+
+## Contribute
+
+To contribute, please add [an
+issue](https://github.com/best-practice-and-impact/aftables/issues) or
+[a pull
+request](https://github.com/best-practice-and-impact/aftables/pulls)
+after reading [the code of
+conduct](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CODE_OF_CONDUCT.md)
+and
+[contributing](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CONTRIBUTING.md)
+guidance.

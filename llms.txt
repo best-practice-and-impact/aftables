@@ -1,0 +1,221 @@
+# {aftables}
+
+## Purpose
+
+An R package to help automatically create reproducible spreadsheets that
+adhere to the guidance on [releasing statistics in
+spreadsheets](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/)
+from the UK government’s [Analysis
+Function](https://analysisfunction.civilservice.gov.uk/), with a focus
+on accessibility.
+
+Visit [the {aftables}
+website](https://best-practice-and-impact.github.io/aftables/) for
+documentation.
+
+## Accessibility
+
+This package is not yet capable of creating perfectly accessible
+spreadsheets but will help with the bulk of the work needed. Users of
+this packages should refer back to [the main spreadsheet
+guidance](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/)
+or [the spreadsheet accessibility
+checklist](https://analysisfunction.civilservice.gov.uk/policy-store/making-spreadsheets-accessible-a-brief-checklist-of-the-basics/)
+after using it to make sure nothing has been missed. Please email
+<analysis.function@ons.gov.uk> if you use the package so they can
+monitor use and the outputs produced.
+
+## Contribute
+
+The package is under (opinionated) active development. Please see [the
+NEWS
+file](https://best-practice-and-impact.github.io/aftables/news/index.html)
+for the latest changes.
+
+To contribute, please add [an
+issue](https://github.com/best-practice-and-impact/aftables/issues) or
+[a pull
+request](https://github.com/best-practice-and-impact/aftables/pulls)
+after reading [the code of
+conduct](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CODE_OF_CONDUCT.md)
+and
+[contributing](https://github.com/best-practice-and-impact/aftables/blob/main/.github/CONTRIBUTING.md)
+guidance.
+
+## Installation
+
+### Install from CRAN
+
+Install the latest release version of aftables directly from CRAN:
+
+``` r
+install.packages("aftables")
+```
+
+### Install from GitHub
+
+aftables can be installed directly from GitHub.
+
+``` r
+remotes::install_github(
+  "best-practice-and-impact/aftables",
+  upgrade = "never",
+  build_vignettes = TRUE,
+  dependencies = TRUE
+)
+```
+
+## How to install a11ytables
+
+The original name of the aftables package was a11ytables. The package
+was renamed to make it consistent the [afcharts
+package](https://github.com/best-practice-and-impact/afcharts). Some
+function names were updated when the package was renamed. If you need to
+install a11ytables for a legacy project, the following code can be used.
+
+``` r
+install.packages("remotes") # if not already installed
+
+remotes::install_github(
+  repo = "best-practice-and-impact/aftables", # GitHub user/repository
+  ref = "v0.3.2", # this installs the final version of a11ytables. Change if you need an earlier version.
+  dependencies = TRUE, # install required/suggested packages
+  build_vignettes = TRUE # generate vignette documentation
+)
+
+library(a11ytables) # attach package
+```
+
+## Use
+
+To create a spreadsheet:
+
+1.  Use
+    [`create_aftable()`](https://best-practice-and-impact.github.io/aftables/reference/create_aftable.md)
+2.  Pass the output to
+    [`generate_workbook()`](https://best-practice-and-impact.github.io/aftables/reference/generate_workbook.md)
+3.  Pass the output to
+    [`openxlsx2::wb_save()`](https://janmarvin.github.io/openxlsx2/reference/wb_save.html)
+
+Run `?function_name` or visit [the package
+website](https://best-practice-and-impact.github.io/aftables/reference/index.html)
+for function documentation. For long-form documentation, [visit the
+package website](https://best-practice-and-impact.github.io/aftables/)
+or run `browseVignettes("aftables")` to read the:
+
+- [introductory
+  vignette](https://best-practice-and-impact.github.io/aftables/articles/aftables.html)
+  to get started
+- [accessibility checklist
+  vignette](https://best-practice-and-impact.github.io/aftables/articles/checklist.html)
+  to see how the package complies with best-practice guidance
+- [terminology
+  vignette](https://best-practice-and-impact.github.io/aftables/articles/terminology.html)
+  to understand the nomenclature of spreadsheet terms as used in this
+  package
+- [package structure
+  vignette](https://best-practice-and-impact.github.io/aftables/articles/structure.html)
+  to see how the package works under the hood
+
+This package also includes [an RStudio
+Addin](https://rstudio.github.io/rstudioaddins/) that inserts pre-filled
+demo skeletons of the {aftables} workflow.
+
+## Related projects
+
+The ONS’s Analysis Standards and Pipelines team has released [a Python
+package called ‘gptables’](https://github.com/ONSdigital/gptables).
+{aftables} is an independent effort that offers a native R solution that
+is very similar to gptables in its outputs, though there are some
+differences in implementation.
+
+{aftables} can help you fulfill a [Reproducible Analytical
+Pipeline](https://analysisfunction.civilservice.gov.uk/support/reproducible-analytical-pipelines/)
+by automating the generation of compliant spreadsheets for publication.
+
+## Code of Conduct
+
+Please note that the {aftables} project is released with a [Contributor
+Code of
+Conduct](https://best-practice-and-impact.github.io/aftables/CODE_OF_CONDUCT.html).
+
+## Copyright and Licensing
+
+© Crown Copyright, 2026.
+
+This work is [Crown
+Copyright](https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/).
+The source code for the software is released under the MIT licence as
+per the the [UK Government Licensing
+Framework](https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/open-government-licence/open-software-licences/)
+and the [GDS Way licensing
+guidance](https://gds-way.digital.cabinet-office.gov.uk/manuals/licensing.html).
+The documentation for the software is released under the [Open
+Government
+Licence](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
+
+# Package index
+
+## aftables
+
+Create, coerce and inspect aftable-class objects
+
+- [`as_aftable()`](https://best-practice-and-impact.github.io/aftables/reference/as_aftable.md)
+  [`is_aftable()`](https://best-practice-and-impact.github.io/aftables/reference/as_aftable.md)
+  : Coerce To An 'aftable' Object
+- [`create_aftable()`](https://best-practice-and-impact.github.io/aftables/reference/create_aftable.md)
+  : Create An 'aftable' Object
+- [`summary(`*`<aftable>`*`)`](https://best-practice-and-impact.github.io/aftables/reference/summary.aftable.md)
+  : Summarise An 'aftable' Object
+- [`tbl_sum(`*`<aftable>`*`)`](https://best-practice-and-impact.github.io/aftables/reference/tbl_sum.aftable.md)
+  : Provide A Succinct Summary Of An 'aftable' Object
+
+## Workbooks
+
+Convert aftable- to Workbook-class objects
+
+- [`generate_workbook()`](https://best-practice-and-impact.github.io/aftables/reference/generate_workbook.md)
+  : Generate A Workbook Object From An 'aftable'
+
+## Data
+
+Demo datasets used in package examples
+
+- [`demo_aftable`](https://best-practice-and-impact.github.io/aftables/reference/demo_aftable.md)
+  : A Demo 'aftables' Object
+- [`demo_df`](https://best-practice-and-impact.github.io/aftables/reference/demo_df.md)
+  : A Demo 'data.frame' Object
+- [`demo_workbook`](https://best-practice-and-impact.github.io/aftables/reference/demo_workbook.md)
+  : A Demo 'Workbook' Object
+
+## RStudio Addins
+
+RStudio Addin functions for inserting workflow skeletons
+
+- [`at_template_aftable()`](https://best-practice-and-impact.github.io/aftables/reference/at_template_aftable.md)
+  : Insert 'create_aftable' template
+- [`at_template_workflow()`](https://best-practice-and-impact.github.io/aftables/reference/at_template_workflow.md)
+  : Insert full 'aftables' template workflow
+
+## create_config_yaml
+
+Create config files to format Workbook-class objects created with
+aftables::generate_workbook
+
+- [`create_config_yaml()`](https://best-practice-and-impact.github.io/aftables/reference/create_config_yaml.md)
+  : Create an aftables config.yaml
+
+# Articles
+
+### All vignettes
+
+- [Introduction to
+  {aftables}](https://best-practice-and-impact.github.io/aftables/articles/aftables.md):
+- [Accessibility guidance
+  checklist](https://best-practice-and-impact.github.io/aftables/articles/checklist.md):
+- [Config
+  files](https://best-practice-and-impact.github.io/aftables/articles/configfiles.md):
+- [Package
+  structure](https://best-practice-and-impact.github.io/aftables/articles/structure.md):
+- [Spreadsheet
+  terminology](https://best-practice-and-impact.github.io/aftables/articles/terminology.md):

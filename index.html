@@ -30,7 +30,7 @@
 
     <a class="navbar-brand me-2" href="index.html">aftables</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,6 +45,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/checklist.html">Accessibility guidance checklist</a></li>
+    <li><a class="dropdown-item" href="articles/configfiles.html">Config files</a></li>
     <li><a class="dropdown-item" href="articles/structure.html">Package structure</a></li>
     <li><a class="dropdown-item" href="articles/terminology.html">Spreadsheet terminology</a></li>
   </ul>
@@ -101,14 +102,13 @@
 <div class="section level3">
 <h3 id="install-from-github">Install from GitHub<a class="anchor" aria-label="anchor" href="#install-from-github"></a>
 </h3>
-<p>Install the package <a href="https://github.com/best-practice-and-impact/aftables" class="external-link">from GitHub</a> using <a href="https://remotes.r-lib.org/" class="external-link">{remotes}</a>.</p>
+<p>aftables can be installed directly from GitHub.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>  <span class="co"># if not already installed</span></span>
-<span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span></span>
-<span>  repo <span class="op">=</span> <span class="st">"best-practice-and-impact/aftables"</span>,  <span class="co"># GitHub user/repository</span></span>
-<span>  dependencies <span class="op">=</span> <span class="cn">TRUE</span>,              <span class="co"># install required/suggested packages</span></span>
-<span>  build_vignettes <span class="op">=</span> <span class="cn">TRUE</span>            <span class="co"># generate vignette documentation</span></span>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span></span>
+<span>  <span class="st">"best-practice-and-impact/aftables"</span>,</span>
+<span>  upgrade <span class="op">=</span> <span class="st">"never"</span>,</span>
+<span>  build_vignettes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  dependencies <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -117,16 +117,16 @@
 </h2>
 <p>The original name of the aftables package was a11ytables. The package was renamed to make it consistent the <a href="https://github.com/best-practice-and-impact/afcharts" class="external-link">afcharts package</a>. Some function names were updated when the package was renamed. If you need to install a11ytables for a legacy project, the following code can be used.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>  <span class="co"># if not already installed</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span> <span class="co"># if not already installed</span></span>
 <span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span></span>
-<span>  repo <span class="op">=</span> <span class="st">"best-practice-and-impact/aftables"</span>,  <span class="co"># GitHub user/repository</span></span>
+<span>  repo <span class="op">=</span> <span class="st">"best-practice-and-impact/aftables"</span>, <span class="co"># GitHub user/repository</span></span>
 <span>  ref <span class="op">=</span> <span class="st">"v0.3.2"</span>, <span class="co"># this installs the final version of a11ytables. Change if you need an earlier version.</span></span>
-<span>  dependencies <span class="op">=</span> <span class="cn">TRUE</span>,              <span class="co"># install required/suggested packages</span></span>
-<span>  build_vignettes <span class="op">=</span> <span class="cn">TRUE</span>            <span class="co"># generate vignette documentation</span></span>
+<span>  dependencies <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># install required/suggested packages</span></span>
+<span>  build_vignettes <span class="op">=</span> <span class="cn">TRUE</span> <span class="co"># generate vignette documentation</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">a11ytables</span><span class="op">)</span>  <span class="co"># attach package</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">a11ytables</span><span class="op">)</span> <span class="co"># attach package</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="use">Use<a class="anchor" aria-label="anchor" href="#use"></a>
@@ -137,7 +137,7 @@
 </li>
 <li>Pass the output to <code><a href="reference/generate_workbook.html">generate_workbook()</a></code>
 </li>
-<li>Pass the output to <code><a href="https://rdrr.io/pkg/openxlsx/man/saveWorkbook.html" class="external-link">openxlsx::saveWorkbook()</a></code>
+<li>Pass the output to <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_save.html" class="external-link">openxlsx2::wb_save()</a></code>
 </li>
 </ol>
 <p>Run <code>?function_name</code> or visit <a href="https://best-practice-and-impact.github.io/aftables/reference/index.html">the package website</a> for function documentation. For long-form documentation, <a href="https://best-practice-and-impact.github.io/aftables/">visit the package website</a> or run <code>browseVignettes("aftables")</code> to read the:</p>
@@ -147,16 +147,16 @@
 <li>
 <a href="https://best-practice-and-impact.github.io/aftables/articles/checklist.html">accessibility checklist vignette</a> to see how the package complies with best-practice guidance</li>
 <li>
-<a href="https://best-practice-and-impact.github.io/aftables/articles/terminology">terminology vignette</a> to understand the nomenclature of spreadsheet terms as used in this package</li>
+<a href="https://best-practice-and-impact.github.io/aftables/articles/terminology.html">terminology vignette</a> to understand the nomenclature of spreadsheet terms as used in this package</li>
 <li>
-<a href="https://best-practice-and-impact.github.io/aftables/articles/structure">package structure vignette</a> to see how the package works under the hood</li>
+<a href="https://best-practice-and-impact.github.io/aftables/articles/structure.html">package structure vignette</a> to see how the package works under the hood</li>
 </ul>
 <p>This package also includes <a href="https://rstudio.github.io/rstudioaddins/" class="external-link">an RStudio Addin</a> that inserts pre-filled demo skeletons of the {aftables} workflow.</p>
 </div>
 <div class="section level2">
 <h2 id="related-projects">Related projects<a class="anchor" aria-label="anchor" href="#related-projects"></a>
 </h2>
-<p>The ONS’s Analysis Standards and Pipelines team has released <a href="https://github.com/best-practice-and-impact/gptables" class="external-link">a Python package called ‘gptables’</a>. {aftables} is an independent effort that offers a native R solution that is very similar to gptables in its outputs, though there are some differences in implementation.</p>
+<p>The ONS’s Analysis Standards and Pipelines team has released <a href="https://github.com/ONSdigital/gptables" class="external-link">a Python package called ‘gptables’</a>. {aftables} is an independent effort that offers a native R solution that is very similar to gptables in its outputs, though there are some differences in implementation.</p>
 <p>{aftables} can help you fulfill a <a href="https://analysisfunction.civilservice.gov.uk/support/reproducible-analytical-pipelines/" class="external-link">Reproducible Analytical Pipeline</a> by automating the generation of compliant spreadsheets for publication.</p>
 </div>
 <div class="section level2">
@@ -167,7 +167,7 @@
 <div class="section level2">
 <h2 id="copyright-and-licensing">Copyright and Licensing<a class="anchor" aria-label="anchor" href="#copyright-and-licensing"></a>
 </h2>
-<p>© Crown Copyright, 2023.</p>
+<p>© Crown Copyright, 2026.</p>
 <p>This work is <a href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/" class="external-link">Crown Copyright</a>. The source code for the software is released under the MIT licence as per the the <a href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/open-government-licence/open-software-licences/" class="external-link">UK Government Licensing Framework</a> and the <a href="https://gds-way.digital.cabinet-office.gov.uk/manuals/licensing.html" class="external-link">GDS Way licensing guidance</a>. The documentation for the software is released under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" class="external-link">Open Government Licence</a>.</p>
 </div>
 </div>
@@ -229,7 +229,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

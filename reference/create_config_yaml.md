@@ -1,0 +1,118 @@
+# Create an aftables config.yaml
+
+Copy the example config.yaml file included with aftables to a directory
+of the user's choice, and optionally open the file for editing. The
+config.yaml file can be passed to the aftables function
+[`generate_workbook`](https://best-practice-and-impact.github.io/aftables/reference/generate_workbook.md).
+
+## Usage
+
+``` r
+create_config_yaml(path = getwd(), open_config = rlang::is_interactive())
+```
+
+## Arguments
+
+- path:
+
+  optional character string containing directory to copy the config.yaml
+  file. Defaults to current working directory.
+
+- open_config:
+
+  optional logical whether to open the copy of config.yaml for editing
+  in the current R session.
+
+## Details
+
+If there is an existing config.yaml file in the destination directory
+this function will not overwrite it.
+
+Contents of example config.yaml:
+
+    aftables:
+      default:
+        workbook_properties:
+          author: "aftables"
+          title: "aftables example workbook"
+          keywords:
+            - "aftables1"
+            - "aftables2"
+            - "aftables3"
+          subject: "aftables example subject"
+          category: "aftables example category"
+          comments: "aftables example comments"
+        workbook_format:
+          base_font_name: "Arial"
+          base_font_size: 12
+          table_header_size: 12
+          sheet_heading_size: 16
+          sheet_subheading_size: 14
+          cellwidth_default: 16
+          cellwidth_wider: 32
+          nchar_break: 50
+      workbook1:
+        workbook_properties:
+          category: "aftables workbook 1 category"
+          keywords:
+            - "aftablesworkbook1"
+      workbook2:
+        workbook_properties:
+          title: "aftables workbook 2"
+          category: "aftables workbook 2 category"
+          keywords:
+            - "aftablesworkbook2"
+
+All configurations must be placed below an `aftables` key. `aftables`
+should be followed by a `default` key and/or custom keys (e.g.
+`workbook1`).
+
+The `default` key settings will be read by all calls to
+[`generate_workbook`](https://best-practice-and-impact.github.io/aftables/reference/generate_workbook.md)
+which use this config.yml. This allows you to share settings when
+generating multiple workbooks in one script.
+
+Custom key settings (e.g. `workbook1`) will only be used by
+[`generate_workbook`](https://best-practice-and-impact.github.io/aftables/reference/generate_workbook.md)
+when the key is provided as the `config_name` argument. This allows you
+to specify settings for a specific workbook. Custom key settings will be
+preferred over the `default` settings.
+
+Keys below workbook_properties will appear in the Excel workbook when it
+is saved using
+[`wb_save`](https://janmarvin.github.io/openxlsx2/reference/wb_save.html)
+from openxlsx2. They can be found in the file properties or the workbook
+information.
+
+Keys below `workbook_format` will be applied to the contents of the
+workbook. The values of `base_font_name` and `base_font_size` define the
+default font name and size used by the workbook. All text not formatted
+as a table header, sheet subheading or sheet heading will use the
+default settings. Font sizes of sheet headings, sheet subheadings, and
+table header rows will use the values of `sheet_heading_size`,
+`sheet_subheading_size` and `table_header_size` respectively, and they
+will additionally be formatted as bold.
+
+The values of `cellwidth_default`, `cellwidth_wider` and `nchar_break`
+are used to define column widths. The units of `cellwidth_default` and
+`cellwidth_wider` are the column width values used by Excel. All columns
+widths are set by default to use the `cellwidth_default` value. If the
+number of characters in a column header or the contents of a column
+exceeds the value of `nchar_break` aftables will set the column width to
+the value of `cellwidth_wider`. Users can avoid text wrapping in columns
+or column headers by setting the value of `nchar_break` based on their
+data or the content of their column headers.
+
+Not all workbook configuration options need to be set. Required settings
+are documented in
+[`generate_workbook`](https://best-practice-and-impact.github.io/aftables/reference/generate_workbook.md).
+
+## Examples
+
+``` r
+# Use default arguments to copy `aftables` `config.yaml` file to the current
+# working directory without opening the copied file for editing:
+
+if (FALSE) { # \dontrun{
+create_config_yaml(open_config = FALSE)} # }
+```

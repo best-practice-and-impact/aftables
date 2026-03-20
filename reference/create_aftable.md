@@ -1,0 +1,235 @@
+# Create An 'aftable' Object
+
+Create a new aftable-class object, which is a special data.frame that
+contains all the information needed in your output spreadsheet. In turn,
+the object created by this function can be used to populate an
+'openxlsx2' wbWorkbook-class object with the function
+[`generate_workbook`](https://best-practice-and-impact.github.io/aftables/reference/generate_workbook.md).
+
+## Usage
+
+``` r
+create_aftable(
+  tab_titles,
+  sheet_types = c("cover", "contents", "notes", "tables"),
+  sheet_titles,
+  blank_cells = NA_character_,
+  sources = NA_character_,
+  custom_rows = list(NA_character_),
+  tables
+)
+```
+
+## Arguments
+
+- tab_titles:
+
+  Required character vector, one value per sheet. Each title will appear
+  literally on each tab of the final spreadsheet output. Keep brief.
+  Letters and numbers only; do not start with a number; use underscores
+  for spaces. For example: 'Cover', 'Contents', 'Notes', 'Table_1'. Will
+  be corrected automatically unless there's an error.
+
+- sheet_types:
+
+  Required character vector, one value per sheet. Sheets that don't
+  contain publication tables ('meta' sheets) should be of type
+  'contents', 'cover' or 'notes'. Sheets that contain statistical tables
+  of data are type 'tables'.
+
+- sheet_titles:
+
+  Required character vector, one value per sheet. The main title for
+  each sheet, which will appear in cell A1 (top-left corner).
+
+- blank_cells:
+
+  Optional character vector, one value per sheet. A short sentence to
+  explain the reason for any blank cells in the sheet. Supply as
+  `NA_character_` if empty. Most likely to be used with sheet type
+  'tables'.
+
+- sources:
+
+  Optional character vector, one value per sheet. The origin of the data
+  for a given sheet. Supply as `NA_character_` if empty. To be used with
+  sheet type 'tables'.
+
+- custom_rows:
+
+  Optional list of character vectors. One list element per sheet, one
+  character vector element per row of pre-table metadata. Supply a list
+  element as `NA_character_` if empty. To be used with sheet type
+  'tables', but can also be used for sheet types 'contents' and 'notes'.
+
+- tables:
+
+  Required list of data.frames (though the cover sheet may be supplied
+  as a list), one per sheet. See details.
+
+## Value
+
+An object with classes 'aftable', 'tbl' and 'data.frame'.
+
+## Details
+
+### How to supply data to the 'tables' argument
+
+Formats for the elements collected as a list and passed to the 'tables'
+argument, depending on the sheet type.
+
+- Sheet type 'cover': either (a) a list where each element name is a
+  section header and each element's content is a character vector whose
+  elements will make up separate rows of that section (recommended),
+  or (b) a data.frame with one row per subsection, with one column for
+  section titles and one column for corresponding for that section's
+  body text. For example, you may have a section with the title 'Contact
+  details' that contains an email address and telephone number. You can
+  use line breaks (i.e. '\n') to separate text into paragraphs.
+
+- Sheet type 'contents': one row per sheet, two columns suggested at
+  least (named 'Tab title' and 'Worksheet title').
+
+- Sheet type 'notes': one row per note, two columns suggested (named
+  'Note number', 'Note text'), where notes are in the form '\[note 1\]'.
+
+- Sheet type 'tables': a tidy, rectangular data.frame containing the
+  data to be published. It's the user's responsibility to add notes in
+  the form '\[note 1\]' to column headers, or in a special 'Notes' row.
+
+### How to supply hyperlinks
+
+You can provide text in Markdown link syntax (e.g.
+'\[GOV.UK\](https://www.gov.uk)', adding 'mailto:' before an email
+address) and the containing cell will be rendered as a hyperlink in the
+output spreadsheet. Note that whole cells will become hyperlinks; there
+is no support for selected words in a sentence to be rendered as a
+hyperlink.
+
+Hyperlinks can be supplied in the character strings to three arguments:
+
+- To the 'tables' argument for sheet type 'cover' only. It's recommended
+  to supply the cover information as a list rather than a data.frame,
+  which will allow you to make specific rows within a section (e.g.
+  'contact us') into hyperlinks.
+
+- To the 'custom_rows' argument for sheets of type 'contents, 'notes'
+  and 'tables'.
+
+- To the 'source' argument for sheets of type 'table' only.
+
+## Examples
+
+``` r
+# Prepare some demo tables of information
+
+set.seed(1066)
+
+cover_list <- list(
+  "Section 1" = c("First row of Section 1.", "Second row of Section 1."),
+  "Section 2" = "The only row of Section 2.",
+  "Section 3" = c(
+    "[Website](https://best-practice-and-impact.github.io/aftables/)",
+    "[Email address](mailto:fake.address@aftables.com)"
+  )
+)
+
+contents_df <- data.frame(
+  "Sheet name" = c("Notes", "Table_1", "Table_2"),
+  "Sheet title" = c(
+    "Notes used in this workbook",
+    "First Example Sheet",
+    "Second Example Sheet"
+  ),
+  check.names = FALSE
+)
+
+notes_df <- data.frame(
+  "Note number" = paste0("[note ", 1:2, "]"),
+  "Note text" = c("First note.", "Second note."),
+  check.names = FALSE
+)
+
+
+table_1_df <- data.frame(
+  Category = LETTERS[1:10],
+  "Numeric [note 1]" = 1:10,
+  "Numeric suppressed" = c(1:4, "[c]", 6:9, "[x]"),
+  "Numeric thousands" = abs(round(rnorm(10), 4) * 1e5),
+  "Numeric decimal" = abs(round(rnorm(10), 5)),
+  "Long name that means that the column width needs to be widened" = 1:10,
+  Notes = c(
+    "[note 1]", rep(NA_character_, 4), "[note 2]",
+    rep(NA_character_, 4)
+  ),
+  check.names = FALSE
+)
+
+table_2_df <- data.frame(Category = LETTERS[1:10], Numeric = 1:10)
+
+# Create 'aftables' object
+
+x <- aftables::create_aftable(
+  tab_titles = c("Cover", "Contents", "Notes", "Table_1", "Table_2"),
+  sheet_types = c("cover", "contents", "notes", "tables", "tables"),
+  sheet_titles = c(
+    "The 'aftables' Demo Workbook",
+    "Table of contents",
+    "Notes",
+    "Table 1: First Example Sheet",
+    "Table 2: Second Example Sheet"
+  ),
+  blank_cells = c(
+    rep(NA_character_, 3),
+    "Blank cells indicate that there's no note in that row.",
+    NA_character_
+  ),
+  custom_rows = list(
+    NA_character_,
+    NA_character_,
+    "A custom row.",
+    c(
+      paste0(
+        "First custom row [with a hyperlink.]",
+        "(https://best-practice-and-impact.github.io/aftables/)"
+      ),
+      "Second custom row."
+    ),
+    "A custom row."
+  ),
+  sources = c(
+    rep(NA_character_, 3),
+    paste0(
+      "[The Source Material, 2024.]",
+      "(https://best-practice-and-impact.github.io/aftables/)"
+    ),
+    "The Source Material, 2024."
+  ),
+  tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)
+)
+
+# Test that 'aftable' is one of the object's classes
+is_aftable(x)
+#> [1] TRUE
+
+# Look at the structure of the object
+str(x, max.level = 2)
+#> Classes ‘aftable’, ‘tbl’ and 'data.frame':   5 obs. of  7 variables:
+#>  $ tab_title  : chr  "Cover" "Contents" "Notes" "Table_1" ...
+#>  $ sheet_type : chr  "cover" "contents" "notes" "tables" ...
+#>  $ sheet_title: chr  "The 'aftables' Demo Workbook" "Table of contents" "Notes" "Table 1: First Example Sheet" ...
+#>  $ blank_cells: chr  NA NA NA "Blank cells indicate that there's no note in that row." ...
+#>  $ source     : chr  NA NA NA "[The Source Material, 2024.](https://best-practice-and-impact.github.io/aftables/)" ...
+#>  $ custom_rows:List of 5
+#>   ..$ : chr NA
+#>   ..$ : chr NA
+#>   ..$ : chr "A custom row."
+#>   ..$ : chr  "First custom row [with a hyperlink.](https://best-practice-and-impact.github.io/aftables/)" "Second custom row."
+#>   ..$ : chr "A custom row."
+#>  $ table      :List of 5
+#>   ..$ :List of 3
+#>   ..$ :'data.frame': 3 obs. of  2 variables:
+#>   ..$ :'data.frame': 2 obs. of  2 variables:
+#>   ..$ :'data.frame': 10 obs. of  7 variables:
+#>   ..$ :'data.frame': 10 obs. of  2 variables:
+```

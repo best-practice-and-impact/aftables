@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">aftables</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/checklist.html">Accessibility guidance checklist</a></li>
+    <li><a class="dropdown-item" href="../articles/configfiles.html">Config files</a></li>
     <li><a class="dropdown-item" href="../articles/structure.html">Package structure</a></li>
     <li><a class="dropdown-item" href="../articles/terminology.html">Spreadsheet terminology</a></li>
   </ul>
@@ -68,7 +69,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Introduction to {aftables}</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/best-practice-and-impact/aftables/blob/main/vignettes/aftables.Rmd" class="external-link"><code>vignettes/aftables.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/best-practice-and-impact/aftables/blob/v2.0.0/vignettes/aftables.Rmd" class="external-link"><code>vignettes/aftables.Rmd</code></a></small>
       <div class="d-none name"><code>aftables.Rmd</code></div>
     </div>
 
@@ -84,13 +85,10 @@ practice</a>.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>Install the package <a href="https://github.com/best-practice-and-impact/aftables" class="external-link">from
-GitHub</a> using <a href="https://remotes.r-lib.org/" class="external-link">{remotes}</a>.</p>
+<p>Install the latest release version of aftables directly from
+CRAN:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>  <span class="co"># if not already installed</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"best-practice-and-impact/aftables"</span><span class="op">)</span></span></code></pre></div>
-<p>The package depends on <a href="https://ycphs.github.io/openxlsx/" class="external-link">{openxlsx}</a> and <a href="https://pillar.r-lib.org/" class="external-link">{pillar}</a>, which are also installed
-with {aftables}.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"aftables"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="workflow">Workflow<a class="anchor" aria-label="anchor" href="#workflow"></a>
@@ -102,11 +100,11 @@ generating a compliant spreadsheet:</p>
 (with class ‘aftable’) that contains all the content that will go in
 your spreadsheet</li>
 <li>Pass the output to <code><a href="../reference/generate_workbook.html">generate_workbook()</a></code> to convert the
-aftable to {openxlsx}‘s ’Workbook’ class, which adds spreadsheet
+aftable to {openxlsx2}‘s ’wbWorkbook’ class, which adds spreadsheet
 structure and styles</li>
-<li>Pass the output to <code><a href="https://rdrr.io/pkg/openxlsx/man/saveWorkbook.html" class="external-link">openxlsx::saveWorkbook()</a></code> to write
-out to an xlsx file (or <code><a href="https://rdrr.io/pkg/openxlsx/man/openXL.html" class="external-link">openxlsx::openXL()</a></code> to open a
-temporary copy)</li>
+<li>Pass the output to <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_save.html" class="external-link">openxlsx2::wb_save()</a></code> to write out to
+an xlsx file (or <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_open.html" class="external-link">openxlsx2::wb_open()</a></code> to open a temporary
+copy)</li>
 </ol>
 <p>You can use the package’s <a href="https://rstudio.github.io/rstudioaddins/" class="external-link">RStudio Addin</a>, which
 is installed with {aftables}, to insert a pre-filled demo skeleton of
@@ -209,9 +207,6 @@ preferable to prepare them first into their own named objects.</p>
 <code><a href="../reference/create_aftable.html">create_aftable()</a></code>. I’ve used <code><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tibble::tribble()</a></code>
 for human-readable row-by-row dataframe construction, but you can just
 use <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code> if you want.</p>
-<p>Note that you can use the RStudio Addin ‘Insert table templates using
-’tibble’’ and ‘Insert table templates using ’data.frame’’ to insert a
-demo skeleton into your R script.</p>
 <div class="section level5">
 <h5 id="meta-sheets">Meta-sheets<a class="anchor" aria-label="anchor" href="#meta-sheets"></a>
 </h5>
@@ -444,14 +439,16 @@ aftable with <code><a href="../reference/as_aftable.html">as_aftable()</a></code
 <h3 id="convert-to-a-workbook">2. Convert to a workbook<a class="anchor" aria-label="anchor" href="#convert-to-a-workbook"></a>
 </h3>
 <p>We can use <code><a href="../reference/generate_workbook.html">generate_workbook()</a></code> to convert our aftable to
-an <a href="https://ycphs.github.io/openxlsx/" class="external-link">{openxlsx}</a>
-Workbook-class object.</p>
+an <a href="https://janmarvin.github.io/openxlsx2/" class="external-link">{openxlsx2}</a>
+wbWorkbook-class object.</p>
 <p>This type of object adds information from each row of our aftable
 into separate sheets and applies other relevant structure, mark-up and
 styles for compliance with <a href="https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/" class="external-link">the
 best practice guidance</a>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_wb</span> <span class="op">&lt;-</span> <span class="fu">aftables</span><span class="fu">::</span><span class="fu"><a href="../reference/generate_workbook.html">generate_workbook</a></span><span class="op">(</span><span class="va">my_aftable</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">my_wb</span> <span class="op">&lt;-</span> <span class="fu">aftables</span><span class="fu">::</span><span class="fu"><a href="../reference/generate_workbook.html">generate_workbook</a></span><span class="op">(</span><span class="va">my_aftable</span><span class="op">)</span></span>
+<span><span class="co"># Warning: Some of the recommended workbook properties are missing. Analysis</span></span>
+<span><span class="co"># Function guidance recommends completing the author, title and keywords fields.</span></span></code></pre></div>
 <details><summary>
 Click for a preview of the Workbook object
 </summary><p>The print method for a Workbook-class object is fairly limited, but
@@ -462,63 +459,29 @@ styling.</p>
 <span><span class="co"># A Workbook object.</span></span>
 <span><span class="co">#  </span></span>
 <span><span class="co"># Worksheets:</span></span>
-<span><span class="co">#  Sheet 1: "Cover"</span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co">#   Custom row heights (row: height)</span></span>
-<span><span class="co">#    2: 34, 5: 34, 7: 34 </span></span>
-<span><span class="co">#   Custom column widths (column: width)</span></span>
-<span><span class="co">#     1: 72 </span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co"># </span></span>
-<span><span class="co">#  Sheet 2: "Contents"</span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co">#   Custom column widths (column: width)</span></span>
-<span><span class="co">#     1: 16, 2: 56 </span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co"># </span></span>
-<span><span class="co">#  Sheet 3: "Notes"</span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co">#   Custom column widths (column: width)</span></span>
-<span><span class="co">#     1: 16, 2: 56 </span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co"># </span></span>
-<span><span class="co">#  Sheet 4: "Table_1"</span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co">#   Custom column widths (column: width)</span></span>
-<span><span class="co">#     1: 16, 2: 16, 3: 16, 4: 16, 5: 16, 6: 32, 7: 16 </span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co"># </span></span>
-<span><span class="co">#  Sheet 5: "Table_2"</span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co">#   Custom column widths (column: width)</span></span>
-<span><span class="co">#     1: 16, 2: 16 </span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co"># </span></span>
-<span><span class="co">#  </span></span>
-<span><span class="co">#  Worksheet write order: 1, 2, 3, 4, 5</span></span>
-<span><span class="co">#  Active Sheet 1: "Cover" </span></span>
-<span><span class="co">#   Position: 1</span></span></code></pre></div>
+<span><span class="co">#  Sheets: Cover, Contents, Notes, Table_1, Table_2 </span></span>
+<span><span class="co">#  Write order: 1, 2, 3, 4, 5</span></span></code></pre></div>
 </details>
 </div>
 <div class="section level3">
 <h3 id="write-to-file">3. Write to file<a class="anchor" aria-label="anchor" href="#write-to-file"></a>
 </h3>
-<p>Finally, you can use <a href="https://ycphs.github.io/openxlsx/reference/saveWorkbook.html" class="external-link">the
-<code>saveWorkbook()</code> function from {openxlsx}</a> to write your
-workbook object to an xlsx file (set the filename argument to a location
+<p>Finally, you can use <a href="https://janmarvin.github.io/openxlsx2/reference/wb_save.html" class="external-link">the
+<code>wb_save()</code> function from {openxlsx2}</a> to write your
+workbook object to an xlsx file (set the path argument to a location
 suitable for your work).</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">openxlsx</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/saveWorkbook.html" class="external-link">saveWorkbook</a></span><span class="op">(</span><span class="va">my_wb</span>, <span class="st">"publication.xlsx"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">openxlsx2</span><span class="fu">::</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_save.html" class="external-link">wb_save</a></span><span class="op">(</span>wb <span class="op">=</span> <span class="va">my_wb</span>, file <span class="op">=</span> <span class="st">"C://Documents//publication.xlsx"</span><span class="op">)</span></span></code></pre></div>
 <p>You could also open a temporary copy of the workbook with
-<code><a href="https://rdrr.io/pkg/openxlsx/man/openXL.html" class="external-link">openxlsx::openXL()</a></code>, which is convenient during the
-development process.</p>
+<code>my_wb$open()</code>, which is convenient during the development
+process.</p>
 <div class="section level4">
 <h4 id="output">Output<a class="anchor" aria-label="anchor" href="#output"></a>
 </h4>
 <p>The content of your output spreadsheet will end up looking something
 like this:</p>
 <div class="figure">
-<p><img src="../reference/figures/vignette-workbook.gif" alt="Gif of a simple Excel workbook created using the aftables package, revealing tabs for cover, contents, notes and a table." width="100%"></p>
+<p><img src="../reference/figures/vignette-workbook.gif" alt="Gif of a simple Excel workbook created using the aftables package, revealing tabs for cover, contents, notes and tables." width="100%"></p>
 </div>
 <p>You’ll notice that various best-practice formatting (e.g. Arial size
 12 font for body text) and mark-up (e.g. tables, donated by a marker in
@@ -540,16 +503,10 @@ defaults don’t quite meet your requirements (e.g. some column widths),
 though it’s advisable to keep changes to a minimum for reproducibility
 purposes and because you may undo some of the compliant structuring and
 formatting that {aftables} provides.</p>
-<p>At time of writing (v0.3.0) you might want to address manually some
-other <a href="https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/" class="external-link">accessibility
-requirements</a> that are not yet covered by the package:</p>
-<ol style="list-style-type: decimal">
-<li>Fill in the document properties, which you are likely to find under
-‘File’ then ‘Properties’ in your spreadsheet software</li>
-<li>Convert to an ODS file rather than the proprietary xlsx format</li>
-<li>Various number-formatting issues, like padding decimal places with
-zeroes</li>
-</ol>
+<p>You will need to manually address some other <a href="https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/" class="external-link">accessibility
+requirements</a> that are not yet covered by the package such as
+converting the output to an ODS file rather than the proprietary xlsx
+format.</p>
 <p>We’re trying to address a number of these limitations. Please <a href="https://github.com/best-practice-and-impact/aftables/issues" class="external-link">see
 the issues on GitHub</a> for the current status.</p>
 </div>
@@ -575,7 +532,7 @@ guidance.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
