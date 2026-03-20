@@ -76,7 +76,6 @@ The `generate_workbook()` function has two arguments for config files: `config_p
 
 ```{r config example 1, eval = FALSE}
 my_wb <- generate_workbook(aftable = demo_aftable)
-
 ```
 
 When the user does not provide any config arguments to {aftables} it will look in the working directory for a `config.yaml` file. If {aftables} finds a config file it will look for an `aftables` entry with a `default` config. If {aftables} cannot find a config file or the config file doesn't contain an `aftables` entry with a `default` config, it will generate an {openxlsx2} wbWorkbook object named `my_wb` without applying any config. Otherwise {aftables} will generate an {openxlsx2} wbWorkbook object named `my_wb` with the `default` config applied. This is the default behaviour of the {generate_workbook} function.
@@ -88,7 +87,6 @@ my_wb <- generate_workbook(
   aftable = demo_aftable,
   config_name = "workbook1"
 )
-
 ```
 
 {aftables} will look in the working directory for a file named `config.yaml` and import the `aftables` entry. It will look for the `workbook1` config as well as a `default` config. If there is no `aftables` entry or `workbook1` config, {aftables} will stop with an error. If both the `default` and `workbook1` configs exist {aftables} will combine them, preferring values specified in the `config_name` custom config over those in the `default` config. If there is no `default` config all values will be taken from the `workbook1` config. {aftables} will generate an {openxlsx2} wbWorkbook object named `my_wb` with the `workbook1` or combined config applied.
@@ -96,17 +94,17 @@ my_wb <- generate_workbook(
 ### Example 3: Using a custom config file
 
 ```{r config example 3, eval = FALSE}
+dir.create("configs")
 
 create_config_yaml(
-  path = "/user_path/custom_user_config.yaml",
+  path = "configs",
   open_config = FALSE
 )
 
 my_wb <- generate_workbook(
   aftable = demo_aftable,
-  config_path = "/user_path/custom_user_config.yaml"
+  config_path = "configs/config.yaml"
 )
-
 ```
 
 {aftables} will look for the user-specified config file from `config_path` and import the `aftables` entry. It will look for the `default` config. If there is no `aftables` entry or `default` config, {aftables} will stop with an error. Otherwise {aftables} will generate an {openxlsx2} wbWorkbook object named `my_wb` with the `default` config applied.
@@ -114,14 +112,16 @@ my_wb <- generate_workbook(
 ### Example 4: Using a custom config file with a custom config
 
 ```{r config example 4, eval = FALSE}
+dir.create("configs")
+
 create_config_yaml(
-  path = "/user_path/custom_user_config.yaml",
+  path = "configs",
   open_config = FALSE
 )
 
 my_wb <- generate_workbook(
   aftable = demo_aftable,
-  config_path = "/user_path/custom_user_config.yaml"
+  config_path = "configs/config.yaml",
   config_name = "workbook1"
 )
 ```
