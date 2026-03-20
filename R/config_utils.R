@@ -41,22 +41,24 @@
 #' saved using \code{\link[openxlsx2]{wb_save}} from openxlsx2. They can be
 #' found in the file properties or the workbook information.
 #'
-#' Keys below workbook_format will be applied to the contents of the workbook.
-#' The keys base_font_name and base_font_size define the default font name and
-#' size used by the workbook. All text not formatted as a table header, sheet
-#' subheading or sheet heading will use the default settings. Font sizes of
-#' sheet headings, sheet subheadings, and table header rows can be set using the
-#' sheet_heading_size, sheet_subheading_size and table_header_size keys
-#' respectively, and they will additionally be formatted as bold.
+#' Keys below `workbook_format` will be applied to the contents of the workbook.
+#' The values of `base_font_name` and `base_font_size` define the default font
+#' name and size used by the workbook. All text not formatted as a table header,
+#' sheet subheading or sheet heading will use the default settings. Font sizes
+#' of sheet headings, sheet subheadings, and table header rows will use the
+#' values of `sheet_heading_size`, `sheet_subheading_size` and
+#' `table_header_size` respectively, and they will additionally be formatted as
+#' bold.
 #'
-#' The keys cellwidth_default, cellwidth_wider and nchar_break are used to
-#' define column widths. The units of the cellwidth_default and cellwidth_wider
-#' keys are the column width values used by Excel. All columns widths are set by
-#' default to use the cellwidth_default value. If the number of characters in a
-#' column header or the contents of a column exceeds the value of nchar_break
-#' aftables will set the column width to the value of cellwidth_wider. Users can
-#' avoid text wrapping in columns or column headers by setting the value of
-#' nchar_break based on their data or the content of their column headers.
+#' The values of `cellwidth_default`, `cellwidth_wider` and `nchar_break` are
+#' used to define column widths. The units of `cellwidth_default` and
+#' `cellwidth_wider` are the column width values used by Excel. All columns
+#' widths are set by default to use the `cellwidth_default` value. If the number
+#' of characters in a column header or the contents of a column exceeds the
+#' value of `nchar_break` aftables will set the column width to the value of
+#' `cellwidth_wider`. Users can avoid text wrapping in columns or column headers
+#' by setting the value of `nchar_break` based on their data or the content of
+#' their column headers.
 #'
 #' Not all workbook configuration options need to be set. Required settings are
 #' documented in \code{\link[aftables]{generate_workbook}}.

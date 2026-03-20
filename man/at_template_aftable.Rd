@@ -2,7 +2,7 @@
 % Please edit documentation in R/addin.R
 \name{at_template_aftable}
 \alias{at_template_aftable}
-\title{Insert Demo 'create_aftable' Template}
+\title{Insert 'create_aftable' template}
 \usage{
 at_template_aftable()
 }
@@ -11,5 +11,5 @@ Empty list. Function is used for side effect.
 }
 \description{
 Insert at the cursor a template for \code{\link{create_aftable}} from the
-'aftable' package, pre-filled with demo data.
+'aftables' package, pre-filled with demo data.
 }

@@ -64,17 +64,14 @@ install.packages("aftables")
 
 ### Install from GitHub
 
-Install the package [from
-GitHub](https://github.com/best-practice-and-impact/aftables) using
-[{remotes}](https://remotes.r-lib.org/).
+aftables can be installed directly from GitHub.
 
 ``` r
-install.packages("remotes") # if not already installed
-
 remotes::install_github(
-  repo = "best-practice-and-impact/aftables", # GitHub user/repository
-  dependencies = TRUE, # install required/suggested packages
-  build_vignettes = TRUE # generate vignette documentation
+  "best-practice-and-impact/aftables",
+  upgrade = "never",
+  build_vignettes = TRUE,
+  dependencies = TRUE
 )
 ```
 
@@ -120,11 +117,15 @@ or run `browseVignettes("aftables")` to read the:
   vignette](https://best-practice-and-impact.github.io/aftables/articles/checklist.html)
   to see how the package complies with best-practice guidance
 - [terminology
-  vignette](https://best-practice-and-impact.github.io/aftables/articles/terminology)
+  vignette](https://best-practice-and-impact.github.io/aftables/articles/terminology.html)
   to understand the nomenclature of spreadsheet terms as used in this
   package
+- [config file
+  vignette](https://best-practice-and-impact.github.io/aftables/articles/configfiles.html)
+  to understand how to use config files to set workbook properties and
+  formatting
 - [package structure
-  vignette](https://best-practice-and-impact.github.io/aftables/articles/structure)
+  vignette](https://best-practice-and-impact.github.io/aftables/articles/structure.html)
   to see how the package works under the hood
 
 This package also includes [an RStudio
@@ -152,7 +153,7 @@ Conduct](https://best-practice-and-impact.github.io/aftables/CODE_OF_CONDUCT.htm
 
 ## Copyright and Licensing
 
-© Crown Copyright, 2023.
+© Crown Copyright, 2026.
 
 This work is [Crown
 Copyright](https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/).
