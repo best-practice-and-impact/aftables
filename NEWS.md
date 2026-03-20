@@ -1,4 +1,4 @@
-# aftables 1.0.2.9000 (development version)
+# aftables 2.0.0
 
  * Major update of package back-end to use openxlsx2 functions to build and format workbook (#70).
  * Bug fix: ensured columns containing both numbers/currencies and shorthand have numeric formatting applied to prevent Excel warning of numbers formatted as characters. (#93)

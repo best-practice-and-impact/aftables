@@ -120,10 +120,6 @@ or run `browseVignettes("aftables")` to read the:
   vignette](https://best-practice-and-impact.github.io/aftables/articles/terminology.html)
   to understand the nomenclature of spreadsheet terms as used in this
   package
-- [config file
-  vignette](https://best-practice-and-impact.github.io/aftables/articles/configfiles.html)
-  to understand how to use config files to set workbook properties and
-  formatting
 - [package structure
   vignette](https://best-practice-and-impact.github.io/aftables/articles/structure.html)
   to see how the package works under the hood
@@ -135,8 +131,7 @@ demo skeletons of the {aftables} workflow.
 ## Related projects
 
 The ONS’s Analysis Standards and Pipelines team has released [a Python
-package called
-‘gptables’](https://github.com/best-practice-and-impact/gptables).
+package called ‘gptables’](https://github.com/ONSdigital/gptables).
 {aftables} is an independent effort that offers a native R solution that
 is very similar to gptables in its outputs, though there are some
 differences in implementation.
