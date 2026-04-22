@@ -1,4 +1,6 @@
-# aftables (development version)
+# aftables 2.0.1
+
+ * Bug fix: added rlang import for backwards compatibility with R versions < 4.4.0 (#147)
 
 # aftables 2.0.0
 

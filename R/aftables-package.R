@@ -12,6 +12,7 @@
 #' @importFrom dplyr all_of
 #' @importFrom tidyselect where
 #' @importFrom rlang .data
+#' @importFrom rlang '%||%'
 #' @importFrom pillar tbl_sum
 #' @importFrom purrr pwalk
 #' @importFrom purrr pluck
