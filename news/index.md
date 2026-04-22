@@ -1,6 +1,14 @@
 # Changelog
 
+## aftables 2.0.1
+
+- Bug fix: added rlang import for backwards compatibility with R
+  versions \< 4.4.0
+  ([\#147](https://github.com/best-practice-and-impact/aftables/issues/147))
+
 ## aftables 2.0.0
+
+CRAN release: 2026-03-20
 
 - Major update of package back-end to use openxlsx2 functions to build
   and format workbook

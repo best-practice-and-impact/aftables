@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">aftables</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,11 +36,15 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/best-practice-and-impact/aftables/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/best-practice-and-impact/aftables/blob/v2.0.1/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.0.0" id="aftables-200">aftables 2.0.0<a class="anchor" aria-label="anchor" href="#aftables-200"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.0.1" id="aftables-201">aftables 2.0.1<a class="anchor" aria-label="anchor" href="#aftables-201"></a></h2>
+<ul><li>Bug fix: added rlang import for backwards compatibility with R versions &lt; 4.4.0 (<a href="https://github.com/best-practice-and-impact/aftables/issues/147" class="external-link">#147</a>)</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.0.0" id="aftables-200">aftables 2.0.0<a class="anchor" aria-label="anchor" href="#aftables-200"></a></h2><p class="text-muted">CRAN release: 2026-03-20</p>
 <ul><li><p>Major update of package back-end to use openxlsx2 functions to build and format workbook (<a href="https://github.com/best-practice-and-impact/aftables/issues/70" class="external-link">#70</a>).</p></li>
 <li><p>Bug fix: ensured columns containing both numbers/currencies and shorthand have numeric formatting applied to prevent Excel warning of numbers formatted as characters. (<a href="https://github.com/best-practice-and-impact/aftables/issues/93" class="external-link">#93</a>)</p></li>
 <li><p>Bug fix: numeric formatting applies thousand separators by default. (<a href="https://github.com/best-practice-and-impact/aftables/issues/51" class="external-link">#51</a>)</p></li>
