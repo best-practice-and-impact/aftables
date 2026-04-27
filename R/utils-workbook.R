@@ -383,10 +383,21 @@
 
   table_cell_references <- dims_to_rowcol(table_cell_references)
 
+  table_column_references <-
+    data.frame(
+      t(
+        paste0(outer(table_cell_references$col,
+                     min(as.numeric(table_cell_references$row)), paste0),
+               ":",
+               outer(table_cell_references$col,
+                     max(as.numeric(table_cell_references$row)), paste0))
+      ))
+
+  colnames(table_column_references) <- names(table)
+
   table_cell_references <- t(outer(table_cell_references$col, table_cell_references$row, paste0))
 
   colnames(table_cell_references) <- names(table)
-
 
   if (length(numeric_columns) > 0) {
 
@@ -430,10 +441,20 @@
     # and decimal places to pass to .style_table
     #===========================================================================
 
+    number_column_references <-
+      table_column_references[, numeric_columns, drop = FALSE]
+
     number_cell_references <-
       table_cell_references[, numeric_columns, drop = FALSE]
 
-    number_formats <- .determine_number_formats(
+    # number_formats <- .determine_number_formats(
+    #   currency_units,
+    #   decimal_places,
+    #   number_cell_references
+    # )
+
+    number_formats <-
+    .determine_number_formats_2(
       currency_units,
       decimal_places,
       number_cell_references
@@ -469,18 +490,26 @@
   # insert notes into mixed columns
   #=============================================================================
 
-  notes_replacement |>
-    pwalk(\(cell_reference,
-            cell_text) {
-      wb$add_data(
-        sheet = tab_title,
-        x = cell_text,
-        dims = cell_reference,
-        col_names = FALSE,
-        row_names = FALSE,
-        apply_cell_style = FALSE
-      )
-    })
+  # notes_replacement |>
+  #   pwalk(\(cell_reference,
+  #           cell_text) {
+  #     wb$add_data(
+  #       sheet = tab_title,
+  #       x = cell_text,
+  #       dims = cell_reference,
+  #       col_names = FALSE,
+  #       row_names = FALSE,
+  #       apply_cell_style = FALSE
+  #     )
+  #   })
+
+  if (nrow(notes_replacement) > 0) {
+    wb$add_data(sheet = tab_title,
+                x = notes_replacement$cell_text,
+                dims = notes_replacement$cell_reference,
+                col_names = FALSE,
+                apply_cell_style = FALSE)
+  }
 
   #=============================================================================
   # create output to pass to .style_table
@@ -940,6 +969,37 @@
     ) |>
       unlist(use.names = FALSE)
   )
+
+  output
+}
+
+.determine_number_formats_2 <- function(currency_units,
+                                        decimal_places,
+                                        number_cell_references) {
+
+  output <-
+  data.frame(
+    cell_references = as.vector(number_cell_references),
+    cell_format = purrr::map2(
+      currency_units,
+      purrr::map(colnames(number_cell_references),
+                 \(x) purrr::pluck(decimal_places, x)),
+      \(currency_unit, decimal_length) {
+        paste0(
+          currency_unit,
+          # default formatting with thousand separator
+          "#,##0",
+          # add decimal point if required
+          if (decimal_length > 0) ".",
+          # add number of digits after decimal point from decimal_length
+          paste0(rep("0", decimal_length), collapse = "")
+        )
+      }
+    ) |> unlist()
+  ) |> dplyr::group_by(cell_format) |>
+    dplyr::mutate(cell_references = paste0(paste0(cell_references, collapse = ";"), ";")) |>
+    unique() |>
+    dplyr::ungroup()
 
   output
 }

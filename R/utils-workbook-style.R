@@ -219,13 +219,26 @@
   if (!is.null(table_formats$number_formats)) {
     # apply numeric formatting to entire table
     table_formats$number_formats |>
-      pwalk(\(cell_reference, cell_format) {
+      pwalk(\(cell_references, cell_format) {
         wb$add_numfmt(
           sheet = tab_title,
-          dims = cell_reference,
+          dims = cell_references,
           numfmt = cell_format
         )
       })
+
+    # wb_add_numfmt(
+    #   wb = wb,
+    #   sheet = tab_title,
+    #   dims = table_formats$number_formats$cell_references,
+    #   numfmt = table_formats$number_formats$cell_format
+    # )
+    #
+    # wb$add_numfmt(
+    #   sheet = tab_title,
+    #   dims = table_formats$number_formats$cell_reference,
+    #   numfmt = table_formats$number_formats$cell_format
+    # )
   }
 
   wb
