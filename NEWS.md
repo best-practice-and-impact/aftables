@@ -1,4 +1,4 @@
-# aftables 2.0.2
+# aftables (development)
 
 * Bug fix: re-enabled RStudio Addin to insert code for {aftables} workflow (#151).
 
