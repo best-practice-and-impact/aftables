@@ -395,10 +395,11 @@
 
     note_values <- table[note_cells]
 
-    notes_replacement <-
-      .note_cell_ranges(table_cell_references,
-                        note_cells,
-                        note_values)
+    notes_replacement <- .note_cell_ranges(
+      table_cell_references,
+      note_cells,
+      note_values
+    )
 
     table[note_cells] <- ""
 
@@ -430,19 +431,17 @@
     number_cell_references <-
       table_cell_references[, numeric_columns, drop = FALSE]
 
-    number_formats <-
-      .determine_number_formats(
-        currency_units,
-        decimal_places,
-        number_cell_references
-      )
+    number_formats <- .determine_number_formats(
+      currency_units,
+      decimal_places,
+      number_cell_references
+    )
 
   } else {
-    notes_replacement <-
-      data.frame(
-        cell_reference = character(0),
-        cell_text = character(0)
-      )
+    notes_replacement <- data.frame(
+      cell_reference = character(0),
+      cell_text = character(0)
+    )
 
     number_formats <- NULL
   }
@@ -955,46 +954,51 @@
                               note_cells,
                               note_values) {
 
-  output <-
-    tibble::tibble(cell_references = table_cell_references[note_cells],
-                   cell_text = note_values) |>
+  output <- tibble(
+    cell_references = table_cell_references[note_cells],
+    cell_text = note_values
+  ) |>
     mutate(
       cell_reference_characters =
-      stringr::str_sub(.data$cell_references,
-                       start = 1,
-                       end =
-                       stringr::str_locate(.data$cell_references,
-                                           "[[:alpha:]]+")[, 1]),
-      cell_reference_numbers =
-      as.numeric(
-        stringr::str_sub(.data$cell_references,
-                         start = stringr::str_locate(.data$cell_references,
-                                                     "[[:digit:]]+")[, 1])
+        stringr::str_sub(
+          .data$cell_references,
+          start = 1,
+          end = stringr::str_locate(.data$cell_references, "[[:alpha:]]+")[, 1]
+        ),
+      cell_reference_numbers = as.numeric(
+        stringr::str_sub(
+          .data$cell_references,
+          start =
+            stringr::str_locate(.data$cell_references, "[[:digit:]]+")[, 1]
+        )
       )
     ) |>
     dplyr::select(-"cell_references")
 
-  output <-
-    output |>
+  output <- output |>
     mutate(
-      sequence_id = cumsum(c(TRUE,
-                             diff(.data$cell_reference_numbers) != 1)
+      sequence_id = cumsum(c(TRUE, diff(.data$cell_reference_numbers) != 1)
       )
     ) |>
     dplyr::group_by(.data$sequence_id, .add = TRUE) |>
-    mutate(start = ifelse(nrow(output) > 0,
-                          min(.data$cell_reference_numbers), 0),
-
-           end = ifelse(nrow(output) > 0,
-                        max(.data$cell_reference_numbers), 0)) |>
     mutate(
-      cell_reference = dplyr::if_else(.data$start == .data$end,
-                                      paste0(.data$cell_reference_characters,
-                                             .data$start),
-                                      paste0(.data$cell_reference_characters,
-                                             .data$start, ":",
-                                             .data$cell_reference_characters,
-                                             .data$end))
+      start = ifelse(nrow(output) > 0, min(.data$cell_reference_numbers), 0),
+      end = ifelse(nrow(output) > 0, max(.data$cell_reference_numbers), 0)
+    ) |>
+    mutate(
+      cell_reference = dplyr::if_else(
+        .data$start == .data$end,
+        paste0(
+          .data$cell_reference_characters,
+          .data$start
+        ),
+        paste0(
+          .data$cell_reference_characters,
+          .data$start, ":",
+          .data$cell_reference_characters,
+          .data$end
+        )
+      )
     ) |>
     dplyr::group_by(.data$cell_text) |>
     dplyr::select("cell_reference", "cell_text") |>
