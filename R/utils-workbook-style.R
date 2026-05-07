@@ -226,19 +226,6 @@
           numfmt = cell_format
         )
       })
-
-    # wb_add_numfmt(
-    #   wb = wb,
-    #   sheet = tab_title,
-    #   dims = table_formats$number_formats$cell_references,
-    #   numfmt = table_formats$number_formats$cell_format
-    # )
-    #
-    # wb$add_numfmt(
-    #   sheet = tab_title,
-    #   dims = table_formats$number_formats$cell_reference,
-    #   numfmt = table_formats$number_formats$cell_format
-    # )
   }
 
   wb

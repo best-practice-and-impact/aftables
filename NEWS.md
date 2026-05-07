@@ -1,3 +1,7 @@
+# aftables 2.0.3
+
+* Bug fix: improvements to process large dataframes faster.
+
 # aftables 2.0.2
 
 * Bug fix: re-enabled RStudio Addin to insert code for {aftables} workflow (#151).

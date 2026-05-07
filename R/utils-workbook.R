@@ -383,18 +383,6 @@
 
   table_cell_references <- dims_to_rowcol(table_cell_references)
 
-  table_column_references <-
-    data.frame(
-      t(
-        paste0(outer(table_cell_references$col,
-                     min(as.numeric(table_cell_references$row)), paste0),
-               ":",
-               outer(table_cell_references$col,
-                     max(as.numeric(table_cell_references$row)), paste0))
-      ))
-
-  colnames(table_column_references) <- names(table)
-
   table_cell_references <- t(outer(table_cell_references$col, table_cell_references$row, paste0))
 
   colnames(table_cell_references) <- names(table)
@@ -406,15 +394,13 @@
     #===========================================================================
 
     note_values <- table[note_cells]
-    note_cell_references <- table_cell_references[note_cells]
 
-    notes_replacement <- data.frame(
-      cell_reference = note_cell_references,
-      cell_text = note_values
-    )
+    notes_replacement <-
+      .note_cell_ranges(table_cell_references,
+                        note_cells,
+                        note_values)
 
     table[note_cells] <- ""
-
 
     #===========================================================================
     # Extract currency symbols from numeric columns for number formatting
@@ -441,24 +427,15 @@
     # and decimal places to pass to .style_table
     #===========================================================================
 
-    number_column_references <-
-      table_column_references[, numeric_columns, drop = FALSE]
-
     number_cell_references <-
       table_cell_references[, numeric_columns, drop = FALSE]
 
-    # number_formats <- .determine_number_formats(
-    #   currency_units,
-    #   decimal_places,
-    #   number_cell_references
-    # )
-
     number_formats <-
-    .determine_number_formats_2(
-      currency_units,
-      decimal_places,
-      number_cell_references
-    )
+      .determine_number_formats(
+        currency_units,
+        decimal_places,
+        number_cell_references
+      )
 
   } else {
     notes_replacement <-
@@ -490,25 +467,19 @@
   # insert notes into mixed columns
   #=============================================================================
 
-  # notes_replacement |>
-  #   pwalk(\(cell_reference,
-  #           cell_text) {
-  #     wb$add_data(
-  #       sheet = tab_title,
-  #       x = cell_text,
-  #       dims = cell_reference,
-  #       col_names = FALSE,
-  #       row_names = FALSE,
-  #       apply_cell_style = FALSE
-  #     )
-  #   })
-
   if (nrow(notes_replacement) > 0) {
-    wb$add_data(sheet = tab_title,
-                x = notes_replacement$cell_text,
-                dims = notes_replacement$cell_reference,
-                col_names = FALSE,
-                apply_cell_style = FALSE)
+    notes_replacement |>
+      pwalk(\(cell_reference,
+              cell_text) {
+        wb$add_data(
+          sheet = tab_title,
+          x = cell_text,
+          dims = cell_reference,
+          col_names = FALSE,
+          row_names = FALSE,
+          apply_cell_style = FALSE
+        )
+      })
   }
 
   #=============================================================================
@@ -947,59 +918,86 @@
                                       decimal_places,
                                       number_cell_references) {
 
-  output <- list(
-    cell_reference = as.vector(number_cell_references),
-    # combine currency units (by table cell)
-    # with decimal places (by numeric table column)
-    cell_format = purrr::map2(
-      currency_units,
-      purrr::map(colnames(number_cell_references),
-                 \(x) purrr::pluck(decimal_places, x)),
-      \(currency_unit, decimal_length) {
-        paste0(
-          currency_unit,
-          # default formatting with thousand separator
-          "#,##0",
-          # add decimal point if required
-          if (decimal_length > 0) ".",
-          # add number of digits after decimal point from decimal_length
-          paste0(rep("0", decimal_length), collapse = "")
-        )
-      }
+  output <-
+    data.frame(
+      cell_references = as.vector(number_cell_references),
+      cell_format = purrr::map2(
+        currency_units,
+        purrr::map(colnames(number_cell_references),
+                   \(x) purrr::pluck(decimal_places, x)),
+        \(currency_unit, decimal_length) {
+          paste0(
+            currency_unit,
+            # default formatting with thousand separator
+            "#,##0",
+            # add decimal point if required
+            if (decimal_length > 0) ".",
+            # add number of digits after decimal point from decimal_length
+            paste0(rep("0", decimal_length), collapse = "")
+          )
+        }
+      ) |> unlist()
     ) |>
-      unlist(use.names = FALSE)
-  )
+    dplyr::group_by(.data$cell_format) |>
+    dplyr::mutate(cell_references = paste0(
+      paste0(.data$cell_references,
+             collapse = ";"),
+      ";")
+    ) |>
+    unique() |>
+    dplyr::ungroup()
 
   output
 }
 
-.determine_number_formats_2 <- function(currency_units,
-                                        decimal_places,
-                                        number_cell_references) {
+.note_cell_ranges <- function(table_cell_references,
+                              note_cells,
+                              note_values) {
 
   output <-
-  data.frame(
-    cell_references = as.vector(number_cell_references),
-    cell_format = purrr::map2(
-      currency_units,
-      purrr::map(colnames(number_cell_references),
-                 \(x) purrr::pluck(decimal_places, x)),
-      \(currency_unit, decimal_length) {
-        paste0(
-          currency_unit,
-          # default formatting with thousand separator
-          "#,##0",
-          # add decimal point if required
-          if (decimal_length > 0) ".",
-          # add number of digits after decimal point from decimal_length
-          paste0(rep("0", decimal_length), collapse = "")
-        )
-      }
-    ) |> unlist()
-  ) |> dplyr::group_by(cell_format) |>
-    dplyr::mutate(cell_references = paste0(paste0(cell_references, collapse = ";"), ";")) |>
-    unique() |>
-    dplyr::ungroup()
+    tibble::tibble(cell_references = table_cell_references[note_cells],
+                   cell_text = note_values) |>
+    mutate(
+      cell_reference_characters =
+      stringr::str_sub(.data$cell_references,
+                       start = 1,
+                       end =
+                       stringr::str_locate(.data$cell_references,
+                                           "[[:alpha:]]+")[, 1]),
+      cell_reference_numbers =
+      as.numeric(
+        stringr::str_sub(.data$cell_references,
+                         start = stringr::str_locate(.data$cell_references,
+                                                     "[[:digit:]]+")[, 1])
+      )
+    ) |>
+    dplyr::select(-"cell_references")
+
+  output <-
+    output |>
+    mutate(
+      sequence_id = cumsum(c(TRUE,
+                             diff(.data$cell_reference_numbers) != 1)
+      )
+    ) |>
+    dplyr::group_by(.data$sequence_id, .add = TRUE) |>
+    mutate(start = ifelse(nrow(output) > 0,
+                          min(.data$cell_reference_numbers), 0),
+
+           end = ifelse(nrow(output) > 0,
+                        max(.data$cell_reference_numbers), 0)) |>
+    mutate(
+      cell_reference = dplyr::if_else(.data$start == .data$end,
+                                      paste0(.data$cell_reference_characters,
+                                             .data$start),
+                                      paste0(.data$cell_reference_characters,
+                                             .data$start, ":",
+                                             .data$cell_reference_characters,
+                                             .data$end))
+    ) |>
+    dplyr::group_by(.data$cell_text) |>
+    dplyr::select("cell_reference", "cell_text") |>
+    unique()
 
   output
 }
