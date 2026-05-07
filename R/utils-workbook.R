@@ -976,8 +976,7 @@
 
   output <- output |>
     mutate(
-      sequence_id = cumsum(c(TRUE, diff(.data$cell_reference_numbers) != 1)
-      )
+      sequence_id = cumsum(c(TRUE, diff(.data$cell_reference_numbers) != 1))
     ) |>
     dplyr::group_by(.data$sequence_id, .add = TRUE) |>
     mutate(
