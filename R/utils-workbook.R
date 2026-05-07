@@ -939,10 +939,11 @@
       ) |> unlist()
     ) |>
     dplyr::group_by(.data$cell_format) |>
-    dplyr::mutate(cell_references = paste0(
-      paste0(.data$cell_references,
-             collapse = ";"),
-      ";")
+    dplyr::mutate(
+      cell_references = paste0(
+        paste0(.data$cell_references, collapse = ";"),
+        ";"
+      )
     ) |>
     unique() |>
     dplyr::ungroup()
