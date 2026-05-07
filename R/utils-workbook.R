@@ -917,26 +917,25 @@
                                       decimal_places,
                                       number_cell_references) {
 
-  output <-
-    data.frame(
-      cell_references = as.vector(number_cell_references),
-      cell_format = purrr::map2(
-        currency_units,
-        purrr::map(colnames(number_cell_references),
-                   \(x) purrr::pluck(decimal_places, x)),
-        \(currency_unit, decimal_length) {
-          paste0(
-            currency_unit,
-            # default formatting with thousand separator
-            "#,##0",
-            # add decimal point if required
-            if (decimal_length > 0) ".",
-            # add number of digits after decimal point from decimal_length
-            paste0(rep("0", decimal_length), collapse = "")
-          )
-        }
-      ) |> unlist()
-    ) |>
+  output <- data.frame(
+    cell_references = as.vector(number_cell_references),
+    cell_format = purrr::map2(
+      currency_units,
+      purrr::map(colnames(number_cell_references),
+                 \(x) purrr::pluck(decimal_places, x)),
+      \(currency_unit, decimal_length) {
+        paste0(
+          currency_unit,
+          # default formatting with thousand separator
+          "#,##0",
+          # add decimal point if required
+          if (decimal_length > 0) ".",
+          # add number of digits after decimal point from decimal_length
+          paste0(rep("0", decimal_length), collapse = "")
+        )
+      }
+    ) |> unlist()
+  ) |>
     dplyr::group_by(.data$cell_format) |>
     dplyr::mutate(
       cell_references = paste0(
