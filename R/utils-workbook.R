@@ -387,6 +387,19 @@
 
   colnames(table_cell_references) <- names(table)
 
+  # create placeholder objects
+  notes_cell_references <- list(
+    replacements = tibble(col = character(0),
+                          start_row = character(0),
+                          cell_text = character(0)),
+    na_cells = ""
+  )
+
+  number_formats <- tibble(
+    cell_references = character(0),
+    cell_format = character(0)
+  )
+
   if (length(numeric_columns) > 0) {
 
     #===========================================================================
@@ -395,13 +408,26 @@
 
     note_values <- table[note_cells]
 
-    notes_replacement <- .note_cell_ranges(
-      table_cell_references,
-      note_cells,
-      note_values
-    )
+    if (length(note_values) > 0) {
 
-    table[note_cells] <- ""
+      notes_cell_references <- .determine_note_cell_ranges(
+        table_cell_references,
+        note_cells,
+        note_values,
+        existing_na = any(is.na(table))
+      )
+
+      # if there are no NA values in the table
+      # set all note cells to NA to be replaced via na.strings and
+      # values in note_cell_references
+      if (!any(is.na(table))) {
+        table[note_cells] <- NA
+      } else { # some NA values in table, not safe to use na.strings
+        # all notes are in note_cell_references
+        table[note_cells] <- ""
+      }
+
+    }
 
     #===========================================================================
     # Extract currency symbols from numeric columns for number formatting
@@ -437,13 +463,6 @@
       number_cell_references
     )
 
-  } else {
-    notes_replacement <- data.frame(
-      cell_reference = character(0),
-      cell_text = character(0)
-    )
-
-    number_formats <- NULL
   }
 
   #=============================================================================
@@ -459,21 +478,23 @@
     table_style = "none",
     with_filter = FALSE,
     banded_rows = FALSE,
-    na.strings = ""
+    na.strings = notes_cell_references$na_cells
   )
 
   #=============================================================================
   # insert notes into mixed columns
   #=============================================================================
 
-  if (nrow(notes_replacement) > 0) {
-    notes_replacement |>
-      pwalk(\(cell_reference,
+  if (nrow(notes_cell_references$replacements) > 0) {
+    notes_cell_references$replacements |>
+      pwalk(\(col,
+              start_row,
               cell_text) {
         wb$add_data(
           sheet = tab_title,
           x = cell_text,
-          dims = cell_reference,
+          start_col = col,
+          start_row = start_row,
           col_names = FALSE,
           row_names = FALSE,
           apply_cell_style = FALSE
@@ -937,7 +958,7 @@
     ) |> unlist()
   ) |>
     dplyr::group_by(.data$cell_format) |>
-    dplyr::mutate(
+    mutate(
       cell_references = paste0(
         paste0(.data$cell_references, collapse = ";"),
         ";"
@@ -949,58 +970,72 @@
   output
 }
 
-.note_cell_ranges <- function(table_cell_references,
-                              note_cells,
-                              note_values) {
+.determine_note_cell_ranges <- function(table_cell_references,
+                                        note_cells,
+                                        note_values,
+                                        existing_na = FALSE) {
 
-  output <- tibble(
-    cell_references = table_cell_references[note_cells],
-    cell_text = note_values
-  ) |>
-    mutate(
-      cell_reference_characters =
-        stringr::str_sub(
-          .data$cell_references,
-          start = 1,
-          end = stringr::str_locate(.data$cell_references, "[[:alpha:]]+")[, 1]
-        ),
-      cell_reference_numbers = as.numeric(
-        stringr::str_sub(
-          .data$cell_references,
-          start =
-            stringr::str_locate(.data$cell_references, "[[:digit:]]+")[, 1]
-        )
-      )
-    ) |>
-    dplyr::select(-"cell_references")
+  output <- list(replacements = "",
+                 na_cells = "")
 
-  output <- output |>
-    mutate(
-      sequence_id = cumsum(c(TRUE, diff(.data$cell_reference_numbers) != 1))
+  output$replacements <-
+    tibble(
+      cell_references = table_cell_references[note_cells],
+      cell_text = note_values
     ) |>
-    dplyr::group_by(.data$sequence_id, .add = TRUE) |>
-    mutate(
-      start = ifelse(nrow(output) > 0, min(.data$cell_reference_numbers), 0),
-      end = ifelse(nrow(output) > 0, max(.data$cell_reference_numbers), 0)
-    ) |>
-    mutate(
-      cell_reference = dplyr::if_else(
-        .data$start == .data$end,
-        paste0(
-          .data$cell_reference_characters,
-          .data$start
-        ),
-        paste0(
-          .data$cell_reference_characters,
-          .data$start, ":",
-          .data$cell_reference_characters,
-          .data$end
-        )
-      )
-    ) |>
-    dplyr::group_by(.data$cell_text) |>
-    dplyr::select("cell_reference", "cell_text") |>
-    unique()
+    dplyr::group_by(.data$cell_text)
+
+  # Remove the largest group of notes from the replacements
+  # to be added using NA values in wb_add_data_table function
+  # if data contains NA values this step will not run
+  # to avoid overwriting valid NAs with notes
+
+  if (!existing_na) {
+    output$na_cells <-
+      output$replacements |>
+      dplyr::summarise(count = dplyr::n()) |>
+      dplyr::group_by(.data$count, .add = TRUE) |>
+      mutate(tiebreak = rank(.data$count, ties.method = "random")) |>
+      dplyr::ungroup() |>
+      filter(.data$count == max(.data$count) &
+               .data$tiebreak == min(.data$tiebreak)) |>
+      dplyr::select(.data$cell_text) |>
+      as.character()
+
+    output$replacements <-
+      output$replacements |>
+      filter(.data$cell_text != output$na_cells)
+  }
+
+  if (nrow(output$replacements) > 0) {
+    output$replacements <-
+      output$replacements |>
+      dplyr::group_by(.data$cell_references, .add = TRUE) |>
+      # turn each cell into numeric column and row reference
+      dplyr::summarise(zz = list(dims_to_rowcol(.data$cell_references,
+                                                as_integer = TRUE))) |>
+      # extract numeric column and row references
+      tidyr::unnest_wider(.data$zz) |>
+      # sort and group by column and row to identify sequences within columns
+      dplyr::arrange(col, row) |>
+      dplyr::group_by(.data$col) |>
+      mutate(
+        sequence_id = cumsum(c(TRUE, diff(.data$row) != 1))
+      ) |>
+      dplyr::group_by(.data$col, .data$sequence_id) |>
+      # find start row
+      mutate(start_row = dplyr::if_else(dplyr::n() > 0,
+                                        min(.data$row), 0)) |>
+      dplyr::select(-c("cell_references", "row")) |>
+      dplyr::group_by(.data$start_row, .add = TRUE) |>
+      # nest data frames of cell_text
+      tidyr::nest(cell_text = .data$cell_text) |>
+      dplyr::ungroup() |>
+      dplyr::select("col", "start_row", "cell_text") |>
+      unique()
+  }
+  # output contains column reference and start rows to insert values contained
+  # in data frames nested in cell_text
 
   output
 }
