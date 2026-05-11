@@ -1012,10 +1012,10 @@
       output$replacements |>
       dplyr::group_by(.data$cell_references, .add = TRUE) |>
       # turn each cell into numeric column and row reference
-      dplyr::summarise(zz = list(dims_to_rowcol(.data$cell_references,
-                                                as_integer = TRUE))) |>
+      dplyr::summarise(refs = list(dims_to_rowcol(.data$cell_references,
+                                                  as_integer = TRUE))) |>
       # extract numeric column and row references
-      tidyr::unnest_wider(.data$zz) |>
+      tidyr::unnest_wider(all_of("refs")) |>
       # sort and group by column and row to identify sequences within columns
       dplyr::arrange(col, row) |>
       dplyr::group_by(.data$col) |>
@@ -1029,7 +1029,7 @@
       dplyr::select(-c("cell_references", "row")) |>
       dplyr::group_by(.data$start_row, .add = TRUE) |>
       # nest data frames of cell_text
-      tidyr::nest(cell_text = .data$cell_text) |>
+      tidyr::nest(cell_text = all_of("cell_text")) |>
       dplyr::ungroup() |>
       dplyr::select("col", "start_row", "cell_text") |>
       unique()
