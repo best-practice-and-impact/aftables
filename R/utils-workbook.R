@@ -417,15 +417,8 @@
         existing_na = any(is.na(table))
       )
 
-      # if there are no NA values in the table
-      # set all note cells to NA to be replaced via na.strings and
-      # values in note_cell_references
-      if (!any(is.na(table))) {
-        table[note_cells] <- NA
-      } else { # some NA values in table, not safe to use na.strings
-        # all notes are in note_cell_references
-        table[note_cells] <- ""
-      }
+
+      table[note_cells] <- ""
 
     }
 
@@ -478,7 +471,7 @@
     table_style = "none",
     with_filter = FALSE,
     banded_rows = FALSE,
-    na.strings = notes_cell_references$na_cells
+    na.strings = ""
   )
 
   #=============================================================================
@@ -984,28 +977,6 @@
       cell_text = note_values
     ) |>
     dplyr::group_by(.data$cell_text)
-
-  # Remove the largest group of notes from the replacements
-  # to be added using NA values in wb_add_data_table function
-  # if data contains NA values this step will not run
-  # to avoid overwriting valid NAs with notes
-
-  if (!existing_na) {
-    output$na_cells <-
-      output$replacements |>
-      dplyr::summarise(count = dplyr::n()) |>
-      dplyr::group_by(.data$count, .add = TRUE) |>
-      mutate(tiebreak = rank(.data$count, ties.method = "random")) |>
-      dplyr::ungroup() |>
-      filter(.data$count == max(.data$count) &
-               .data$tiebreak == min(.data$tiebreak)) |>
-      dplyr::select(.data$cell_text) |>
-      as.character()
-
-    output$replacements <-
-      output$replacements |>
-      filter(.data$cell_text != output$na_cells)
-  }
 
   if (nrow(output$replacements) > 0) {
     output$replacements <-
