@@ -30,7 +30,8 @@ Imports:
     rlang,
     utils,
     yaml,
-    tibble
+    tibble,
+    stats
 Suggests: 
     covr,
     knitr,

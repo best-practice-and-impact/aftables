@@ -194,17 +194,19 @@
   table_count <- nrow(content[content$tab_title == tab_title, ])
 
   if (table_count < 10) {
-    table_count <- switch(as.character(table_count),
-      "1"  = "one",
-      "2"  = "two",
-      "3"  = "three",
-      "4"  = "four",
-      "5"  = "five",
-      "6"  = "six",
-      "7"  = "seven",
-      "8"  = "eight",
-      "9"  = "nine",
-    )
+    table_count <-
+      switch(
+        as.character(table_count),
+        "1"  = "one",
+        "2"  = "two",
+        "3"  = "three",
+        "4"  = "four",
+        "5"  = "five",
+        "6"  = "six",
+        "7"  = "seven",
+        "8"  = "eight",
+        "9"  = "nine",
+      )
   }
 
   text <- paste(
@@ -373,12 +375,13 @@
 
 
   # Get table cell reference positions
-
   table_cell_references <-
-    wb_dims(
-      x = table,
-      from_row = start_row,
-      cols = names(table)
+    paste0(
+      "A",
+      start_row,
+      ":",
+      LETTERS[ncol(table)],
+      start_row + nrow(table) - 1
     )
 
   table_cell_references <- dims_to_rowcol(table_cell_references)
@@ -480,13 +483,13 @@
 
   if (nrow(notes_cell_references$replacements) > 0) {
     notes_cell_references$replacements |>
-      pwalk(\(col,
+      pwalk(\(col_num,
               start_row,
               cell_text) {
         wb$add_data(
           sheet = tab_title,
           x = cell_text,
-          start_col = col,
+          start_col = col_num,
           start_row = start_row,
           col_names = FALSE,
           row_names = FALSE,
@@ -931,27 +934,60 @@
                                       decimal_places,
                                       number_cell_references) {
 
-  output <- data.frame(
-    cell_references = as.vector(number_cell_references),
-    cell_format = purrr::map2(
-      currency_units,
-      purrr::map(colnames(number_cell_references),
-                 \(x) purrr::pluck(decimal_places, x)),
-      \(currency_unit, decimal_length) {
-        paste0(
-          currency_unit,
-          # default formatting with thousand separator
-          "#,##0",
-          # add decimal point if required
-          if (decimal_length > 0) ".",
-          # add number of digits after decimal point from decimal_length
-          paste0(rep("0", decimal_length), collapse = "")
-        )
-      }
-    ) |> unlist()
-  ) |>
+  numbers_to_letters <- stats::setNames(seq_along(LETTERS), LETTERS)
+
+  output <-
+    data.frame(
+      cell_references = as.vector(number_cell_references),
+      cell_format = purrr::map2(
+        currency_units,
+        purrr::map(colnames(number_cell_references),
+                   \(x) purrr::pluck(decimal_places, x)),
+        \(currency_unit, decimal_length) {
+          paste0(
+            currency_unit,
+            # default formatting with thousand separator
+            "#,##0",
+            # add decimal point if required
+            if (decimal_length > 0) ".",
+            # add number of digits after decimal point from decimal_length
+            paste0(rep("0", decimal_length), collapse = "")
+          )
+        }
+      ) |> unlist()
+    ) |>
     dplyr::group_by(.data$cell_format) |>
-    mutate(
+    dplyr::mutate(col = stringr::str_extract(.data$cell_references, "^[A-Z]*"),
+                  row = as.numeric(stringr::str_extract(.data$cell_references, "[0-9]*$"))) |>
+    dplyr::mutate(col_num = sapply(
+      strsplit(col, split = ""),
+      function(x) {
+        sum(numbers_to_letters[x]
+            * 26^((length(x) - 1):0))
+      }
+    )) |>
+    dplyr::arrange(.data$col_num, .data$row) |>
+    dplyr::group_by(.data$cell_format, .data$col_num) |>
+    dplyr::mutate(
+      sequence_id = cumsum(c(TRUE, diff(.data$row) != 1))
+    ) |>
+    dplyr::group_by(.data$cell_format, .data$col_num, .data$sequence_id) |>
+    # find start and end row
+    dplyr::mutate(start_row = dplyr::if_else(dplyr::n() > 0,
+                                             min(.data$row), 0),
+                  end_row = dplyr::if_else(dplyr::n() > 0,
+                                           max(.data$row), 0)) |>
+    dplyr::group_by(.data$sequence_id) |>
+    dplyr::select(-c("cell_references", "row")) |>
+    dplyr::mutate(cell_references = ifelse(.data$start_row == .data$end_row,
+                                           paste0(.data$col, .data$start_row),
+                                           paste0(.data$col, .data$start_row, ":",
+                                                  .data$col, .data$end_row))) |>
+    dplyr::ungroup() |>
+    dplyr::select("cell_format", "cell_references") |>
+    unique() |>
+    dplyr::group_by(.data$cell_format) |>
+    dplyr::mutate(
       cell_references = paste0(
         paste0(.data$cell_references, collapse = ";"),
         ";"
@@ -963,10 +999,14 @@
   output
 }
 
+#' @importFrom stats setNames
+
 .determine_note_cell_ranges <- function(table_cell_references,
                                         note_cells,
                                         note_values,
                                         existing_na = FALSE) {
+
+  numbers_to_letters <- stats::setNames(seq_along(LETTERS), LETTERS)
 
   output <- list(replacements = "",
                  na_cells = "")
@@ -983,17 +1023,22 @@
       output$replacements |>
       dplyr::group_by(.data$cell_references, .add = TRUE) |>
       # turn each cell into numeric column and row reference
-      dplyr::summarise(refs = list(dims_to_rowcol(.data$cell_references,
-                                                  as_integer = TRUE))) |>
-      # extract numeric column and row references
-      tidyr::unnest_wider(all_of("refs")) |>
+      dplyr::mutate(col_num = stringr::str_extract(.data$cell_references, "^[A-Z]*"),
+                    row = as.numeric(stringr::str_extract(.data$cell_references, "[0-9]*$"))) |>
+      dplyr::mutate(col_num = sapply(
+        strsplit(.data$col_num, split = ""),
+        function(x) {
+          sum(numbers_to_letters[x]
+              * 26^((length(x) - 1):0))
+        }
+      )) |>
       # sort and group by column and row to identify sequences within columns
-      dplyr::arrange(col, row) |>
-      dplyr::group_by(.data$col) |>
+      dplyr::arrange(.data$col_num, .data$row) |>
+      dplyr::group_by(.data$col_num) |>
       mutate(
         sequence_id = cumsum(c(TRUE, diff(.data$row) != 1))
       ) |>
-      dplyr::group_by(.data$col, .data$sequence_id) |>
+      dplyr::group_by(.data$col_num, .data$sequence_id) |>
       # find start row
       mutate(start_row = dplyr::if_else(dplyr::n() > 0,
                                         min(.data$row), 0)) |>
@@ -1002,7 +1047,7 @@
       # nest data frames of cell_text
       tidyr::nest(cell_text = all_of("cell_text")) |>
       dplyr::ungroup() |>
-      dplyr::select("col", "start_row", "cell_text") |>
+      dplyr::select("col_num", "start_row", "cell_text") |>
       unique()
   }
   # output contains column reference and start rows to insert values contained
