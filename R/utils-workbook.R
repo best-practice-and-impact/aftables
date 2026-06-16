@@ -347,6 +347,10 @@
 
 .insert_table <- function(wb, content, table_name) {
 
+  # set openxlsx2 arguments
+  old <- options("openxlsx2.string_nums" = TRUE)
+  on.exit(options(old), add = TRUE)
+
   # convert tibbles to data frames before processing
   table <- as.data.frame(content[content$table_name == table_name, ][["table"]][[1]])
   sheet_type <- content[content$table_name == table_name, "sheet_type"][[1]]
@@ -367,21 +371,14 @@
 
   numeric_columns <- table_datatypes$numeric_columns
 
-  currency_cells <- table_datatypes$currency_cells
-
-  numeric_cells <- table_datatypes$numeric_cells
-
-  note_cells <- table_datatypes$note_cells
-
-
   # Get table cell reference positions
   table_cell_references <-
     paste0(
       "A",
-      start_row,
+      start_row + 1,
       ":",
       LETTERS[ncol(table)],
-      start_row + nrow(table) - 1
+      start_row + nrow(table)
     )
 
   table_cell_references <- dims_to_rowcol(table_cell_references)
@@ -390,40 +387,13 @@
 
   colnames(table_cell_references) <- names(table)
 
-  # create placeholder objects
-  notes_cell_references <- list(
-    replacements = tibble(col = character(0),
-                          start_row = character(0),
-                          cell_text = character(0)),
-    na_cells = ""
-  )
-
+  # create placeholder object
   number_formats <- tibble(
     cell_references = character(0),
     cell_format = character(0)
   )
 
   if (length(numeric_columns) > 0) {
-
-    #===========================================================================
-    # Clean mixed columns by removing notes
-    #===========================================================================
-
-    note_values <- table[note_cells]
-
-    if (length(note_values) > 0) {
-
-      notes_cell_references <- .determine_note_cell_ranges(
-        table_cell_references,
-        note_cells,
-        note_values,
-        existing_na = any(is.na(table))
-      )
-
-
-      table[note_cells] <- ""
-
-    }
 
     #===========================================================================
     # Extract currency symbols from numeric columns for number formatting
@@ -458,7 +428,6 @@
       decimal_places,
       number_cell_references
     )
-
   }
 
   #=============================================================================
@@ -474,29 +443,8 @@
     table_style = "none",
     with_filter = FALSE,
     banded_rows = FALSE,
-    na.strings = ""
+    na = ""
   )
-
-  #=============================================================================
-  # insert notes into mixed columns
-  #=============================================================================
-
-  if (nrow(notes_cell_references$replacements) > 0) {
-    notes_cell_references$replacements |>
-      pwalk(\(col_num,
-              start_row,
-              cell_text) {
-        wb$add_data(
-          sheet = tab_title,
-          x = cell_text,
-          start_col = col_num,
-          start_row = start_row,
-          col_names = FALSE,
-          row_names = FALSE,
-          apply_cell_style = FALSE
-        )
-      })
-  }
 
   #=============================================================================
   # create output to pass to .style_table
@@ -886,9 +834,10 @@
   output <- table |>
     mutate(
       across(
-        where(\(x) !is.numeric(x)) & all_of(numeric_columns),
-        \(x) as.numeric(str_replace_all(x, "[\\s,]", ""))
-      )
+             where(\(x) !is.numeric(x)) & all_of(numeric_columns),
+             \(x) {
+               stringr::str_remove_all(x, "[\\s,]")
+             })
     )
 
   output
@@ -921,6 +870,10 @@
   output <- table |>
     dplyr::select(all_of(numeric_columns)) |>
     mutate(
+      across(everything(),
+             \(x) {
+               as.numeric(stringr::str_remove_all(x, notes_regex))
+             }),
       across(everything(), \(x) nchar(abs(x)) - 1 - nchar(floor(abs(x)))),
       across(everything(), \(x) ifelse(x < 0, 0, x))
     ) |>
@@ -933,8 +886,6 @@
 .determine_number_formats <- function(currency_units,
                                       decimal_places,
                                       number_cell_references) {
-
-  numbers_to_letters <- stats::setNames(seq_along(LETTERS), LETTERS)
 
   output <-
     data.frame(
@@ -957,26 +908,8 @@
       ) |> unlist()
     ) |>
     dplyr::group_by(.data$cell_format) |>
-    dplyr::mutate(col = stringr::str_extract(.data$cell_references, "^[A-Z]*"),
-                  row = as.numeric(stringr::str_extract(.data$cell_references, "[0-9]*$"))) |>
-    dplyr::mutate(col_num = sapply(
-      strsplit(col, split = ""),
-      function(x) {
-        sum(numbers_to_letters[x]
-            * 26^((length(x) - 1):0))
-      }
-    )) |>
-    dplyr::arrange(.data$col_num, .data$row) |>
-    dplyr::group_by(.data$cell_format, .data$col_num) |>
-    dplyr::mutate(
-      sequence_id = cumsum(c(TRUE, diff(.data$row) != 1))
-    ) |>
-    dplyr::group_by(.data$cell_format, .data$col_num, .data$sequence_id) |>
-    # find start and end row
-    dplyr::mutate(start_row = dplyr::if_else(dplyr::n() > 0,
-                                             min(.data$row), 0),
-                  end_row = dplyr::if_else(dplyr::n() > 0,
-                                           max(.data$row), 0)) |>
+    .order_cell_references(references_column = .data$cell_references,
+                           group_columns = c("cell_format", "col_num", "sequence_id")) |>
     dplyr::group_by(.data$sequence_id) |>
     dplyr::select(-c("cell_references", "row")) |>
     dplyr::mutate(cell_references = ifelse(.data$start_row == .data$end_row,
@@ -999,49 +932,23 @@
   output
 }
 
-#' @importFrom stats setNames
-
 .determine_note_cell_ranges <- function(table_cell_references,
                                         note_cells,
-                                        note_values,
-                                        existing_na = FALSE) {
+                                        note_values) {
 
-  numbers_to_letters <- stats::setNames(seq_along(LETTERS), LETTERS)
-
-  output <- list(replacements = "",
-                 na_cells = "")
-
-  output$replacements <-
+  output <-
     tibble(
       cell_references = table_cell_references[note_cells],
       cell_text = note_values
     ) |>
     dplyr::group_by(.data$cell_text)
 
-  if (nrow(output$replacements) > 0) {
-    output$replacements <-
-      output$replacements |>
+  if (nrow(output) > 0) {
+    output <-
+      output |>
       dplyr::group_by(.data$cell_references, .add = TRUE) |>
-      # turn each cell into numeric column and row reference
-      dplyr::mutate(col_num = stringr::str_extract(.data$cell_references, "^[A-Z]*"),
-                    row = as.numeric(stringr::str_extract(.data$cell_references, "[0-9]*$"))) |>
-      dplyr::mutate(col_num = sapply(
-        strsplit(.data$col_num, split = ""),
-        function(x) {
-          sum(numbers_to_letters[x]
-              * 26^((length(x) - 1):0))
-        }
-      )) |>
-      # sort and group by column and row to identify sequences within columns
-      dplyr::arrange(.data$col_num, .data$row) |>
-      dplyr::group_by(.data$col_num) |>
-      mutate(
-        sequence_id = cumsum(c(TRUE, diff(.data$row) != 1))
-      ) |>
-      dplyr::group_by(.data$col_num, .data$sequence_id) |>
-      # find start row
-      mutate(start_row = dplyr::if_else(dplyr::n() > 0,
-                                        min(.data$row), 0)) |>
+      .order_cell_references(references_column = .data$cell_references,
+                             group_columns = c("col_num", "sequence_id")) |>
       dplyr::select(-c("cell_references", "row")) |>
       dplyr::group_by(.data$start_row, .add = TRUE) |>
       # nest data frames of cell_text
@@ -1052,6 +959,47 @@
   }
   # output contains column reference and start rows to insert values contained
   # in data frames nested in cell_text
+
+  output
+}
+
+#' @importFrom stats setNames
+
+.column_to_number <- function(column) {
+
+  numbers_to_letters <- stats::setNames(seq_along(LETTERS), LETTERS)
+
+  output <- sapply(
+    strsplit(column, split = ""),
+    function(x) {
+      sum(numbers_to_letters[x]
+          * 26^((length(x) - 1):0))
+    }
+  )
+
+  output
+
+}
+
+.order_cell_references <- function(data, references_column, group_columns) {
+
+  output <-
+    data |>
+    dplyr::mutate(col = stringr::str_extract({{ references_column }}, "^[A-Z]*"),
+                  row = as.numeric(stringr::str_extract({{ references_column }}, "[0-9]*$"))) |>
+    dplyr::mutate(col_num = .column_to_number(col)) |>
+    # sort and group by column and row to identify sequences within columns
+    dplyr::arrange(.data$col_num, .data$row) |>
+    dplyr::group_by(.data$col_num, .data$cell_format) |>
+    mutate(
+      sequence_id = cumsum(c(TRUE, diff(.data$row) != 1))
+    ) |>
+    dplyr::group_by_at(all_of(group_columns)) |>
+    # find start and end row
+    dplyr::mutate(start_row = dplyr::if_else(dplyr::n() > 0,
+                                             min(.data$row), 0),
+                  end_row = dplyr::if_else(dplyr::n() > 0,
+                                           max(.data$row), 0))
 
   output
 }

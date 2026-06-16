@@ -145,6 +145,8 @@ test_that("table cleaning functions work as intended", {
 
 
   # .clean_numeric_data --------------------------------------------------------
+  # numbers as characters left as is, inserted into workbook as numbers
+  # with openxlsx2.string_nums option
 
   df <- data.frame(
     col1 = c("12.30", NA, " 13 ", "   123,123.1234"),
@@ -154,8 +156,8 @@ test_that("table cleaning functions work as intended", {
   )
 
   cleaned_df_expected <- data.frame(
-    col1 = c(12.30, NA, 13, 123123.1234),
-    col2 = c(19000.12, 12.30, 12, NA),
+    col1 = c("12.30", NA, "13", "123123.1234"),
+    col2 = c("19000.12", "12.30", "12", NA),
     col3 = c(123, 235, NA, 12.4),
     col4 = c("  123", "12,001 ", NA, " 12.1")
   )
