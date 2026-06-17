@@ -171,3 +171,25 @@ test_that("table cleaning functions work as intended", {
 
 
 })
+
+test_that("years_helper function works as intended", {
+
+  df <- data.frame(
+    Date_column = c(2001:2004),
+    col1 = c("12.30", NA, " 13 ", "   123,123.1234"),
+    col2 = c(" 19,000.12", "12.30", "12 ", NA),
+    col3 = c(123, 235, NA, 12.4),
+    col4 = c("  123", "12,001 ", NA, " 12.1")
+  )
+
+  df_dates_helper <- years_helper(table = df,
+                                  dates_columns = "Date_column")
+
+  # only Date_column is affected
+  expect_true(attr(df_dates_helper$Date_column, "numeric_years"))
+  expect_null(attr(df_dates_helper$col1, "numeric_years"))
+  expect_null(attr(df_dates_helper$col2, "numeric_years"))
+  expect_null(attr(df_dates_helper$col3, "numeric_years"))
+  expect_null(attr(df_dates_helper$col4, "numeric_years"))
+
+})

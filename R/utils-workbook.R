@@ -728,7 +728,12 @@
       across(
         everything(),
         \(x) {
-          grepl(x, pattern = numeric_regex, perl = TRUE)
+          if (!is.null(attr(x, which = "numeric_years")) &&
+                attr(x, which = "numeric_years")) {
+            FALSE
+          } else {
+            grepl(x, pattern = numeric_regex, perl = TRUE)
+          }
         }
       )
     )
@@ -913,6 +918,8 @@
   output
 
 }
+
+#' @importFrom stats setNames
 
 .determine_number_formats <- function(currency_units,
                                       decimal_places,
