@@ -25,6 +25,5 @@
 #' @importFrom stringr str_replace_all
 #' @importFrom tibble tibble
 #' @importFrom stats setNames
-#' @importFrom magrittr set_attr
 ## usethis namespace: end
 NULL

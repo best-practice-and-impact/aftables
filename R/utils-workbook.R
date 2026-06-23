@@ -433,10 +433,13 @@
     number_cell_references <-
       table_cell_references[, numeric_columns, drop = FALSE]
 
+    numeric_exempt_columns <- purrr::map(table, attr, "non-numeric") |> unlist() |> names()
+
     number_formats <- .determine_number_formats(
       currency_units,
       decimal_places,
-      number_cell_references
+      number_cell_references,
+      numeric_exempt_columns
     )
 
   } else {
@@ -728,12 +731,7 @@
       across(
         everything(),
         \(x) {
-          if (!is.null(attr(x, which = "numeric_years")) &&
-                attr(x, which = "numeric_years")) {
-            FALSE
-          } else {
-            grepl(x, pattern = numeric_regex, perl = TRUE)
-          }
+          grepl(x, pattern = numeric_regex, perl = TRUE)
         }
       )
     )
@@ -919,32 +917,34 @@
 
 }
 
-#' @importFrom stats setNames
-
 .determine_number_formats <- function(currency_units,
                                       decimal_places,
-                                      number_cell_references) {
+                                      number_cell_references,
+                                      numeric_exempt_columns) {
 
   output <- list(
     cell_reference = as.vector(number_cell_references),
     # combine currency units (by table cell)
     # with decimal places (by numeric table column)
-    cell_format = purrr::map2(
-      currency_units,
-      purrr::map(colnames(number_cell_references),
-                 \(x) purrr::pluck(decimal_places, x)),
-      \(currency_unit, decimal_length) {
-        paste0(
-          currency_unit,
-          # default formatting with thousand separator
-          "#,##0",
-          # add decimal point if required
-          if (decimal_length > 0) ".",
-          # add number of digits after decimal point from decimal_length
-          paste0(rep("0", decimal_length), collapse = "")
-        )
-      }
-    ) |>
+    cell_format =
+      purrr::pmap(
+                  list(currency_units,
+                    colnames(number_cell_references),
+                    purrr::map(colnames(number_cell_references),
+                               \(x) purrr::pluck(decimal_places, x))
+                  ),
+                  \(currency_unit, col_name, decimal_length) {
+                    paste0(currency_unit,
+                           if (col_name %in% numeric_exempt_columns) {
+                             "###0"
+                           } else {
+                             paste0("#,##0",
+                                    # add decimal point if required
+                                    if (decimal_length > 0) ".",
+                                    # add number of digits after decimal point from decimal_length
+                                    paste0(rep("0", decimal_length), collapse = ""))
+                           })
+                  }) |>
       unlist(use.names = FALSE)
   )
 
