@@ -373,12 +373,10 @@
 
   # Get table cell reference positions
   table_cell_references <-
-    paste0(
-      "A",
-      start_row + 1,
-      ":",
-      LETTERS[ncol(table)],
-      start_row + nrow(table)
+    wb_dims(
+      x = table,
+      from_row = start_row + 1,
+      col_names = FALSE
     )
 
   table_cell_references <- dims_to_rowcol(table_cell_references)
@@ -776,24 +774,6 @@
   output
 }
 
-.extract_numeric_values <- function(values) {
-  numeric_values <-
-    values[
-      sapply(
-        values,
-        grepl,
-        pattern = numeric_regex,
-        perl = TRUE
-      )
-    ]
-
-  numeric_values <- str_replace_all(numeric_values, "[\\s,]", "")
-
-  numeric_values <- as.numeric(numeric_values)
-
-  numeric_values
-}
-
 .extract_currency_units <- function(table,
                                     numeric_columns) {
 
@@ -994,7 +974,7 @@
     mutate(
       sequence_id = cumsum(c(TRUE, diff(.data$row) != 1))
     ) |>
-    dplyr::group_by_at(all_of(group_columns)) |>
+    dplyr::group_by_at(all_of(c(group_columns, "sequence_id"))) |>
     # find start and end row
     dplyr::mutate(start_row = dplyr::if_else(dplyr::n() > 0,
                                              min(.data$row), 0),
