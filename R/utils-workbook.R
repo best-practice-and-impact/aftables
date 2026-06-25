@@ -943,8 +943,6 @@
   output
 }
 
-#' @importFrom stats setNames
-
 .column_to_number <- function(column) {
 
   numbers_to_letters <- stats::setNames(seq_along(LETTERS), LETTERS)
