@@ -433,8 +433,6 @@
     number_cell_references <-
       table_cell_references[, numeric_columns, drop = FALSE]
 
-    numeric_exempt_columns <- purrr::map(table, attr, "non-numeric") |> unlist() |> names()
-
     number_formats <- .determine_number_formats(
       table,
       currency_units,
