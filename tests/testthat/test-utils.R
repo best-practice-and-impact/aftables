@@ -182,14 +182,36 @@ test_that("prevent_number_formatting function works as intended", {
     col4 = c("  123", "12,001 ", NA, " 12.1")
   )
 
-  output_df <- prevent_number_formatting(table = test_df,
-                                         numeric_columns = "Date_column")
+  # test named columns
+  named_cols_df <- prevent_number_formatting(table = test_df,
+                                             numeric_columns = c("Date_column"))
 
   # only Date_column is affected
-  expect_true(attr(output_df$Date_column, "non-numeric"))
-  expect_null(attr(output_df$col1, "non-numeric"))
-  expect_null(attr(output_df$col2, "non-numeric"))
-  expect_null(attr(output_df$col3, "non-numeric"))
-  expect_null(attr(output_df$col4, "non-numeric"))
+  expect_equal(attr(named_cols_df$Date_column, "decimal_places"), 0)
+  expect_false(attr(named_cols_df$Date_column, "thousand_separators"))
+  expect_null(attr(named_cols_df$col1, "decimal_places"))
+  expect_null(attr(named_cols_df$col1, "thousand_separators"))
+  expect_null(attr(named_cols_df$col2, "decimal_places"))
+  expect_null(attr(named_cols_df$col2, "thousand_separators"))
+  expect_null(attr(named_cols_df$col3, "decimal_places"))
+  expect_null(attr(named_cols_df$col3, "thousand_separators"))
+  expect_null(attr(named_cols_df$col4, "decimal_places"))
+  expect_null(attr(named_cols_df$col4, "thousand_separators"))
+
+  # test tidyselect
+  tidyselect_df <-  prevent_number_formatting(table = test_df,
+                                              numeric_columns = where(is.numeric))
+
+  # only Date_column and col3 are affected
+  expect_equal(attr(tidyselect_df$Date_column, "decimal_places"), 0)
+  expect_false(attr(tidyselect_df$Date_column, "thousand_separators"))
+  expect_null(attr(tidyselect_df$col1, "decimal_places"))
+  expect_null(attr(tidyselect_df$col1, "thousand_separators"))
+  expect_null(attr(tidyselect_df$col2, "decimal_places"))
+  expect_null(attr(tidyselect_df$col2, "thousand_separators"))
+  expect_equal(attr(tidyselect_df$col3, "decimal_places"), 0)
+  expect_false(attr(tidyselect_df$col3, "thousand_separators"))
+  expect_null(attr(tidyselect_df$col4, "decimal_places"))
+  expect_null(attr(tidyselect_df$col4, "thousand_separators"))
 
 })
