@@ -925,8 +925,14 @@
 
   numeric_columns <- colnames(number_cell_references)
 
+  number_helper_function_check <-
+    length(sapply(df, attr, which = "decimal_places") |>
+             unlist(use.names = FALSE)) > 0 |
+    length(sapply(df, attr, which = "thousand_separators") |>
+             unlist(use.names = FALSE) > 0)
+
   # if prevent_number_formatting helper function has been used
-  if (isTRUE(attr(df, "aftables_prevent_number_formatting"))) {
+  if (number_helper_function_check) {
     # extract decimal places set by helper function
     user_decimal_places <- purrr::map(df[numeric_columns], attr, "decimal_places", exact = TRUE) |> unlist()
 
@@ -936,7 +942,7 @@
     # extract thousand separators set by helper function
     thousand_separators <-
       purrr::map(df[numeric_columns], attr, "thousand_separators", exact = TRUE) |>
-      purrr::map(\(x) ifelse(is.null(x), FALSE, x)) |>
+      purrr::map(\(x) ifelse(is.null(x), TRUE, x)) |>
       tidyr::as_tibble()
 
     # expand thousand_separators by row to cover entire table
@@ -952,7 +958,7 @@
     tidyr::uncount(decimal_places, nrow(df)) |> unlist(use.names = FALSE)
 
   cell_format_options <-
-    list(
+    tibble(
       currency_units = unlist(currency_units, use.names = FALSE),
       decimal_places = decimal_places,
       thousand_separators = thousand_separators
@@ -961,16 +967,20 @@
   output <-
     list(
          cell_reference = as.vector(number_cell_references),
-         cell_format = purrr::pmap(cell_format_options,
-                                   \(currency_units, decimal_places, thousand_separators) {
-                                     paste0(currency_units,
-                                            # add thousand separators if required
-                                            ifelse(thousand_separators, "#,##0", "###0"),
-                                            # add decimal point if required
-                                            if (decimal_places > 0) ".",
-                                            # add number of digits after decimal point from decimal_length
-                                            paste0(rep("0", decimal_places), collapse = ""))
-                                   }) |> unlist(use.names = FALSE))
+         cell_format = cell_format_options |>
+           mutate(format =
+                    paste0(currency_units,
+                           ifelse(thousand_separators, "#,##0", "###0"),
+                           ifelse(decimal_places > 0, ".", ""),
+                           mapply(paste0,
+                                  mapply(rep,
+                                         "0",
+                                         times = decimal_places),
+                                  collapse = "")
+                    )
+           ) |>
+           dplyr::select(format) |>
+           unlist(use.names = FALSE))
 
   output
 }

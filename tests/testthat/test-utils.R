@@ -187,7 +187,8 @@ test_that("prevent_number_formatting function works as intended", {
                                              numeric_columns = c("Date_column"))
 
   # only Date_column is affected
-  expect_equal(attr(named_cols_df$Date_column, "decimal_places"), 0)
+  expect_equal(attr(named_cols_df$Date_column, "decimal_places"),
+               c(Date_column = 0))
   expect_false(attr(named_cols_df$Date_column, "thousand_separators"))
   expect_null(attr(named_cols_df$col1, "decimal_places"))
   expect_null(attr(named_cols_df$col1, "thousand_separators"))
