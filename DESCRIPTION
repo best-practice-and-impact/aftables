@@ -20,7 +20,7 @@ BugReports: https://github.com/best-practice-and-impact/aftables/issues
 Depends: 
     R (>= 4.1.0)
 Imports: 
-    openxlsx2,
+    openxlsx2 (>= 1.27),
     pillar,
     purrr,
     dplyr,
