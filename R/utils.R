@@ -104,12 +104,10 @@ format_numbers_helper <- function(table,
                                   thousand_separators) {
 
   # Prevent mutate error if columns don't exist
-  if (typeof(columns) != "closure" &&
-      !columns %in% names(table)) {
+  if (typeof(columns) != "closure" && !columns %in% names(table)) {
     stop("All columns must be in table.",
          call. = FALSE)
   }
-
 
   if (typeof(columns) != "closure") {
     names(decimal_places) <- columns
@@ -121,18 +119,18 @@ format_numbers_helper <- function(table,
     mutate(
       across({{ columns }},
              \(x) {
-               ifelse(typeof(columns) == "closure", # tidyselect selector
-                      attr(x, "decimal_places") <- decimal_places,
-                      attr(x, "decimal_places") <-
-                        decimal_places[dplyr::cur_column()])
-               x}),
+                   ifelse(typeof(columns) == "closure", # tidyselect selector
+                          attr(x, "decimal_places") <- decimal_places,
+                          attr(x, "decimal_places") <-
+                            decimal_places[dplyr::cur_column()])
+                   x}),
       across({{ columns }},
              \(x) {
-               ifelse(typeof(columns) == "closure", # tidyselect selector
-                      attr(x, "thousand_separators") <- thousand_separators,
-                      attr(x, "thousand_separators") <-
-                        thousand_separators[dplyr::cur_column()])
-               x})
+                   ifelse(typeof(columns) == "closure", # tidyselect selector
+                          attr(x, "thousand_separators") <- thousand_separators,
+                          attr(x, "thousand_separators") <-
+                            thousand_separators[dplyr::cur_column()])
+                   x})
     )
 
   output

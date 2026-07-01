@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{format_numbers_helper}
 \alias{format_numbers_helper}
-\title{Helper function for more control over how aftables processes numeric data}
+\title{Helper function to specify how aftables should display numeric data}
 \usage{
 format_numbers_helper(table, columns, decimal_places, thousand_separators)
 }
@@ -15,17 +15,18 @@ columns or tidyselect pattern determining columns to be processed with
 specified number formatting. No default.}
 
 \item{decimal_places}{Required numeric vector specifying decimal places to
-format specified columns. No default.}
+apply to data in specified columns. No default.}
 
-\item{thousand_separators}{Required logical vector specifying whether columns
-should be formatted with thousand separators. No default.}
+\item{thousand_separators}{Required logical vector specifying whether data in
+specified columns should be formatted with thousand separators. No default.}
 }
 \description{
-Prevent aftables formatting data in numeric columns as numbers with
-decimal places and commas as thousand separators. This function is intended
-to prevent aftables from formatting calendar or financial years as numbers,
-but may be used with any numeric data. Use this function before the data
-frame is passed to the aftables::create_aftable function.
+Control how aftables formats data in numeric columns as numbers with
+decimal places and commas as thousand separators. This function can be used
+to overwrite the default behaviour of aftables, which normally determines the
+number of decimal places required from the data in each numeric column, and
+adds thousand separators to numeric columns. Use this function before the
+data frame is passed to the aftables::create_aftable function.
 }
 \examples{
 \dontrun{
@@ -39,6 +40,11 @@ table_1_df <- data.frame(
   check.names = FALSE
 )
 
-# Prevent all numeric columns being formatted with thousand separators and decimal places
+# Specify decimal places and thousand separators for Date, Date2 and Numeric decimal columns
+table_1_df_formatted <-
+format_numbers_helper(table = table_1_df,
+                      columns = c("Date","Date2", "Numeric decimal"),
+                      decimal_places = c(0, 0, 5),
+                      thousand_separators = c(FALSE, FALSE, TRUE))
 }
 }

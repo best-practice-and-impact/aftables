@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{prevent_number_formatting}
 \alias{prevent_number_formatting}
-\title{Helper function for more control over how aftables processes numeric data}
+\title{Helper function for more control over how aftables displays numeric data}
 \usage{
 prevent_number_formatting(table, numeric_columns)
 }

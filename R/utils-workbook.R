@@ -963,20 +963,23 @@
     )
 
   output <-
-    list(
-         cell_reference = as.vector(number_cell_references),
+    list(cell_reference = as.vector(number_cell_references),
          cell_format = cell_format_options |>
            mutate(format =
-                    paste0(currency_units,
-                           ifelse(thousand_separators, "#,##0", "###0"),
-                           ifelse(decimal_places > 0, ".", ""),
-                           mapply(paste0,
-                                  mapply(rep,
-                                         "0",
-                                         times = decimal_places),
-                                  collapse = "")
-                    )
-           ) |>
+                    paste0(
+                      currency_units,
+                      ifelse(thousand_separators,
+                             "#,##0",
+                             "###0"),
+                      ifelse(decimal_places > 0,
+                             ".",
+                             ""),
+                      mapply(paste0,
+                             mapply(rep,
+                                    "0",
+                                    times = decimal_places),
+                             collapse = "")
+                    )) |>
            dplyr::select(format) |>
            unlist(use.names = FALSE))
 
