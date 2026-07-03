@@ -41,10 +41,11 @@ table_1_df <- data.frame(
 )
 
 # Specify decimal places and thousand separators for Date, Date2 and Numeric decimal columns
-table_1_df_formatted <-
-format_numbers_helper(table = table_1_df,
-                      columns = c("Date","Date2", "Numeric decimal"),
-                      decimal_places = c(0, 0, 5),
-                      thousand_separators = c(FALSE, FALSE, TRUE))
+table_1_df_formatted <- format_numbers_helper(
+  table = table_1_df,
+ columns = c("Date","Date2", "Numeric decimal"),
+  decimal_places = c(0, 0, 5),
+  thousand_separators = c(FALSE, FALSE, TRUE)
+)
 }
 }

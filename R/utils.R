@@ -38,23 +38,28 @@
 #' )
 #'
 #' # Prevent specific numeric columns being formatted with thousand separators and decimal places
-#' table_1_df_non_numeric_dates <- prevent_number_formatting(table_1_df,
-#'                                                           numeric_columns = c("Date", "Date2"))
+#' table_1_df_non_numeric_dates <- prevent_number_formatting(
+#'   table_1_df,
+#'   numeric_columns = c("Date", "Date2")
+#' )
 #'
 #' # Prevent all numeric columns being formatted with thousand separators and decimal places
-#' table_1_df_all_non_numeric <- prevent_number_formatting(table_1_df,
-#'                                                         numeric_columns = which(is.numeric))
+#' table_1_df_all_non_numeric <- prevent_number_formatting(
+#'   table_1_df,
+#'   numeric_columns = which(is.numeric)
+#' )
 #'}
 #' @export
 
 prevent_number_formatting <- function(table,
                                       numeric_columns) {
 
-  output <-
-    format_numbers_helper(table = table,
-                          columns = {{ numeric_columns }},
-                          decimal_places = 0,
-                          thousand_separators = FALSE)
+  output <- format_numbers_helper(
+    table = table,
+    columns = {{ numeric_columns }},
+    decimal_places = 0,
+    thousand_separators = FALSE
+  )
 
   output
 }
@@ -90,11 +95,12 @@ prevent_number_formatting <- function(table,
 #' )
 #'
 #' # Specify decimal places and thousand separators for Date, Date2 and Numeric decimal columns
-#' table_1_df_formatted <-
-#' format_numbers_helper(table = table_1_df,
-#'                       columns = c("Date","Date2", "Numeric decimal"),
-#'                       decimal_places = c(0, 0, 5),
-#'                       thousand_separators = c(FALSE, FALSE, TRUE))
+#' table_1_df_formatted <- format_numbers_helper(
+#'   table = table_1_df,
+#'  columns = c("Date","Date2", "Numeric decimal"),
+#'   decimal_places = c(0, 0, 5),
+#'   thousand_separators = c(FALSE, FALSE, TRUE)
+#' )
 #'}
 #' @export
 
@@ -105,8 +111,7 @@ format_numbers_helper <- function(table,
 
   # Prevent mutate error if columns don't exist
   if (typeof(columns) != "closure" && !columns %in% names(table)) {
-    stop("All columns must be in table.",
-         call. = FALSE)
+    stop("All columns must be in table.", call. = FALSE)
   }
 
   if (typeof(columns) != "closure") {
@@ -117,20 +122,29 @@ format_numbers_helper <- function(table,
   output <-
     table |>
     mutate(
-      across({{ columns }},
-             \(x) {
-                   ifelse(typeof(columns) == "closure", # tidyselect selector
-                          attr(x, "decimal_places") <- decimal_places,
-                          attr(x, "decimal_places") <-
-                            decimal_places[dplyr::cur_column()])
-                   x}),
-      across({{ columns }},
-             \(x) {
-                   ifelse(typeof(columns) == "closure", # tidyselect selector
-                          attr(x, "thousand_separators") <- thousand_separators,
-                          attr(x, "thousand_separators") <-
-                            thousand_separators[dplyr::cur_column()])
-                   x})
+      across(
+        .cols = {{ columns }},
+        .fns = \(x) {
+          ifelse(
+            typeof(columns) == "closure", # tidyselect selector
+            attr(x, "decimal_places") <- decimal_places,
+            attr(x, "decimal_places") <- decimal_places[dplyr::cur_column()]
+          )
+          x
+        }
+      ),
+      across(
+        .cols = {{ columns }},
+        .fns = \(x) {
+          ifelse(
+            typeof(columns) == "closure", # tidyselect selector
+            attr(x, "thousand_separators") <- thousand_separators,
+            attr(x, "thousand_separators") <-
+              thousand_separators[dplyr::cur_column()]
+          )
+          x
+        }
+      )
     )
 
   output

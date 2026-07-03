@@ -34,11 +34,15 @@ table_1_df <- data.frame(
 )
 
 # Prevent specific numeric columns being formatted with thousand separators and decimal places
-table_1_df_non_numeric_dates <- prevent_number_formatting(table_1_df,
-                                                          numeric_columns = c("Date", "Date2"))
+table_1_df_non_numeric_dates <- prevent_number_formatting(
+  table_1_df,
+  numeric_columns = c("Date", "Date2")
+)
 
 # Prevent all numeric columns being formatted with thousand separators and decimal places
-table_1_df_all_non_numeric <- prevent_number_formatting(table_1_df,
-                                                        numeric_columns = which(is.numeric))
+table_1_df_all_non_numeric <- prevent_number_formatting(
+  table_1_df,
+  numeric_columns = which(is.numeric)
+)
 }
 }
