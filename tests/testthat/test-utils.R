@@ -234,9 +234,27 @@ test_that("number_formatter function works as intended", {
     number_formatter(
       table = test_df,
       columns = where(is.numeric),
+      decimal_places = "1"
+    ),
+    "`decimal_places` must be numeric"
+  )
+
+  expect_error(
+    number_formatter(
+      table = test_df,
+      columns = where(is.numeric),
       thousand_separators = c(FALSE, TRUE)
     ),
     "`thousand_separators` must be of length 1"
+  )
+
+  expect_error(
+    number_formatter(
+      table = test_df,
+      columns = where(is.numeric),
+      thousand_separators = 1
+    ),
+    "`thousand_separators` must be TRUE or FALSE"
   )
 
 })

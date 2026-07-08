@@ -107,7 +107,7 @@ number_formatter <- function(table,
   }
 
   if (!is.null(thousand_separators) && !is.logical(thousand_separators)) {
-    stop("`thousand_separators` must be TRUE or FALSE", call. = FALSE)
+    stop("`thousand_separators` must be TRUE or FALSE.", call. = FALSE)
   }
 
   output <- table |>
