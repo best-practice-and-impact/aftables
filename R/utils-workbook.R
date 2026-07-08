@@ -924,28 +924,40 @@
   numeric_columns <- colnames(number_cell_references)
 
   number_helper_function_check <-
-    length(sapply(df, attr, which = "aftables_decimal_places") |>
-             unlist(use.names = FALSE)) > 0 |
-    length(sapply(df, attr, which = "aftables_thousand_separators") |>
-             unlist(use.names = FALSE) > 0)
+    length(
+      sapply(df, attr, which = "aftables_decimal_places") |>
+        unlist(use.names = FALSE)
+    ) > 0 |
+    length(
+      sapply(df, attr, which = "aftables_thousand_separators") |>
+        unlist(use.names = FALSE) > 0
+    )
 
   # if number_formatter helper function has been used
   if (number_helper_function_check) {
     # extract decimal places set by helper function
-    user_decimal_places <- purrr::map(df[numeric_columns], attr, "aftables_decimal_places", exact = TRUE) |> unlist()
+    user_decimal_places <- purrr::map(
+      df[numeric_columns],
+      \(x) attr(x, "aftables_decimal_places", exact = TRUE)
+    ) |>
+      unlist()
 
     # replace decimal places determined from data with user decimal places
-    decimal_places[names(decimal_places) %in% names(user_decimal_places)] <- user_decimal_places
+    decimal_places[names(decimal_places) %in% names(user_decimal_places)] <-
+      user_decimal_places
 
     # extract thousand separators set by helper function
-    thousand_separators <-
-      purrr::map(df[numeric_columns], attr, "aftables_thousand_separators", exact = TRUE) |>
+    thousand_separators <- purrr::map(
+      df[numeric_columns],
+      \(x) attr(x, "aftables_thousand_separators", exact = TRUE)
+    ) |>
       purrr::map(\(x) ifelse(is.null(x), TRUE, x)) |>
       tidyr::as_tibble()
 
     # expand thousand_separators by row to cover entire table
     thousand_separators <-
-      tidyr::uncount(thousand_separators, nrow(df)) |> unlist(use.names = FALSE)
+      tidyr::uncount(thousand_separators, nrow(df)) |>
+      unlist(use.names = FALSE)
 
   } else {
     thousand_separators <- FALSE
@@ -953,35 +965,35 @@
 
   # expand decimal_places by row to cover entire table
   decimal_places <-
-    tidyr::uncount(decimal_places, nrow(df)) |> unlist(use.names = FALSE)
+    tidyr::uncount(decimal_places, nrow(df)) |>
+    unlist(use.names = FALSE)
 
-  cell_format_options <-
-    tibble(
-      currency_units = unlist(currency_units, use.names = FALSE),
-      decimal_places = decimal_places,
-      thousand_separators = thousand_separators
-    )
+  cell_format_options <- tibble(
+    currency_units = unlist(currency_units, use.names = FALSE),
+    decimal_places = decimal_places,
+    thousand_separators = thousand_separators
+  )
 
-  output <-
-    list(cell_reference = as.vector(number_cell_references),
-         cell_format = cell_format_options |>
-           mutate(format =
-                    paste0(
-                      currency_units,
-                      ifelse(thousand_separators,
-                             "#,##0",
-                             "###0"),
-                      ifelse(decimal_places > 0,
-                             ".",
-                             ""),
-                      mapply(paste0,
-                             mapply(rep,
-                                    "0",
-                                    times = decimal_places),
-                             collapse = "")
-                    )) |>
-           dplyr::select(format) |>
-           unlist(use.names = FALSE))
+  output <- list(
+    cell_reference = as.vector(number_cell_references),
+    cell_format = cell_format_options |>
+      mutate(
+        format = paste0(
+          currency_units,
+          ifelse(thousand_separators, "#,##0", "###0"),
+          ifelse(decimal_places > 0, ".", ""),
+          mapply(
+            paste0,
+            mapply(rep,
+                   "0",
+                   times = decimal_places),
+            collapse = ""
+          )
+        )
+      ) |>
+      dplyr::select(format) |>
+      unlist(use.names = FALSE)
+  )
 
   output
 }
