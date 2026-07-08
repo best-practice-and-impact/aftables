@@ -12,139 +12,100 @@
   vector
 }
 
-#' Helper function for more control over how aftables displays numeric data
-#'
-#' Prevent aftables formatting data in numeric columns as numbers with
-#' decimal places and commas as thousand separators. This function is intended
-#' to prevent aftables from formatting calendar or financial years as numbers,
-#' but may be used with any numeric data. Use this function before the data
-#' frame is passed to the aftables::create_aftable function.
-#'
-#' @param table Required data frame. Data frame to be passed into
-#' aftables::create_aftable function. No default.
-#' @param numeric_columns Required character vector containing names of numeric
-#' columns or tidyselect pattern determining columns to be processed without
-#' number formatting. No default.
-#' @examples
-#' \dontrun{
-#'
-#' table_1_df <- data.frame(
-#'   Category = LETTERS[1:10],
-#'   Date = 2001:2010,
-#'   Date2 = 2001:2010,
-#'   "Numeric thousands" = abs(round(rnorm(10), 4) * 1e5),
-#'   "Numeric decimal" = abs(round(rnorm(10), 5)),
-#'   check.names = FALSE
-#' )
-#'
-#' # Prevent specific numeric columns being formatted with thousand separators and decimal places
-#' table_1_df_non_numeric_dates <- prevent_number_formatting(
-#'   table_1_df,
-#'   numeric_columns = c("Date", "Date2")
-#' )
-#'
-#' # Prevent all numeric columns being formatted with thousand separators and decimal places
-#' table_1_df_all_non_numeric <- prevent_number_formatting(
-#'   table_1_df,
-#'   numeric_columns = which(is.numeric)
-#' )
-#'}
-#' @export
-
-prevent_number_formatting <- function(table,
-                                      numeric_columns) {
-
-  output <- format_numbers_helper(
-    table = table,
-    columns = {{ numeric_columns }},
-    decimal_places = 0,
-    thousand_separators = FALSE
-  )
-
-  output
-}
-
 #' Helper function to specify how aftables should display numeric data
 #'
-#' Control how aftables formats data in numeric columns as numbers with
-#' decimal places and commas as thousand separators. This function can be used
-#' to overwrite the default behaviour of aftables, which normally determines the
-#' number of decimal places required from the data in each numeric column, and
-#' adds thousand separators to numeric columns. Use this function before the
-#' data frame is passed to the aftables::create_aftable function.
+#' Control how aftables formats data as numbers with decimal places and commas
+#' as thousand separators. This function can be used to overwrite the default
+#' behaviour of aftables, which normally determines the number of decimal places
+#' required from the data in each numeric column, and adds thousand separators
+#' to numeric columns. A key use case for this function is to prevent aftables
+#' from displying calendar or financial years as numbers with thousand
+#' separators, but may be used with any numeric data. Use this function before
+#' the data frame is passed to the aftables::create_aftable function.
 #'
 #' @param table Required data frame. Data frame to be passed into
 #' aftables::create_aftable function. No default.
-#' @param columns Required character vector containing names of numeric
-#' columns or tidyselect pattern determining columns to be processed with
-#' specified number formatting. No default.
-#' @param decimal_places Required numeric vector specifying decimal places to
+#' @param columns Required character vector containing names of columns
+#' or tidyselect pattern determining columns to be processed with specified
+#' number formatting. No default.
+#' @param decimal_places Required numeric value specifying decimal places to
 #' apply to data in specified columns. No default.
-#' @param thousand_separators Required logical vector specifying whether data in
+#' @param thousand_separators Required logical value whether data in
 #' specified columns should be formatted with thousand separators. No default.
 #' @examples
 #' \dontrun{
+#' library(dplyr)
+#'
+#' set.seed(1066)
 #'
 #' table_1_df <- data.frame(
 #'   Category = LETTERS[1:10],
 #'   Date = 2001:2010,
 #'   Date2 = 2001:2010,
-#'   "Numeric thousands" = abs(round(rnorm(10), 4) * 1e5),
-#'   "Numeric decimal" = abs(round(rnorm(10), 5)),
+#'   "Count" = abs(round(rnorm(10), 3) * 1e3),
+#'   "Population" = abs(round(rnorm(10), 5) * 1e5),
 #'   check.names = FALSE
-#' )
+#' ) |>
+#'   mutate(Percentage = Count/Population * 100)
 #'
-#' # Specify decimal places and thousand separators for Date, Date2 and Numeric decimal columns
-#' table_1_df_formatted <- format_numbers_helper(
-#'   table = table_1_df,
-#'  columns = c("Date","Date2", "Numeric decimal"),
-#'   decimal_places = c(0, 0, 5),
-#'   thousand_separators = c(FALSE, FALSE, TRUE)
-#' )
-#'}
+#' # Specify removing thousand separators for Date and Date2 columns
+#' table_1_df_formatted <-
+#'   number_formatter(table = table_1_df,
+#'                    columns = c(Date, Date2),
+#'                    thousand_separators = FALSE)
+#'
+#' # number_formatter columns argument also accepts tidyselect expressions
+#' table_1_df_formatted_tidyselect <-
+#'   number_formatter(table = table_1_df,
+#'                    columns = tidyselect::starts_with("Date"),
+#'                    thousand_separators = FALSE)
+#'
+#' # the default precision for "Percentage" column is 7 decimal places
+#' # overruled by number_formatter to display the data in Excel workbook to
+#' # 2 decimal places
+#' table_1_df_formatted_2dp <-
+#'   number_formatter(table = table_1_df,
+#'                    columns = "Percentage",
+#'                    decimal_places = 2)
+#'
+#' # number_formatter can be used multiple times to set different number formats
+#' table_1_df_multiple_formats <-
+#'   number_formatter(table = table_1_df,
+#'                    columns = "Percentage",
+#'                    decimal_places = 2) |>
+#'   number_formatter(columns = tidyselect::starts_with("Date"),
+#'                    thousand_separators = FALSE)
+#'
+#' }
 #' @export
 
-format_numbers_helper <- function(table,
-                                  columns,
-                                  decimal_places,
-                                  thousand_separators) {
+number_formatter <- function(table,
+                             columns,
+                             decimal_places = NULL,
+                             thousand_separators = NULL) {
 
-  # Prevent mutate error if columns don't exist
-  if (typeof(columns) != "closure" && !columns %in% names(table)) {
-    stop("All columns must be in table.", call. = FALSE)
+  # error check decimal_places and thousand_separators must be length 1
+  if (length(decimal_places) > 1) {
+    stop("`decimal_places` must be of length 1.")
   }
 
-  if (typeof(columns) != "closure") {
-    names(decimal_places) <- columns
-    names(thousand_separators) <- columns
+  if (length(thousand_separators) > 1) {
+    stop("`thousand_separators` must be of length 1.")
   }
 
   output <-
     table |>
     mutate(
-      across(
-        .cols = {{ columns }},
-        .fns = \(x) {
-          ifelse(
-            typeof(columns) == "closure", # tidyselect selector
-            attr(x, "decimal_places") <- decimal_places,
-            attr(x, "decimal_places") <- decimal_places[dplyr::cur_column()]
-          )
-          x
-        }
-      ),
-      across(
-        .cols = {{ columns }},
-        .fns = \(x) {
-          ifelse(
-            typeof(columns) == "closure", # tidyselect selector
-            attr(x, "thousand_separators") <- thousand_separators,
-            attr(x, "thousand_separators") <-
-              thousand_separators[dplyr::cur_column()]
-          )
-          x
-        }
-      )
+      across({{ columns }},
+             \(x) {
+                   attr(x, "aftables_decimal_places") <-
+                     decimal_places
+                   x}),
+      across({{ columns }},
+             \(x) {
+                   attr(x, "aftables_thousand_separators") <-
+                     thousand_separators
+                   x})
     )
 
   output

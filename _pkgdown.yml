@@ -27,8 +27,7 @@ reference:
       - is_aftable
       - summary.aftable
       - tbl_sum.aftable
-      - prevent_number_formatting
-      - format_numbers_helper
+      - number_formatter
   - title: "Workbooks"
     desc: "Convert aftable- to Workbook-class objects"
     contents: generate_workbook

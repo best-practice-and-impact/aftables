@@ -924,22 +924,22 @@
   numeric_columns <- colnames(number_cell_references)
 
   number_helper_function_check <-
-    length(sapply(df, attr, which = "decimal_places") |>
+    length(sapply(df, attr, which = "aftables_decimal_places") |>
              unlist(use.names = FALSE)) > 0 |
-    length(sapply(df, attr, which = "thousand_separators") |>
+    length(sapply(df, attr, which = "aftables_thousand_separators") |>
              unlist(use.names = FALSE) > 0)
 
-  # if prevent_number_formatting helper function has been used
+  # if number_formatter helper function has been used
   if (number_helper_function_check) {
     # extract decimal places set by helper function
-    user_decimal_places <- purrr::map(df[numeric_columns], attr, "decimal_places", exact = TRUE) |> unlist()
+    user_decimal_places <- purrr::map(df[numeric_columns], attr, "aftables_decimal_places", exact = TRUE) |> unlist()
 
     # replace decimal places determined from data with user decimal places
     decimal_places[names(decimal_places) %in% names(user_decimal_places)] <- user_decimal_places
 
     # extract thousand separators set by helper function
     thousand_separators <-
-      purrr::map(df[numeric_columns], attr, "thousand_separators", exact = TRUE) |>
+      purrr::map(df[numeric_columns], attr, "aftables_thousand_separators", exact = TRUE) |>
       purrr::map(\(x) ifelse(is.null(x), TRUE, x)) |>
       tidyr::as_tibble()
 

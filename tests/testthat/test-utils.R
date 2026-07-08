@@ -172,7 +172,7 @@ test_that("table cleaning functions work as intended", {
 
 })
 
-test_that("prevent_number_formatting function works as intended", {
+test_that("number_formatter function works as intended", {
 
   test_df <- data.frame(
     Date_column = c(2001:2004),
@@ -183,36 +183,52 @@ test_that("prevent_number_formatting function works as intended", {
   )
 
   # test named columns
-  named_cols_df <- prevent_number_formatting(table = test_df,
-                                             numeric_columns = c("Date_column"))
+  named_cols_df <- number_formatter(table = test_df,
+                                    columns = "Date_column",
+                                    decimal_places = 0,
+                                    thousand_separators = FALSE)
 
   # only Date_column is affected
-  expect_equal(attr(named_cols_df$Date_column, "decimal_places"),
-               c(Date_column = 0))
-  expect_false(attr(named_cols_df$Date_column, "thousand_separators"))
-  expect_null(attr(named_cols_df$col1, "decimal_places"))
-  expect_null(attr(named_cols_df$col1, "thousand_separators"))
-  expect_null(attr(named_cols_df$col2, "decimal_places"))
-  expect_null(attr(named_cols_df$col2, "thousand_separators"))
-  expect_null(attr(named_cols_df$col3, "decimal_places"))
-  expect_null(attr(named_cols_df$col3, "thousand_separators"))
-  expect_null(attr(named_cols_df$col4, "decimal_places"))
-  expect_null(attr(named_cols_df$col4, "thousand_separators"))
+  expect_equal(attr(named_cols_df$Date_column, "aftables_decimal_places"),
+               0)
+  expect_false(attr(named_cols_df$Date_column, "aftables_thousand_separators"))
+  expect_null(attr(named_cols_df$col1, "aftables_decimal_places"))
+  expect_null(attr(named_cols_df$col1, "aftables_thousand_separators"))
+  expect_null(attr(named_cols_df$col2, "aftables_decimal_places"))
+  expect_null(attr(named_cols_df$col2, "aftables_thousand_separators"))
+  expect_null(attr(named_cols_df$col3, "aftables_decimal_places"))
+  expect_null(attr(named_cols_df$col3, "aftables_thousand_separators"))
+  expect_null(attr(named_cols_df$col4, "aftables_decimal_places"))
+  expect_null(attr(named_cols_df$col4, "aftables_thousand_separators"))
 
   # test tidyselect
-  tidyselect_df <-  prevent_number_formatting(table = test_df,
-                                              numeric_columns = where(is.numeric))
+  tidyselect_df <-  number_formatter(table = test_df,
+                                     columns = where(is.numeric),
+                                     decimal_places = 2,
+                                     thousand_separators = FALSE)
 
   # only Date_column and col3 are affected
-  expect_equal(attr(tidyselect_df$Date_column, "decimal_places"), 0)
-  expect_false(attr(tidyselect_df$Date_column, "thousand_separators"))
-  expect_null(attr(tidyselect_df$col1, "decimal_places"))
-  expect_null(attr(tidyselect_df$col1, "thousand_separators"))
-  expect_null(attr(tidyselect_df$col2, "decimal_places"))
-  expect_null(attr(tidyselect_df$col2, "thousand_separators"))
-  expect_equal(attr(tidyselect_df$col3, "decimal_places"), 0)
-  expect_false(attr(tidyselect_df$col3, "thousand_separators"))
-  expect_null(attr(tidyselect_df$col4, "decimal_places"))
-  expect_null(attr(tidyselect_df$col4, "thousand_separators"))
+  expect_equal(attr(tidyselect_df$Date_column, "aftables_decimal_places"),
+               2)
+  expect_false(attr(tidyselect_df$Date_column, "aftables_thousand_separators"))
+  expect_null(attr(tidyselect_df$col1, "aftables_decimal_places"))
+  expect_null(attr(tidyselect_df$col1, "aftables_thousand_separators"))
+  expect_null(attr(tidyselect_df$col2, "aftables_decimal_places"))
+  expect_null(attr(tidyselect_df$col2, "aftables_thousand_separators"))
+  expect_equal(attr(tidyselect_df$col3, "aftables_decimal_places"),
+               2)
+  expect_false(attr(tidyselect_df$col3, "aftables_thousand_separators"))
+  expect_null(attr(tidyselect_df$col4, "aftables_decimal_places"))
+  expect_null(attr(tidyselect_df$col4, "aftables_thousand_separators"))
+
+  expect_error(number_formatter(table = test_df,
+                                columns = where(is.numeric),
+                                decimal_places = c(1, 1)),
+               "`decimal_places` must be of length 1")
+
+  expect_error(number_formatter(table = test_df,
+                                columns = where(is.numeric),
+                                thousand_separators = c(FALSE, TRUE)),
+               "`thousand_separators` must be of length 1")
 
 })

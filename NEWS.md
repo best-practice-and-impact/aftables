@@ -1,5 +1,6 @@
 # aftables (development)
 
+* Added number_formatter function for control over how numbers appear.
 * Bug fix: re-enabled RStudio Addin to insert code for {aftables} workflow (#151).
 
 # aftables 2.0.1
