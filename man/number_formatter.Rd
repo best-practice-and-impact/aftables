@@ -52,32 +52,38 @@ table_1_df <- data.frame(
   mutate(Percentage = Count/Population * 100)
 
 # Specify removing thousand separators for Date and Date2 columns
-table_1_df_formatted <-
-  number_formatter(table = table_1_df,
-                   columns = c(Date, Date2),
-                   thousand_separators = FALSE)
+table_1_df_formatted <- table_1_df |>
+  number_formatter(
+    columns = c(Date, Date2),
+    thousand_separators = FALSE
+  )
 
 # number_formatter columns argument also accepts tidyselect expressions
-table_1_df_formatted_tidyselect <-
-  number_formatter(table = table_1_df,
-                   columns = tidyselect::starts_with("Date"),
-                   thousand_separators = FALSE)
+table_1_df_formatted_tidyselect <- table_1_df
+number_formatter(
+  columns = tidyselect::starts_with("Date"),
+  thousand_separators = FALSE
+)
 
 # the default precision for "Percentage" column is 7 decimal places
 # overruled by number_formatter to display the data in Excel workbook to
 # 2 decimal places
-table_1_df_formatted_2dp <-
-  number_formatter(table = table_1_df,
-                   columns = "Percentage",
-                   decimal_places = 2)
+table_1_df_formatted_2dp <- table_1_df |>
+  number_formatter(
+    columns = "Percentage",
+    decimal_places = 2
+  )
 
 # number_formatter can be used multiple times to set different number formats
-table_1_df_multiple_formats <-
-  number_formatter(table = table_1_df,
-                   columns = "Percentage",
-                   decimal_places = 2) |>
-  number_formatter(columns = tidyselect::starts_with("Date"),
-                   thousand_separators = FALSE)
+table_1_df_multiple_formats <- table_1_df |>
+  number_formatter(
+    columns = "Percentage",
+    decimal_places = 2
+  ) |>
+  number_formatter(
+    columns = tidyselect::starts_with("Date"),
+    thousand_separators = FALSE
+  )
 
 }
 }
