@@ -994,6 +994,6 @@
       dplyr::select(format) |>
       unlist(use.names = FALSE)
   )
-
+## purrr::map_chr(c(1, 2, 1, 3), \(x) paste0(rep("0", times= x), collapse = ""))
   output
 }

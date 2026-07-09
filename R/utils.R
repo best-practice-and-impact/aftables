@@ -12,29 +12,29 @@
   vector
 }
 
-#' Helper function to specify how aftables should display numeric data
+#' Helper function to specify how `aftables` should display numeric data
 #'
-#' Control how aftables formats data as numbers with decimal places and commas
+#' Control how `aftables` formats data as numbers with decimal places and commas
 #' as thousand separators. This function can be used to overwrite the default
-#' behaviour of aftables, which normally determines the number of decimal places
+#' behaviour of `aftables`, which normally determines the number of decimal places
 #' required automatically from the data in each numeric column, and adds
 #' thousand separators to numeric columns. A key use case for this function is
-#' to prevent aftables from displying calendar or financial years as numbers
+#' to prevent `aftables` from displaying calendar or financial years as numbers
 #' with thousand separators, but it can be used with any numeric data. Use this
-#' function before the data frame is passed to the aftables::create_aftable
+#' function before the data frame is passed to the [aftables::create_aftable()]
 #' function.
 #'
 #' @param table Required data frame. Data frame to be passed into
 #'   aftables::create_aftable function. No default.
 #' @param columns Required character vector containing names of columns or
-#'   tidyselect pattern determining columns to be processed with specified
-#'   number formatting. No default.
+#'   [`<tidy-select>`][dplyr::select()] syntax determining columns to be
+#'   processed with specified number formatting. No default.
 #' @param decimal_places Required numeric value specifying decimal places to
-#'   apply to data in specified columns. Default (NULL) is for aftables to
+#'   apply to data in specified columns. Default (NULL) is for `aftables` to
 #'   automatically determine number of decimal places from the data.
 #' @param thousand_separators Required logical value whether data in specified
 #'   columns should be formatted with thousand separators. Default (NULL) is for
-#'   aftables to automatically determine whether to use thosands separators.
+#'   `aftables` to automatically determine whether to use thousands separators.
 #' @examples
 #' \dontrun{
 #' library(dplyr)

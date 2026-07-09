@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{number_formatter}
 \alias{number_formatter}
-\title{Helper function to specify how aftables should display numeric data}
+\title{Helper function to specify how \code{aftables} should display numeric data}
 \usage{
 number_formatter(
   table,
@@ -16,26 +16,26 @@ number_formatter(
 aftables::create_aftable function. No default.}
 
 \item{columns}{Required character vector containing names of columns or
-tidyselect pattern determining columns to be processed with specified
-number formatting. No default.}
+\code{\link[dplyr:select]{<tidy-select>}} syntax determining columns to be
+processed with specified number formatting. No default.}
 
 \item{decimal_places}{Required numeric value specifying decimal places to
-apply to data in specified columns. Default (NULL) is for aftables to
+apply to data in specified columns. Default (NULL) is for \code{aftables} to
 automatically determine number of decimal places from the data.}
 
 \item{thousand_separators}{Required logical value whether data in specified
 columns should be formatted with thousand separators. Default (NULL) is for
-aftables to automatically determine whether to use thosands separators.}
+\code{aftables} to automatically determine whether to use thousands separators.}
 }
 \description{
-Control how aftables formats data as numbers with decimal places and commas
+Control how \code{aftables} formats data as numbers with decimal places and commas
 as thousand separators. This function can be used to overwrite the default
-behaviour of aftables, which normally determines the number of decimal places
+behaviour of \code{aftables}, which normally determines the number of decimal places
 required automatically from the data in each numeric column, and adds
 thousand separators to numeric columns. A key use case for this function is
-to prevent aftables from displying calendar or financial years as numbers
+to prevent \code{aftables} from displaying calendar or financial years as numbers
 with thousand separators, but it can be used with any numeric data. Use this
-function before the data frame is passed to the aftables::create_aftable
+function before the data frame is passed to the \code{\link[=create_aftable]{create_aftable()}}
 function.
 }
 \examples{
