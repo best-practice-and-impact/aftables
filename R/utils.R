@@ -99,7 +99,7 @@ number_formatter <- function(table,
   }
 
   if (!is.null(decimal_places) &&
-      !((is.numeric(decimal_places)) && !is.na(decimal_places))) {
+        !((is.numeric(decimal_places)) && !is.na(decimal_places))) {
     stop("`decimal_places` must be numeric.", call. = FALSE)
   }
 
@@ -108,7 +108,7 @@ number_formatter <- function(table,
   }
 
   if (!is.null(thousand_separators) &&
-      !((is.logical(thousand_separators) && !is.na(thousand_separators)))) {
+        !((is.logical(thousand_separators) && !is.na(thousand_separators)))) {
     stop("`thousand_separators` must be TRUE or FALSE.", call. = FALSE)
   }
 
