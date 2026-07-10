@@ -221,6 +221,35 @@ test_that("number_formatter function works as intended", {
   expect_null(attr(tidyselect_df$col4, "aftables_decimal_places"))
   expect_null(attr(tidyselect_df$col4, "aftables_thousand_separators"))
 
+  # test leaving decimal_places to default (NA) adds attributes
+  df_add_attribute <-
+    test_df |>
+    number_formatter(
+      columns = c("Date_column", "col1"),
+      decimal_places = 0
+    )
+
+  df_add_attribute <-
+    df_add_attribute |>
+    number_formatter(
+      columns = "Date_column",
+      thousand_separators = FALSE
+    )
+
+  # decimal_places set for Date_column is preserved after setting thousand_separators
+  expect_equal(attr(df_add_attribute$Date_column, "aftables_decimal_places"), 0)
+
+  # test setting decimal_places to NULL removes attributes
+  df_remove_attribute <-
+    df_add_attribute |>
+    number_formatter(
+      columns = "Date_column",
+      decimal_places = NULL
+    )
+
+  expect_null(attr(df_remove_attribute$Date_column, "aftables_decimal_places"))
+
+  # error checking
   expect_error(
     number_formatter(
       table = test_df,
@@ -243,15 +272,6 @@ test_that("number_formatter function works as intended", {
     number_formatter(
       table = test_df,
       columns = where(is.numeric),
-      decimal_places = NA_integer_
-    ),
-    "`decimal_places` must be numeric"
-  )
-
-  expect_error(
-    number_formatter(
-      table = test_df,
-      columns = where(is.numeric),
       thousand_separators = c(FALSE, TRUE)
     ),
     "`thousand_separators` must be of length 1"
@@ -262,15 +282,6 @@ test_that("number_formatter function works as intended", {
       table = test_df,
       columns = where(is.numeric),
       thousand_separators = 1
-    ),
-    "`thousand_separators` must be TRUE or FALSE"
-  )
-
-  expect_error(
-    number_formatter(
-      table = test_df,
-      columns = where(is.numeric),
-      thousand_separators = NA
     ),
     "`thousand_separators` must be TRUE or FALSE"
   )

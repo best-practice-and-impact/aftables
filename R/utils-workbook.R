@@ -344,11 +344,14 @@
 }
 
 .insert_table <- function(wb, content, table_name) {
-
   # convert tibbles to data frames before processing
   table <- as.data.frame(content[content$table_name == table_name, ][["table"]][[1]])
   sheet_type <- content[content$table_name == table_name, "sheet_type"][[1]]
   tab_title <- content[content$table_name == table_name, "tab_title"][[1]]
+
+  # get columns with decimal places and thousand separators attributes
+  aftables_thousand_separators <- purrr::map(table, attr, "aftables_thousand_separators") |> unlist()
+  aftables_decimal_places <- purrr::map(table, attr, "aftables_decimal_places") |> unlist()
 
   start_row <- .get_start_row_table(
     content,
@@ -389,7 +392,6 @@
 
 
   if (length(numeric_columns) > 0) {
-
     #===========================================================================
     # Clean mixed columns by removing notes
     #===========================================================================
@@ -434,12 +436,12 @@
       table_cell_references[, numeric_columns, drop = FALSE]
 
     number_formats <- .determine_number_formats(
-      table,
       currency_units,
       decimal_places,
+      aftables_decimal_places,
+      aftables_thousand_separators,
       number_cell_references
     )
-
   } else {
     notes_replacement <-
       data.frame(
@@ -493,7 +495,6 @@
   )
 
   output
-
 }
 
 # Special case to insert cover-page info, depending on whether it's provided as
@@ -712,9 +713,7 @@
       across(
         everything(),
         \(x) {
-          grepl(x,
-                pattern = detect_currency_regex,
-                perl = TRUE)
+          grepl(x, pattern = detect_currency_regex, perl = TRUE)
         }
       )
     )
@@ -765,7 +764,7 @@
 
   empty_cells <- .determine_empty_cells(table)
 
-  note_cells <-  .determine_note_cells(table)
+  note_cells <- .determine_note_cells(table)
 
   # total number of cells in each column of each type
   currency_cells_count <- sapply(currency_cells, function(x) sum(x))
@@ -846,7 +845,6 @@
     )
 
   output
-
 }
 
 .replace_currency_units <- function(table,
@@ -912,60 +910,52 @@
     dplyr::summarise(across(everything(), \(x) max(x, na.rm = TRUE)))
 
   output
-
 }
 
-.determine_number_formats <- function(df,
-                                      currency_units,
+.determine_number_formats <- function(currency_units,
                                       decimal_places,
+                                      aftables_decimal_places,
+                                      aftables_thousand_separators,
                                       number_cell_references) {
-
-
   numeric_columns <- colnames(number_cell_references)
 
-  number_helper_function_check <-
-    length(
-      sapply(df, attr, which = "aftables_decimal_places") |>
-        unlist(use.names = FALSE)
-    ) > 0 |
-    length(
-      sapply(df, attr, which = "aftables_thousand_separators") |>
-        unlist(use.names = FALSE) > 0
+  # combine user specified decimal places with aftables determined decimal places
+  if (!is.null(aftables_decimal_places)) {
+    decimal_places_names <- intersect(
+      names(decimal_places),
+      names(aftables_decimal_places)
     )
 
-  # if number_formatter helper function has been used
-  if (number_helper_function_check) {
-    # extract decimal places set by helper function
-    user_decimal_places <- purrr::map(
-      df[numeric_columns],
-      \(x) attr(x, "aftables_decimal_places", exact = TRUE)
-    ) |>
-      unlist()
-
-    # replace decimal places determined from data with user decimal places
-    decimal_places[names(decimal_places) %in% names(user_decimal_places)] <-
-      user_decimal_places
-
-    # extract thousand separators set by helper function
-    thousand_separators <- purrr::map(
-      df[numeric_columns],
-      \(x) attr(x, "aftables_thousand_separators", exact = TRUE)
-    ) |>
-      purrr::map(\(x) ifelse(is.null(x), TRUE, x)) |>
-      tidyr::as_tibble()
-
-    # expand thousand_separators by row to cover entire table
-    thousand_separators <-
-      tidyr::uncount(thousand_separators, nrow(df)) |>
-      unlist(use.names = FALSE)
-
-  } else {
-    thousand_separators <- FALSE
+    decimal_places[decimal_places_names] <- aftables_decimal_places
   }
+
+  # combine user specified thousand separators with default thousand separators
+  thousand_separators <- setNames(
+    rep(
+      TRUE,
+      length(numeric_columns)
+    ),
+    numeric_columns
+  )
+
+  if (!is.null(aftables_thousand_separators)) {
+    thousand_separators_names <- intersect(
+      names(thousand_separators),
+      names(aftables_thousand_separators)
+    )
+
+    thousand_separators[thousand_separators_names] <- aftables_thousand_separators
+  }
+
+  # expand thousand_separators by row to cover entire table
+  thousand_separators <-
+    tibble::as_tibble(thousand_separators) |>
+    tidyr::uncount(nrow(number_cell_references)) |>
+    unlist(use.names = FALSE)
 
   # expand decimal_places by row to cover entire table
   decimal_places <-
-    tidyr::uncount(decimal_places, nrow(df)) |>
+    tidyr::uncount(decimal_places, nrow(number_cell_references)) |>
     unlist(use.names = FALSE)
 
   cell_format_options <- tibble(
@@ -982,18 +972,12 @@
           currency_units,
           ifelse(thousand_separators, "#,##0", "###0"),
           ifelse(decimal_places > 0, ".", ""),
-          mapply(
-            paste0,
-            mapply(rep,
-                   "0",
-                   times = decimal_places),
-            collapse = ""
-          )
+          purrr::map_chr(decimal_places, \(x) paste0(rep("0", times = x), collapse = ""))
         )
       ) |>
       dplyr::select(format) |>
       unlist(use.names = FALSE)
   )
-## purrr::map_chr(c(1, 2, 1, 3), \(x) paste0(rep("0", times= x), collapse = ""))
+
   output
 }

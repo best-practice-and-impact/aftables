@@ -90,25 +90,26 @@
 
 number_formatter <- function(table,
                              columns,
-                             decimal_places = NULL,
-                             thousand_separators = NULL) {
-
+                             decimal_places = NA_integer_,
+                             thousand_separators = NA) {
   # error check decimal_places and thousand_separators are length 1
   if (length(decimal_places) > 1) {
     stop("`decimal_places` must be of length 1.", call. = FALSE)
-  }
-
-  if (!is.null(decimal_places) &&
-        !((is.numeric(decimal_places)) && !is.na(decimal_places))) {
-    stop("`decimal_places` must be numeric.", call. = FALSE)
   }
 
   if (length(thousand_separators) > 1) {
     stop("`thousand_separators` must be of length 1.", call. = FALSE)
   }
 
+  if (!is.null(decimal_places) &&
+        !is.na(decimal_places) &&
+        !is.numeric(decimal_places)) {
+    stop("`decimal_places` must be numeric.", call. = FALSE)
+  }
+
   if (!is.null(thousand_separators) &&
-        !((is.logical(thousand_separators) && !is.na(thousand_separators)))) {
+        !is.na(thousand_separators) &&
+        !is.logical(thousand_separators)) {
     stop("`thousand_separators` must be TRUE or FALSE.", call. = FALSE)
   }
 
@@ -116,19 +117,27 @@ number_formatter <- function(table,
     mutate(
       across(
         .cols = {{ columns }},
-        .fns = \(x) {
-          attr(x, "aftables_decimal_places") <- decimal_places
-          x
-        }
+        .fns =  ~ .set_aftables_attributes(.,
+                                           "aftables_decimal_places",
+                                           decimal_places)
       ),
       across(
         .cols = {{ columns }},
-        .fns = \(x) {
-          attr(x, "aftables_thousand_separators") <- thousand_separators
-          x
-        }
+        .fns = ~ .set_aftables_attributes(.,
+                                          "aftables_thousand_separators",
+                                          thousand_separators)
       )
     )
 
   output
+}
+
+.set_aftables_attributes <- function(column,
+                                     attribute,
+                                     value) {
+  if (is.null(value) || !is.na(value)) {
+    attr(column, attribute) <- value
+  }
+
+  column
 }

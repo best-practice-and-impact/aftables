@@ -139,6 +139,20 @@ table_2_df
 
 See [the best practice guidance](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/) for more information on how to present data in these tables.
 
+#### Optional step: setting number formats with number_formatter function
+The default behaviour of aftables is to format numbers with thousand separators, and with the number of decimal places determined from the source data. In the example table `table_1_df` the columns `Numeric [note 1]`, `Numeric suppressed`, `Numeric thousands`, `Numeric decimal`, and `Long name that means that the column width needs to be widened` will be formatted with thousand separators. The `Numeric decimal` column will be formatted with 5 decimal places; the level of precision required to display all the figures after the decimal point and keep the decimal points aligned across table rows.
+
+The number_formatter function can be used to override aftables' default behaviour and specify if thousand separators should be used, and how many decimal places should be displayed. This code changes the number of decimal places for the `Numeric decimal` column from 5 (by default) to 2, and removes thousand separators for the `Numeric thousands` column:
+
+table_1_df <-
+  table_1_df |> 
+  number_formatter(columns = "Numeric decimal",
+                   decimal_places = 2) |>
+  number_formatter(columns = "Numeric thousands",
+                   thousand_separators = FALSE)
+
+These number formats do not change the source data, and so are not visible when viewing the table in R. The number formats are applied when the data tables are added to the Excel workbook object by the `generate_workbook()` workbook.
+
 #### Create aftable
 
 Now we can construct an aftable by passing the required sheet elements as character vectors with `c()`—or a `list()` in the case of the `tables` and `custom_rows` arguments—to the `create_aftable()` function. 
