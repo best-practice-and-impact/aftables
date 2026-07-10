@@ -7,8 +7,8 @@
 number_formatter(
   table,
   columns,
-  decimal_places = NULL,
-  thousand_separators = NULL
+  decimal_places = NA_integer_,
+  thousand_separators = NA
 )
 }
 \arguments{

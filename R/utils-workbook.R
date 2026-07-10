@@ -930,7 +930,7 @@
   }
 
   # combine user specified thousand separators with default thousand separators
-  thousand_separators <- setNames(
+  thousand_separators <- stats::setNames(
     rep(
       TRUE,
       length(numeric_columns)
