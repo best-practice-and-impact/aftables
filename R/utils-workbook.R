@@ -350,8 +350,17 @@
   tab_title <- content[content$table_name == table_name, "tab_title"][[1]]
 
   # get columns with decimal places and thousand separators attributes
-  aftables_thousand_separators <- purrr::map(table, attr, "aftables_thousand_separators") |> unlist()
-  aftables_decimal_places <- purrr::map(table, attr, "aftables_decimal_places") |> unlist()
+  aftables_decimal_places <- purrr::map(
+    table,
+    \(x) attr(x, "aftables_decimal_places")
+    ) |>
+    unlist()
+
+  aftables_thousand_separators <- purrr::map(
+    table,
+    \(x) attr(x, "aftables_thousand_separators")
+    ) |>
+    unlist()
 
   start_row <- .get_start_row_table(
     content,
@@ -917,7 +926,10 @@
                                       aftables_decimal_places,
                                       aftables_thousand_separators,
                                       number_cell_references) {
+
   numeric_columns <- colnames(number_cell_references)
+
+  decimal_places <- decimal_places |> unlist()
 
   # combine user specified decimal places with aftables determined decimal places
   if (!is.null(aftables_decimal_places)) {
@@ -926,7 +938,8 @@
       names(aftables_decimal_places)
     )
 
-    decimal_places[decimal_places_names] <- aftables_decimal_places
+    decimal_places[decimal_places_names] <-
+      aftables_decimal_places[decimal_places_names]
   }
 
   # combine user specified thousand separators with default thousand separators
@@ -944,24 +957,25 @@
       names(aftables_thousand_separators)
     )
 
-    thousand_separators[thousand_separators_names] <- aftables_thousand_separators
+    thousand_separators[thousand_separators_names] <-
+      aftables_thousand_separators[thousand_separators_names]
   }
 
-  # expand thousand_separators by row to cover entire table
-  thousand_separators <-
-    tibble::as_tibble(thousand_separators) |>
-    tidyr::uncount(nrow(number_cell_references)) |>
-    unlist(use.names = FALSE)
-
   # expand decimal_places by row to cover entire table
-  decimal_places <-
-    tidyr::uncount(decimal_places, nrow(number_cell_references)) |>
-    unlist(use.names = FALSE)
+  decimal_places <- decimal_places |>
+    tibble::as_tibble_row() |>
+    tidyr::uncount(nrow(number_cell_references))
+
+  # expand thousand_separators by row to cover entire table
+  thousand_separators <- thousand_separators |>
+    tibble::as_tibble_row() |>
+    tidyr::uncount(nrow(number_cell_references))
+
 
   cell_format_options <- tibble(
     currency_units = unlist(currency_units, use.names = FALSE),
-    decimal_places = decimal_places,
-    thousand_separators = thousand_separators
+    decimal_places = unlist(decimal_places, use.names = FALSE),
+    thousand_separators = unlist(thousand_separators, use.names = FALSE)
   )
 
   output <- list(
@@ -972,7 +986,10 @@
           currency_units,
           ifelse(thousand_separators, "#,##0", "###0"),
           ifelse(decimal_places > 0, ".", ""),
-          purrr::map_chr(decimal_places, \(x) paste0(rep("0", times = x), collapse = ""))
+          purrr::map_chr(
+            decimal_places,
+            \(x) paste0(rep("0", times = x), collapse = "")
+          )
         )
       ) |>
       dplyr::select(format) |>
