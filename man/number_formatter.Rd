@@ -4,39 +4,38 @@
 \alias{number_formatter}
 \title{Helper function to specify how \code{aftables} should display numeric data}
 \usage{
-number_formatter(
-  table,
-  columns,
-  decimal_places = NA_integer_,
-  thousand_separators = NA
-)
+number_formatter(table, columns, decimal_places = NA, thousand_separators = NA)
 }
 \arguments{
 \item{table}{Required data frame. Data frame to be passed into
 aftables::create_aftable function. No default.}
 
-\item{columns}{Required character vector containing names of columns or
+\item{columns}{Required character vector of column names or
 \code{\link[dplyr:select]{<tidy-select>}} syntax determining columns to be
 processed with specified number formatting. No default.}
 
-\item{decimal_places}{Required numeric value specifying decimal places to
-apply to data in specified columns. Default (NULL) is for \code{aftables} to
-automatically determine number of decimal places from the data.}
+\item{decimal_places}{Optional numeric value specifying decimal places to display.
+Default \code{NA} keeps any existing custom number formatting already applied to
+the column. Set to \code{NULL} to remove any custom number formatting and for
+aftables to set the number of decimal places automatically.}
 
-\item{thousand_separators}{Required logical value whether data in specified
-columns should be formatted with thousand separators. Default (NULL) is for
-\code{aftables} to automatically determine whether to use thousands separators.}
+\item{thousand_separators}{Optional logical value whether data in specified columns
+should be formatted with thousand separators. Default \code{NA} keeps any existing
+custom number formatting already applied to the column. Set to \code{NULL} to
+remove any custom number formatting and for aftables to set thousand
+separators automatically.}
 }
 \description{
-Control how \code{aftables} formats data as numbers with decimal places and commas
-as thousand separators. This function can be used to overwrite the default
-behaviour of \code{aftables}, which normally determines the number of decimal places
-required automatically from the data in each numeric column, and adds
-thousand separators to numeric columns. A key use case for this function is
-to prevent \code{aftables} from displaying calendar or financial years as numbers
-with thousand separators, but it can be used with any numeric data. Use this
-function before the data frame is passed to the \code{\link[=create_aftable]{create_aftable()}}
-function.
+Control how \code{aftables} formats numeric data in tables in the excel output.
+Set the number of decimal places to display and whether to use commas as
+thousand separators. This function can be used to overwrite the default
+behaviour of \code{aftables}, which normally determines the number of decimal
+places required automatically from the data in each numeric column, and adds
+thousand separators to all numeric columns. A key use case for this function
+is to prevent \code{aftables} from displaying calendar or financial years as
+numbers with thousand separators, but it can be used with any numeric data
+column. Use this function before the data frame is passed to the
+\code{\link[=create_aftable]{create_aftable()}} function.
 }
 \examples{
 \dontrun{
@@ -68,9 +67,7 @@ number_formatter(
   thousand_separators = FALSE
 )
 
-# The default precision for "Percentage" column is 7 decimal places
-# This is overruled by number_formatter to display the data in Excel workbook
-# to 2 decimal places
+# Display only 2 decimal places of Percentage column
 table_1_df_formatted_2dp <- table_1_df |>
   number_formatter(
     columns = "Percentage",

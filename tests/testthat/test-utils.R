@@ -272,6 +272,24 @@ test_that("number_formatter function works as intended", {
     number_formatter(
       table = test_df,
       columns = where(is.numeric),
+      decimal_places = Inf
+    ),
+    "`decimal_places` can not be infinite"
+  )
+
+  expect_error(
+    number_formatter(
+      table = test_df,
+      columns = where(is.numeric),
+      decimal_places = -2
+    ),
+    "`decimal_places` must be a positive number"
+  )
+
+  expect_error(
+    number_formatter(
+      table = test_df,
+      columns = where(is.numeric),
       thousand_separators = c(FALSE, TRUE)
     ),
     "`thousand_separators` must be of length 1"

@@ -14,27 +14,31 @@
 
 #' Helper function to specify how `aftables` should display numeric data
 #'
-#' Control how `aftables` formats data as numbers with decimal places and commas
-#' as thousand separators. This function can be used to overwrite the default
-#' behaviour of `aftables`, which normally determines the number of decimal places
-#' required automatically from the data in each numeric column, and adds
-#' thousand separators to numeric columns. A key use case for this function is
-#' to prevent `aftables` from displaying calendar or financial years as numbers
-#' with thousand separators, but it can be used with any numeric data. Use this
-#' function before the data frame is passed to the [aftables::create_aftable()]
-#' function.
+#' Control how `aftables` formats numeric data in tables in the excel output.
+#' Set the number of decimal places to display and whether to use commas as
+#' thousand separators. This function can be used to overwrite the default
+#' behaviour of `aftables`, which normally determines the number of decimal
+#' places required automatically from the data in each numeric column, and adds
+#' thousand separators to all numeric columns. A key use case for this function
+#' is to prevent `aftables` from displaying calendar or financial years as
+#' numbers with thousand separators, but it can be used with any numeric data
+#' column. Use this function before the data frame is passed to the
+#' [aftables::create_aftable()] function.
 #'
 #' @param table Required data frame. Data frame to be passed into
 #'   aftables::create_aftable function. No default.
-#' @param columns Required character vector containing names of columns or
+#' @param columns Required character vector of column names or
 #'   [`<tidy-select>`][dplyr::select()] syntax determining columns to be
 #'   processed with specified number formatting. No default.
-#' @param decimal_places Required numeric value specifying decimal places to
-#'   apply to data in specified columns. Default (NULL) is for `aftables` to
-#'   automatically determine number of decimal places from the data.
-#' @param thousand_separators Required logical value whether data in specified
-#'   columns should be formatted with thousand separators. Default (NULL) is for
-#'   `aftables` to automatically determine whether to use thousands separators.
+#' @param decimal_places Optional numeric value specifying decimal places to display.
+#'   Default `NA` keeps any existing custom number formatting already applied to
+#'   the column. Set to `NULL` to remove any custom number formatting and for
+#'   aftables to set the number of decimal places automatically.
+#' @param thousand_separators Optional logical value whether data in specified columns
+#'   should be formatted with thousand separators. Default `NA` keeps any existing
+#'   custom number formatting already applied to the column. Set to `NULL` to
+#'   remove any custom number formatting and for aftables to set thousand
+#'   separators automatically.
 #' @examples
 #' \dontrun{
 #' library(dplyr)
@@ -65,9 +69,7 @@
 #'   thousand_separators = FALSE
 #' )
 #'
-#' # The default precision for "Percentage" column is 7 decimal places
-#' # This is overruled by number_formatter to display the data in Excel workbook
-#' # to 2 decimal places
+#' # Display only 2 decimal places of Percentage column
 #' table_1_df_formatted_2dp <- table_1_df |>
 #'   number_formatter(
 #'     columns = "Percentage",
@@ -90,7 +92,7 @@
 
 number_formatter <- function(table,
                              columns,
-                             decimal_places = NA_integer_,
+                             decimal_places = NA,
                              thousand_separators = NA) {
   # error check decimal_places and thousand_separators are length 1
   if (length(decimal_places) > 1) {
@@ -101,10 +103,20 @@ number_formatter <- function(table,
     stop("`thousand_separators` must be of length 1.", call. = FALSE)
   }
 
-  if (!is.null(decimal_places) &&
-        !is.na(decimal_places) &&
+  if ((!is.null(decimal_places) &&
+         !is.na(decimal_places)) &&
         !is.numeric(decimal_places)) {
     stop("`decimal_places` must be numeric.", call. = FALSE)
+  }
+
+  if (is.numeric(decimal_places) && is.infinite(decimal_places)) {
+    stop("`decimal_places` can not be infinite.", call. = FALSE)
+  }
+
+  if (is.numeric(decimal_places) &&
+        !is.na(decimal_places) &&
+        decimal_places < 0) {
+    stop("`decimal_places` must be a positive number.", call. = FALSE)
   }
 
   if (!is.null(thousand_separators) &&
@@ -117,15 +129,23 @@ number_formatter <- function(table,
     mutate(
       across(
         .cols = {{ columns }},
-        .fns =  ~ .set_aftables_attributes(.,
-                                           "aftables_decimal_places",
-                                           decimal_places)
+        .fns = \(x) {
+          .set_aftables_attributes(
+            x,
+            "aftables_decimal_places",
+            decimal_places
+          )
+        }
       ),
       across(
         .cols = {{ columns }},
-        .fns = ~ .set_aftables_attributes(.,
-                                          "aftables_thousand_separators",
-                                          thousand_separators)
+        .fns = \(x) {
+          .set_aftables_attributes(
+            x,
+            "aftables_thousand_separators",
+            thousand_separators
+          )
+        }
       )
     )
 
@@ -135,6 +155,7 @@ number_formatter <- function(table,
 .set_aftables_attributes <- function(column,
                                      attribute,
                                      value) {
+
   if (is.null(value) || !is.na(value)) {
     attr(column, attribute) <- value
   }
