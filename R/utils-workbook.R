@@ -353,13 +353,13 @@
   aftables_decimal_places <- purrr::map(
     table,
     \(x) attr(x, "aftables_decimal_places")
-    ) |>
+  ) |>
     unlist()
 
   aftables_thousand_separators <- purrr::map(
     table,
     \(x) attr(x, "aftables_thousand_separators")
-    ) |>
+  ) |>
     unlist()
 
   start_row <- .get_start_row_table(
