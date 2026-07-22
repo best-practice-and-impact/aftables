@@ -978,23 +978,32 @@
     thousand_separators = unlist(thousand_separators, use.names = FALSE)
   )
 
-  output <- list(
-    cell_reference = as.vector(number_cell_references),
-    cell_format = cell_format_options |>
-      mutate(
-        format = paste0(
-          currency_units,
-          ifelse(thousand_separators, "#,##0", "###0"),
-          ifelse(decimal_places > 0, ".", ""),
-          purrr::map_chr(
-            decimal_places,
-            \(x) paste0(rep("0", times = x), collapse = "")
+  output <-
+    tibble::tibble(
+      cell_reference = as.vector(number_cell_references),
+      cell_format = cell_format_options |>
+        mutate(
+          format = paste0(
+            currency_units,
+            ifelse(thousand_separators, "#,##0", "###0"),
+            ifelse(decimal_places > 0, ".", ""),
+            purrr::map_chr(
+              decimal_places,
+              \(x) paste0(rep("0", times = x), collapse = "")
+            )
           )
-        )
-      ) |>
-      dplyr::select(format) |>
-      unlist(use.names = FALSE)
-  )
+        ) |>
+        dplyr::select(format) |>
+        unlist(use.names = FALSE)
+    ) |>
+    dplyr::group_by(.data$cell_format) |>
+    mutate(cell_reference = paste0(
+      paste0(.data$cell_reference, collapse = ";"),
+      ";"
+    )) |>
+    dplyr::ungroup() |>
+    dplyr::distinct() |>
+    as.list()
 
   output
 }
