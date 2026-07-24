@@ -145,7 +145,7 @@ The default behaviour of aftables is to format numbers with thousand separators,
 The number_formatter function can be used to override aftables' default behaviour and specify if thousand separators should be used, and how many decimal places should be displayed. This code changes the number of decimal places for the `Numeric decimal` column from 5 (by default) to 2, and removes thousand separators for the `Numeric thousands` column:
 
 ```{r results=FALSE}
-table_1_df <- table_1_df |> 
+table_1_df <- table_1_df |>
   aftables::number_formatter(
     columns = "Numeric decimal",
     decimal_places = 2

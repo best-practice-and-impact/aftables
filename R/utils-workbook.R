@@ -926,7 +926,6 @@
                                       aftables_decimal_places,
                                       aftables_thousand_separators,
                                       number_cell_references) {
-
   numeric_columns <- colnames(number_cell_references)
 
   decimal_places <- decimal_places |> unlist()
@@ -971,30 +970,37 @@
     tibble::as_tibble_row() |>
     tidyr::uncount(nrow(number_cell_references))
 
-
-  cell_format_options <- tibble(
+  output <- tibble::tibble(
+    cell_reference = as.vector(number_cell_references),
     currency_units = unlist(currency_units, use.names = FALSE),
     decimal_places = unlist(decimal_places, use.names = FALSE),
     thousand_separators = unlist(thousand_separators, use.names = FALSE)
-  )
-
-  output <- list(
-    cell_reference = as.vector(number_cell_references),
-    cell_format = cell_format_options |>
-      mutate(
-        format = paste0(
-          currency_units,
-          ifelse(thousand_separators, "#,##0", "###0"),
-          ifelse(decimal_places > 0, ".", ""),
-          purrr::map_chr(
-            decimal_places,
-            \(x) paste0(rep("0", times = x), collapse = "")
-          )
+  ) |>
+    mutate(
+      cell_format = paste0(
+        currency_units,
+        ifelse(thousand_separators, "#,##0", "###0"),
+        ifelse(decimal_places > 0, ".", ""),
+        purrr::map_chr(
+          decimal_places,
+          \(x) paste0(rep("0", times = x), collapse = "")
         )
-      ) |>
-      dplyr::select(format) |>
-      unlist(use.names = FALSE)
-  )
+      )
+    ) |>
+    dplyr::select(
+      .data$cell_reference,
+      .data$cell_format
+    ) |>
+    dplyr::group_by(.data$cell_format) |>
+    dplyr::summarise(
+      cell_reference =
+        paste0(
+          paste0(.data$cell_reference, collapse = ";"),
+          ";"
+        )
+    ) |>
+    dplyr::ungroup() |>
+    as.list()
 
   output
 }

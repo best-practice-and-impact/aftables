@@ -2,6 +2,7 @@
 
 * Added number_formatter function for control over how numbers appear.
 * Bug fix: re-enabled RStudio Addin to insert code for {aftables} workflow (#151).
+* Bug fix: generate_workbook now runs quicker for spreadsheets with large tables.
 
 # aftables 2.0.1
 
