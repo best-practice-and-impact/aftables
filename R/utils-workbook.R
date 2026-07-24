@@ -992,7 +992,7 @@
       .data$cell_format
     ) |>
     dplyr::group_by(.data$cell_format) |>
-    mutate(
+    dplyr::summarise(
       cell_reference =
         paste0(
           paste0(.data$cell_reference, collapse = ";"),
@@ -1000,7 +1000,6 @@
         )
     ) |>
     dplyr::ungroup() |>
-    dplyr::distinct() |>
     as.list()
 
   output
