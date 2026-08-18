@@ -1,6 +1,6 @@
 Package: aftables
 Title: Create Spreadsheet Publications Following Best Practice
-Version: 2.0.1.9000
+Version: 2.1.0
 Authors@R: c(
     person("Matt", "Dray", , "mwdray@gmail.com", role = c("aut")),
     person("Tim", "Taylor", role = "ctb"),
@@ -44,4 +44,4 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.0
