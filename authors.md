@@ -17,7 +17,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/best-practice-and-impact/aftables/blob/v2.1.0/inst/CITATION)
+[`inst/CITATION`](https://github.com/best-practice-and-impact/aftables/blob/main/inst/CITATION)
 
 Dray M (2021). *aftables: Generate spreadsheet publications that follow
 best practice guidance from the UK government's Analysis Function*.
