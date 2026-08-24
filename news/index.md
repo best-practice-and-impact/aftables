@@ -1,6 +1,17 @@
 # Changelog
 
+## aftables 2.1.0
+
+- Added `number_formatter` function for control over how numbers appear.
+- Bug fix: re-enabled RStudio Addin to insert code for {aftables}
+  workflow
+  ([\#151](https://github.com/best-practice-and-impact/aftables/issues/151)).
+- Bug fix: `generate_workbook` now runs quicker for spreadsheets with
+  large tables.
+
 ## aftables 2.0.1
+
+CRAN release: 2026-04-22
 
 - Bug fix: added rlang import for backwards compatibility with R
   versions \< 4.4.0

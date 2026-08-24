@@ -146,6 +146,7 @@ config and the `config_name` custom config. Values specified in the
 ### Example 1: No config arguments in generate_workbook
 
 ``` r
+
 my_wb <- generate_workbook(aftable = demo_aftable)
 ```
 
@@ -162,6 +163,7 @@ is the default behaviour of the {generate_workbook} function.
 ### Example 2: Using a custom config
 
 ``` r
+
 my_wb <- generate_workbook(
   aftable = demo_aftable,
   config_name = "workbook1"
@@ -182,6 +184,7 @@ with the `workbook1` or combined config applied.
 ### Example 3: Using a custom config file
 
 ``` r
+
 dir.create("configs")
 
 create_config_yaml(
@@ -205,6 +208,7 @@ applied.
 ### Example 4: Using a custom config file with a custom config
 
 ``` r
+
 dir.create("configs")
 
 create_config_yaml(

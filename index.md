@@ -49,6 +49,7 @@ guidance.
 Install the latest release version of aftables directly from CRAN:
 
 ``` r
+
 install.packages("aftables")
 ```
 
@@ -57,6 +58,7 @@ install.packages("aftables")
 aftables can be installed directly from GitHub.
 
 ``` r
+
 remotes::install_github(
   "best-practice-and-impact/aftables",
   upgrade = "never",
@@ -74,6 +76,7 @@ function names were updated when the package was renamed. If you need to
 install a11ytables for a legacy project, the following code can be used.
 
 ``` r
+
 install.packages("remotes") # if not already installed
 
 remotes::install_github(

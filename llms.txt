@@ -49,6 +49,7 @@ guidance.
 Install the latest release version of aftables directly from CRAN:
 
 ``` r
+
 install.packages("aftables")
 ```
 
@@ -57,6 +58,7 @@ install.packages("aftables")
 aftables can be installed directly from GitHub.
 
 ``` r
+
 remotes::install_github(
   "best-practice-and-impact/aftables",
   upgrade = "never",
@@ -74,6 +76,7 @@ function names were updated when the package was renamed. If you need to
 install a11ytables for a legacy project, the following code can be used.
 
 ``` r
+
 install.packages("remotes") # if not already installed
 
 remotes::install_github(
@@ -163,12 +166,20 @@ Create, coerce and inspect aftable-class objects
 - [`as_aftable()`](https://best-practice-and-impact.github.io/aftables/reference/as_aftable.md)
   [`is_aftable()`](https://best-practice-and-impact.github.io/aftables/reference/as_aftable.md)
   : Coerce To An 'aftable' Object
+
 - [`create_aftable()`](https://best-practice-and-impact.github.io/aftables/reference/create_aftable.md)
   : Create An 'aftable' Object
+
 - [`summary(`*`<aftable>`*`)`](https://best-practice-and-impact.github.io/aftables/reference/summary.aftable.md)
   : Summarise An 'aftable' Object
+
 - [`tbl_sum(`*`<aftable>`*`)`](https://best-practice-and-impact.github.io/aftables/reference/tbl_sum.aftable.md)
   : Provide A Succinct Summary Of An 'aftable' Object
+
+- [`number_formatter()`](https://best-practice-and-impact.github.io/aftables/reference/number_formatter.md)
+  :
+
+  Helper function to specify how `aftables` should display numeric data
 
 ## Workbooks
 

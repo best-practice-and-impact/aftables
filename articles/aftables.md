@@ -11,6 +11,7 @@ practice](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-st
 Install the latest release version of aftables directly from CRAN:
 
 ``` r
+
 install.packages("aftables")
 ```
 
@@ -45,15 +46,15 @@ Each argument to
 provides the information needed to construct each sheet in the
 spreadsheet.
 
-| Argument       | Required | Type                                                                                   | Accepted values                        | Explanation                                                                                                                                                                          |
-|:---------------|:---------|:---------------------------------------------------------------------------------------|:---------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `tab_titles`   | Yes      | Character vector                                                                       |                                        | The name that will appear on each sheet’s tab in the output spreadsheet                                                                                                              |
-| `sheet_types`  | Yes      | Character vector                                                                       | ‘cover’, ‘contents’, ‘notes’, ‘tables’ | The kind of information that the sheet holds, which is needed so that the correct structure and formatting can be applied later                                                      |
-| `sheet_titles` | Yes      | Character vector                                                                       |                                        | The main heading of each sheet, which will appear in cell A1                                                                                                                         |
-| `blank_cells`  | No       | Character vector                                                                       |                                        | A sentence that explains the reason for any blank cells in the sheet (if applicable)                                                                                                 |
-| `custom_rows`  | No       | List of character vectors                                                              |                                        | Arbitrary rows of text that the user wants to insert above a table, one list-item per sheet (contents, notes and tables sheets), one vector element per row                          |
-| `sources`      | No       | Character vector                                                                       |                                        | A sentence provides the source of the data found in each table (if applicable, likely only needed for sheets with `sheet_types` of ‘table’)                                          |
-| `tables`       | Yes      | List of dataframes (although the cover sheet content can be provided as a list object) |                                        | The main content for each sheet, expressed as flat ([probably tidy](https://www.jstatsoft.org/article/view/v059i10)) dataframes of rows and columns (though the cover can be a list) |
+| Argument | Required | Type | Accepted values | Explanation |
+|:---|:---|:---|:---|:---|
+| `tab_titles` | Yes | Character vector |  | The name that will appear on each sheet’s tab in the output spreadsheet |
+| `sheet_types` | Yes | Character vector | ‘cover’, ‘contents’, ‘notes’, ‘tables’ | The kind of information that the sheet holds, which is needed so that the correct structure and formatting can be applied later |
+| `sheet_titles` | Yes | Character vector |  | The main heading of each sheet, which will appear in cell A1 |
+| `blank_cells` | No | Character vector |  | A sentence that explains the reason for any blank cells in the sheet (if applicable) |
+| `custom_rows` | No | List of character vectors |  | Arbitrary rows of text that the user wants to insert above a table, one list-item per sheet (contents, notes and tables sheets), one vector element per row |
+| `sources` | No | Character vector |  | A sentence provides the source of the data found in each table (if applicable, likely only needed for sheets with `sheet_types` of ‘table’) |
+| `tables` | Yes | List of dataframes (although the cover sheet content can be provided as a list object) |  | The main content for each sheet, expressed as flat ([probably tidy](https://www.jstatsoft.org/article/view/v059i10)) dataframes of rows and columns (though the cover can be a list) |
 
 You can read more about these arguments and their requirements in the
 function’s help pages, which you can access by running
@@ -88,6 +89,7 @@ mailto links that will open an email client. Here’s a demo list for the
 contents page (required):
 
 ``` r
+
 cover_list <- list(
   "Section 1" = c("First row of Section 1.", "Second row of Section 1."),
   "Section 2" = "The only row of Section 2.",
@@ -105,6 +107,7 @@ version 0.1 of the package.
 Here’s a demo table for the contents page (required):
 
 ``` r
+
 contents_df <- data.frame(
   "Sheet name" = c("Notes", "Table_1", "Table_2"),
   "Sheet title" = c(
@@ -121,6 +124,7 @@ notes in your tables), which has a column for the note number in the
 form ‘\[note x\]’ and a column for the note itself:
 
 ``` r
+
 notes_df <- data.frame(
   "Note number" = paste0("[note ", 1:3, "]"),
   "Note text" = c("First note.", "Second note.", "Third note."),
@@ -131,6 +135,7 @@ notes_df <- data.frame(
 Click to preview these objects
 
 ``` r
+
 cover_list
 # $`Section 1`
 # [1] "First row of Section 1."  "Second row of Section 1."
@@ -162,6 +167,7 @@ suppressed values (e.g. ‘\[c\]’ meaning ‘confidential’ data) and
 includes notes (in the form ‘\[note x\]’).
 
 ``` r
+
 table_1_df <- data.frame(
   Category = LETTERS[1:10],
   "Numeric [note 1]" = 1:10,
@@ -178,12 +184,14 @@ We’ll create a second, simpler table as well, which will go on a
 separate sheet:
 
 ``` r
+
 table_2_df <- data.frame(Category = LETTERS[1:10], Numeric = 1:10)
 ```
 
 Click to preview these tables of statistical data
 
 ``` r
+
 table_1_df
 #    Category Numeric [note 1] Numeric suppressed Numeric thousands
 # 1         A                1                  1            140000
@@ -236,6 +244,44 @@ See [the best practice
 guidance](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/)
 for more information on how to present data in these tables.
 
+#### Optional step: setting number formats with number_formatter function
+
+The default behaviour of aftables is to format numbers with thousand
+separators, and with the number of decimal places determined from the
+source data. In the example table `table_1_df` the columns
+`Numeric [note 1]`, `Numeric suppressed`, `Numeric thousands`,
+`Numeric decimal`, and
+`Long name that means that the column width needs to be widened` will be
+formatted with thousand separators. The `Numeric decimal` column will be
+formatted with 5 decimal places; the level of precision required to
+display all the figures after the decimal point and keep the decimal
+points aligned across table rows.
+
+The number_formatter function can be used to override aftables’ default
+behaviour and specify if thousand separators should be used, and how
+many decimal places should be displayed. This code changes the number of
+decimal places for the `Numeric decimal` column from 5 (by default) to
+2, and removes thousand separators for the `Numeric thousands` column:
+
+``` r
+
+table_1_df <- table_1_df |>
+  aftables::number_formatter(
+    columns = "Numeric decimal",
+    decimal_places = 2
+  ) |>
+  aftables::number_formatter(
+    columns = "Numeric thousands",
+    thousand_separators = FALSE
+  )
+```
+
+These number formats do not change the source data, and so are not
+visible when viewing the table in R. The number formats are applied when
+the data tables are added to the Excel workbook object by the
+[`generate_workbook()`](https://best-practice-and-impact.github.io/aftables/reference/generate_workbook.md)
+workbook.
+
 #### Create aftable
 
 Now we can construct an aftable by passing the required sheet elements
@@ -258,6 +304,7 @@ Note that:
   Addin
 
 ``` r
+
 my_aftable <- aftables::create_aftable(
   tab_titles = c("Cover", "Contents", "Notes", "Table 1", "Table_2"),
   sheet_types = c("cover", "contents", "notes", "tables", "tables"),
@@ -304,6 +351,7 @@ there are any tab titles that start with a numeral.
 Here’s a preview of the object that was created:
 
 ``` r
+
 my_aftable
 # # aftable: 5 x 7
 #   tab_title sheet_type sheet_title   blank_cells source custom_rows table       
@@ -345,6 +393,7 @@ for compliance with [the best practice
 guidance](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/).
 
 ``` r
+
 my_wb <- aftables::generate_workbook(my_aftable)
 # Warning: Some of the recommended workbook properties are missing. Analysis
 # Function guidance recommends completing the author, title and keywords fields.
@@ -356,6 +405,7 @@ The print method for a Workbook-class object is fairly limited, but you
 can see an overview of our named sheets and some of the custom styling.
 
 ``` r
+
 my_wb
 # A Workbook object.
 #  
@@ -372,6 +422,7 @@ to write your workbook object to an xlsx file (set the path argument to
 a location suitable for your work).
 
 ``` r
+
 openxlsx2::wb_save(wb = my_wb, file = "C://Documents//publication.xlsx")
 ```
 

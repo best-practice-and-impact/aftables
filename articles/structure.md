@@ -110,6 +110,7 @@ creates an S3-class object with classes ‘data.frame’ and ‘tbl’
 ‘aftable’ class.
 
 ``` r
+
 library(aftables)
 my_aftable <- as_aftable(demo_df)
 class(my_aftable)
@@ -121,6 +122,7 @@ the {pillar} package and the tbl class—it can be printed in compact form
 without the need for the whole of the {tibble} package to be imported.
 
 ``` r
+
 my_aftable
 # # aftable: 5 x 7
 #   tab_title sheet_type sheet_title   blank_cells source custom_rows table       
@@ -136,6 +138,7 @@ Compare this to its appearance as a regular data.frame, which is
 trickier to understand:
 
 ``` r
+
 as.data.frame(my_aftable)
 #   tab_title sheet_type                   sheet_title
 # 1     Cover      cover  The 'aftables' Demo Workbook
@@ -200,6 +203,7 @@ is a classic logical test that checks for the aftable class in the
 object provided to it.
 
 ``` r
+
 is_aftable(my_aftable)
 # [1] TRUE
 ```
@@ -208,6 +212,7 @@ The [`summary()`](https://rdrr.io/r/base/summary.html) method prints a
 very simple overview of a provided aftable.
 
 ``` r
+
 summary(my_aftable)
 # # An aftable with 5 sheets: 
 #   1) Tab 'Cover' (sheet type 'cover') contains a list of length 3 (element lengths 2, 1 and 2)
@@ -221,6 +226,7 @@ The `tbl_sum()` method is provided via the {pillar} package, with the
 goal of providing a bespoke header to the printed aftable.
 
 ``` r
+
 pillar::tbl_sum(my_aftable)
 # aftable 
 # "5 x 7"
@@ -236,6 +242,7 @@ object and fills it by iterating over a user-supplied the aftable-class
 object.
 
 ``` r
+
 my_wb <- generate_workbook(my_aftable)
 # Warning: Some of the recommended workbook properties are missing. Analysis
 # Function guidance recommends completing the author, title and keywords fields.
@@ -247,6 +254,7 @@ You can see how the Workbook-class object carries information that will
 determine the structure and style of the final spreadsheet output.
 
 ``` r
+
 my_wb
 # A Workbook object.
 #  

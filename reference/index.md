@@ -7,12 +7,20 @@ Create, coerce and inspect aftable-class objects
 - [`as_aftable()`](https://best-practice-and-impact.github.io/aftables/reference/as_aftable.md)
   [`is_aftable()`](https://best-practice-and-impact.github.io/aftables/reference/as_aftable.md)
   : Coerce To An 'aftable' Object
+
 - [`create_aftable()`](https://best-practice-and-impact.github.io/aftables/reference/create_aftable.md)
   : Create An 'aftable' Object
+
 - [`summary(`*`<aftable>`*`)`](https://best-practice-and-impact.github.io/aftables/reference/summary.aftable.md)
   : Summarise An 'aftable' Object
+
 - [`tbl_sum(`*`<aftable>`*`)`](https://best-practice-and-impact.github.io/aftables/reference/tbl_sum.aftable.md)
   : Provide A Succinct Summary Of An 'aftable' Object
+
+- [`number_formatter()`](https://best-practice-and-impact.github.io/aftables/reference/number_formatter.md)
+  :
+
+  Helper function to specify how `aftables` should display numeric data
 
 ## Workbooks
 

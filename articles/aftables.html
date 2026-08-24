@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Fira_Code-0.4.10/font.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Fira_Code-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">aftables</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +69,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Introduction to {aftables}</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/best-practice-and-impact/aftables/blob/main/vignettes/aftables.Rmd" class="external-link"><code>vignettes/aftables.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/best-practice-and-impact/aftables/blob/v2.1.0/vignettes/aftables.Rmd" class="external-link"><code>vignettes/aftables.Rmd</code></a></small>
       <div class="d-none name"><code>aftables.Rmd</code></div>
     </div>
 
@@ -351,6 +351,42 @@ in these tables.</p>
 </div>
 </div>
 <div class="section level4">
+<h4 id="optional-step-setting-number-formats-with-number_formatter-function">Optional step: setting number formats with number_formatter
+function<a class="anchor" aria-label="anchor" href="#optional-step-setting-number-formats-with-number_formatter-function"></a>
+</h4>
+<p>The default behaviour of aftables is to format numbers with thousand
+separators, and with the number of decimal places determined from the
+source data. In the example table <code>table_1_df</code> the columns
+<code>Numeric [note 1]</code>, <code>Numeric suppressed</code>,
+<code>Numeric thousands</code>, <code>Numeric decimal</code>, and
+<code>Long name that means that the column width needs to be widened</code>
+will be formatted with thousand separators. The
+<code>Numeric decimal</code> column will be formatted with 5 decimal
+places; the level of precision required to display all the figures after
+the decimal point and keep the decimal points aligned across table
+rows.</p>
+<p>The number_formatter function can be used to override aftables’
+default behaviour and specify if thousand separators should be used, and
+how many decimal places should be displayed. This code changes the
+number of decimal places for the <code>Numeric decimal</code> column
+from 5 (by default) to 2, and removes thousand separators for the
+<code>Numeric thousands</code> column:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">table_1_df</span> <span class="op">&lt;-</span> <span class="va">table_1_df</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">aftables</span><span class="fu">::</span><span class="fu"><a href="../reference/number_formatter.html">number_formatter</a></span><span class="op">(</span></span>
+<span>    columns <span class="op">=</span> <span class="st">"Numeric decimal"</span>,</span>
+<span>    decimal_places <span class="op">=</span> <span class="fl">2</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">aftables</span><span class="fu">::</span><span class="fu"><a href="../reference/number_formatter.html">number_formatter</a></span><span class="op">(</span></span>
+<span>    columns <span class="op">=</span> <span class="st">"Numeric thousands"</span>,</span>
+<span>    thousand_separators <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p>These number formats do not change the source data, and so are not
+visible when viewing the table in R. The number formats are applied when
+the data tables are added to the Excel workbook object by the
+<code><a href="../reference/generate_workbook.html">generate_workbook()</a></code> workbook.</p>
+</div>
+<div class="section level4">
 <h4 id="create-aftable">Create aftable<a class="anchor" aria-label="anchor" href="#create-aftable"></a>
 </h4>
 <p>Now we can construct an aftable by passing the required sheet
@@ -371,7 +407,7 @@ the first three sheets)</li>
 <li>you can insert a template of this demo using the package’s RStudio
 Addin</li>
 </ul>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_aftable</span> <span class="op">&lt;-</span> <span class="fu">aftables</span><span class="fu">::</span><span class="fu"><a href="../reference/create_aftable.html">create_aftable</a></span><span class="op">(</span></span>
 <span>  tab_titles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Cover"</span>, <span class="st">"Contents"</span>, <span class="st">"Notes"</span>, <span class="st">"Table 1"</span>, <span class="st">"Table_2"</span><span class="op">)</span>,</span>
 <span>  sheet_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cover"</span>, <span class="st">"contents"</span>, <span class="st">"notes"</span>, <span class="st">"tables"</span>, <span class="st">"tables"</span><span class="op">)</span>,</span>
@@ -413,7 +449,7 @@ seems odd. For example, we were warned that a value we supplied to
 since blank spaces are not allowed in tab names. Note that there will be
 an error if there are any tab titles that start with a numeral.</p>
 <p>Here’s a preview of the object that was created:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_aftable</span></span>
 <span><span class="co"># <span style="color: #949494;"># aftable: 5 x 7</span></span></span>
 <span><span class="co">#   tab_title sheet_type sheet_title   blank_cells source custom_rows table       </span></span>
@@ -445,7 +481,7 @@ wbWorkbook-class object.</p>
 into separate sheets and applies other relevant structure, mark-up and
 styles for compliance with <a href="https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/" class="external-link">the
 best practice guidance</a>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_wb</span> <span class="op">&lt;-</span> <span class="fu">aftables</span><span class="fu">::</span><span class="fu"><a href="../reference/generate_workbook.html">generate_workbook</a></span><span class="op">(</span><span class="va">my_aftable</span><span class="op">)</span></span>
 <span><span class="co"># Warning: Some of the recommended workbook properties are missing. Analysis</span></span>
 <span><span class="co"># Function guidance recommends completing the author, title and keywords fields.</span></span></code></pre></div>
@@ -454,7 +490,7 @@ Click for a preview of the Workbook object
 </summary><p>The print method for a Workbook-class object is fairly limited, but
 you can see an overview of our named sheets and some of the custom
 styling.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_wb</span></span>
 <span><span class="co"># A Workbook object.</span></span>
 <span><span class="co">#  </span></span>
@@ -470,7 +506,7 @@ styling.</p>
 <code>wb_save()</code> function from {openxlsx2}</a> to write your
 workbook object to an xlsx file (set the path argument to a location
 suitable for your work).</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">openxlsx2</span><span class="fu">::</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_save.html" class="external-link">wb_save</a></span><span class="op">(</span>wb <span class="op">=</span> <span class="va">my_wb</span>, file <span class="op">=</span> <span class="st">"C://Documents//publication.xlsx"</span><span class="op">)</span></span></code></pre></div>
 <p>You could also open a temporary copy of the workbook with
 <code>my_wb$open()</code>, which is convenient during the development
@@ -532,7 +568,7 @@ guidance.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>
