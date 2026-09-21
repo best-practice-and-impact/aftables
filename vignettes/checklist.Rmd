@@ -62,7 +62,7 @@ There are several self-assessed indicators used in the 'status' column of the ta
 | All written content needs to meet the accessibility guidelines | No | User's responsibility | {aftables} does not check the validity of user-supplied text |
 | Links must be accessible | Yes | User's responsibility | {aftables} does not check the validity of user-supplied text |
 | Format text to make it accessible | No | Met | `generate_workbook()` auto-formats the text |
-| All worksheets should have descriptive titles which are properly tagged and formatted | Yes | Partly/user’s responsibility | {aftables} does not check user-supplied text nor data; the package handles formatting but not yet mark-up for headings |
+| All worksheets should have descriptive titles which are properly formatted | Yes | Partly/user’s responsibility | {aftables} formats titles but does not validate user-supplied title text. Marking a title up as 'Heading 1' is best practice, but is not essential because not all assistive technology recognises heading tags. |
 | Avoid using symbols in general | No | User's responsibility | {aftables} does not check the validity of user-supplied text |
 | Do not use headers and footers, floating text boxes or floating toolbars | Yes | Met  | These features aren't supported by {aftables} |
 | Do not use visual devices to divide data regions | No | Met | Colours and patterns aren't supported by {aftables} |

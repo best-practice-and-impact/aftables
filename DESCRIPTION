@@ -7,7 +7,8 @@ Authors@R: c(
     person("Matt", "Kerlogue", role = "ctb"),
     person("Crown Copyright", role = c("cph")),
     person("Olivia", "Box Power", , "Olivia.BoxPower@dhsc.gov.uk", role = c("cre", "ctb")),
-    person("Zachary", "Gleisner", , "Zachary.Gleisner@dhsc.gov.uk", role = "ctb")
+    person("Zachary", "Gleisner", , "Zachary.Gleisner@dhsc.gov.uk", role = "ctb"),
+    person("Erol", "Tasci", role = "ctb")
   )
 Description: Generate spreadsheet publications that follow best practice
     guidance from the UK government's Analysis Function, available at 
