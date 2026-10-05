@@ -1,6 +1,6 @@
 Package: aftables
 Title: Create Spreadsheet Publications Following Best Practice
-Version: 2.1.0.9000
+Version: 2.2.0.9000
 Authors@R: c(
     person("Matt", "Dray", , "mwdray@gmail.com", role = c("aut")),
     person("Tim", "Taylor", role = "ctb"),
@@ -25,7 +25,7 @@ Imports:
     purrr,
     dplyr,
     stringr,
-    tidyselect,
+    tidyselect (>= 1.2.0),
     tidyr,
     rlang,
     utils,

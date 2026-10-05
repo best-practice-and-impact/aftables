@@ -1,4 +1,6 @@
 # aftables (development version)
+* Added `column_formatter` function for control over column alignment and column width (#158).
+* Added `column_formatter` to {aftables} workflow.
 
 # aftables 2.1.0
 

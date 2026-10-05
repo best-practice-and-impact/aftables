@@ -192,6 +192,49 @@
       widths = cellwidth_wider
     )
   }
+  # get columns with user specified column widths
+  aftables_column_widths <- purrr::map(
+    table,
+    \(x) attr(x, "aftables_column_width")
+  ) |>
+    unlist()
+
+  custom_width_cols <-
+    match(names(aftables_column_widths),
+          names(table))
+
+  # set user specified widths
+  if (length(aftables_column_widths) >= 1) {
+    wb$set_col_widths(
+      sheet = tab_title,
+      cols = custom_width_cols,
+      widths = aftables_column_widths
+    )
+  }
+
+
+  #=============================================================================
+  # Get user specified column alignments
+  #=============================================================================
+
+  aftables_column_alignments <- purrr::map(
+    table,
+    \(x) attr(x, "aftables_column_alignment")
+  ) |>
+    unlist()
+
+  left_align_cols <-
+    match(
+      names(aftables_column_alignments[aftables_column_alignments == "left"]),
+      names(table)
+    )
+
+
+  right_align_cols <-
+    match(
+      names(aftables_column_alignments[aftables_column_alignments == "right"]),
+      names(table)
+    )
 
   #=============================================================================
   # right align numeric columns
@@ -201,12 +244,31 @@
   numeric_cols_names <- table_formats$numeric_columns
   numeric_cols_index <- which(names(table) %in% numeric_cols_names)
 
+  # remove left aligned numeric columns
+  numeric_cols_index <- setdiff(numeric_cols_index, left_align_cols)
+
   if (length(numeric_cols_index > 0)) {
     wb$add_cell_style(
       sheet = tab_title,
       dims = wb_dims(
         rows = seq(start_row, start_row + table_height),
         cols = numeric_cols_index
+      ),
+      horizontal = style_ref[["ralign"]]
+    )
+  }
+
+  #=============================================================================
+  # Add user specified column alignments
+  #=============================================================================
+
+  # required to override default left alignment of text columns
+  if (length(right_align_cols) >= 1) {
+    wb$add_cell_style(
+      sheet = tab_title,
+      dims = wb_dims(
+        rows = seq(start_row, start_row + table_height),
+        cols = right_align_cols
       ),
       horizontal = style_ref[["ralign"]]
     )

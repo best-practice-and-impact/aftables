@@ -305,3 +305,115 @@ test_that("number_formatter function works as intended", {
   )
 
 })
+
+test_that("column_formatter works as intended", {
+  test_df <- data.frame(
+    Date_column = c(2001:2004),
+    col1 = c("12.30", NA, " 13 ", "   123,123.1234"),
+    col2 = c(" 19,000.12", "12.30", "12 ", NA),
+    col3 = c(123, 235, NA, 12.4),
+    col4 = c("  123", "12,001 ", NA, " 12.1")
+  )
+
+  # test named columns
+  named_cols_df <- column_formatter(
+    table = test_df,
+    columns = "Date_column",
+    width = 20,
+    alignment = "left"
+  )
+
+  named_cols_df <- column_formatter(
+    table = named_cols_df,
+    columns = "col1",
+    width = 25,
+    alignment = "right"
+  )
+
+  # only Date_column and col1 are affected
+
+  expect_equal(attr(named_cols_df$Date_column, "aftables_width"), 20)
+  expect_equal(attr(named_cols_df$Date_column, "aftables_alignment"), "left")
+  expect_equal(attr(named_cols_df$col1, "aftables_width"), 25)
+  expect_equal(attr(named_cols_df$col1, "aftables_alignment"), "right")
+  expect_null(attr(named_cols_df$col2, "aftables_width"))
+  expect_null(attr(named_cols_df$col2, "aftables_alignment"))
+  expect_null(attr(named_cols_df$col3, "aftables_width"))
+  expect_null(attr(named_cols_df$col3, "aftables_alignment"))
+  expect_null(attr(named_cols_df$col4, "aftables_width"))
+  expect_null(attr(named_cols_df$col4, "aftables_alignment"))
+
+  # test leaving width to default (NA) adds attributes
+  df_add_attribute <-
+    test_df |>
+    column_formatter(
+      columns = c("Date_column", "col1"),
+      width = 20
+    )
+
+  df_add_attribute <-
+    df_add_attribute |>
+    column_formatter(
+      columns = "Date_column",
+      alignment = "left"
+    )
+
+  # width set for Date_column is preserved after setting alignment
+  expect_equal(attr(df_add_attribute$Date_column, "aftables_width"), 20)
+
+  # test setting alignment to NULL removes attributes
+  df_remove_attribute <-
+    df_add_attribute |>
+    column_formatter(
+      columns = "Date_column",
+      alignment = NULL
+    )
+
+  expect_null(attr(df_remove_attribute$Date_column, "aftables_alignment"))
+
+  expect_error(
+    test_df |>
+      column_formatter(
+        columns = "Date_column",
+        width = "20"
+      ),
+    "`width` must be numeric."
+  )
+
+  expect_error(
+    test_df |>
+      column_formatter(
+        columns = "Date_column",
+        width = c(20, 25)
+      ),
+    "`width` must be of length 1."
+  )
+
+  expect_error(
+    test_df |>
+      column_formatter(
+        columns = "Date_column",
+        alignment = 20
+      ),
+    "`alignment` must be character, and can only be `left` or `right`."
+  )
+
+  expect_error(
+    test_df |>
+      column_formatter(
+        columns = "Date_column",
+        alignment = c("left", "right")
+      ),
+    "`alignment` must be of length 1."
+  )
+
+  expect_error(
+    test_df |>
+      column_formatter(
+        columns = "Date_column",
+        alignment = "middle"
+      ),
+    "`alignment` must be character, and can only be `left` or `right`."
+  )
+
+})

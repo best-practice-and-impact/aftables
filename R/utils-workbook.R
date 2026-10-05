@@ -988,8 +988,8 @@
       )
     ) |>
     dplyr::select(
-      .data$cell_reference,
-      .data$cell_format
+      "cell_reference",
+      "cell_format"
     ) |>
     dplyr::group_by(.data$cell_format) |>
     dplyr::summarise(
