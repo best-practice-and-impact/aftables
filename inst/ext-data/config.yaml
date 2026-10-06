@@ -19,6 +19,7 @@ aftables:
       cellwidth_default: 16
       cellwidth_wider: 32
       nchar_break: 50
+      config_links: 0
   workbook1:
     workbook_properties:
       category: "aftables workbook 1 category"

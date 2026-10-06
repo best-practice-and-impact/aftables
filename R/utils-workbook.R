@@ -550,6 +550,56 @@
   }
 }
 
+# Special case to insert contents table with internal links.
+.insert_contents_table <- function(wb, content, table_name, link_column) {
+
+  table <- content[content$table_name == "contents", ][["table"]][[1]]
+  tab_title <- content[content$table_name == "contents", "tab_title"][[1]]
+
+  start_row <- .get_start_row_table(
+    content,
+    tab_title,
+    .has_notes(content, tab_title),
+    .has_blanks_message(content, tab_title),
+    .has_custom_rows(content, tab_title),
+    .has_source(content, tab_title)
+  )
+
+  wb$add_data_table(
+    sheet = tab_title,
+    x = table,
+    table_name = table_name,
+    start_col = 1,
+    start_row = start_row,
+    table_style = "none",
+    with_filter = FALSE,
+    banded_rows = FALSE,
+    na.strings = ""
+  )
+
+  if (link_column > 0) {
+    contents_links <- unlist(table[[link_column]], use.names = FALSE)
+
+    for (i in seq_along(contents_links)) {
+      has_internal_hyperlink <-
+        stringr::str_detect(
+          contents_links[[i]],
+          "=HYPERLINK")
+
+      if (has_internal_hyperlink) {
+        wb$add_formula(
+          sheet = tab_title,
+          x = contents_links[[i]],
+          dims = wb_dims(x = contents_links[[i]],
+                         from_col = link_column,
+                         from_row = start_row + i)
+        )
+      }
+    }
+  }
+}
+
+
 
 # Handle hyperlinks -------------------------------------------------------
 
@@ -657,7 +707,45 @@
   .insert_title(wb, content, tab_title)
   .insert_table_count(wb, content, tab_title)
   .insert_custom_rows(wb, content, tab_title)
-  table_format <- .insert_table(wb, content, table_name)
+
+  if (!is.null(workbook_format$config_links)) {
+    contents_link_column <- workbook_format$config_links
+  } else {
+    contents_link_column <- 0
+  }
+
+  if (contents_link_column >
+      ncol(content$table[content$sheet_type == "contents"][[1]])) {
+    stop("The column to be turned into internal links does not exist in the Contents table",
+         call. = FALSE)
+  }
+
+  # the content table may contain a Notes entry but there doesn't have to be a
+  # Notes table. The number of tabs can be different to the number of entries
+  # in the contents table. If this happens aftables can't create links to the
+  # tabs as it doesn't know which tab is the Notes tab.
+  # The user will receive a separate warning.
+  link_content <-
+    content$tab_title[content$sheet_type %in% c("notes", "tables")]
+
+  link_text <-
+    unlist(content$table[content$sheet_type == "contents"][[1]][contents_link_column],
+           use.names = FALSE)
+
+  # convert the first column of the contents table into hyperlinks
+  if (contents_link_column > 0 &
+      length(link_content) == length(link_text)) {
+    content$table[content$sheet_type == "contents"][[1]][contents_link_column] <-
+      map2(
+        link_content,
+        link_text,
+        \(x, y)
+        create_hyperlink(sheet = x, text = y)
+      ) |>
+      unlist(use.names = FALSE)
+  }
+
+  table_format <- .insert_contents_table(wb, content, table_name, contents_link_column)
 
   styles <- .style_paragraph()
   .style_sheet_title(wb, tab_title, styles, font_ref)
@@ -988,8 +1076,8 @@
       )
     ) |>
     dplyr::select(
-      .data$cell_reference,
-      .data$cell_format
+      "cell_reference",
+      "cell_format"
     ) |>
     dplyr::group_by(.data$cell_format) |>
     dplyr::summarise(

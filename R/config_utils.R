@@ -58,7 +58,11 @@
 #' value of `nchar_break` aftables will set the column width to the value of
 #' `cellwidth_wider`. Users can avoid text wrapping in columns or column headers
 #' by setting the value of `nchar_break` based on their data or the content of
-#' their column headers.
+#' their column headers. The value of `config_links` determines which column of
+#' the Contents table is turned into an internal link to each tab. The default
+#' value of `0` will stop aftables from creating internal links in the Contents
+#' table. Setting it to any other number will create internal links in the
+#' corresponding column of the Contents table.
 #'
 #' Not all workbook configuration options need to be set. Required settings are
 #' documented in \code{\link[aftables]{generate_workbook}}.
@@ -140,7 +144,7 @@ create_config_yaml <- function(path = getwd(),
 
   if (!is.null(config_path) && file.exists(config_path)) {
 
-    config_file <- yaml::read_yaml(config_path)
+    config_file <- read_yaml(config_path)
 
     if (config_path != "config.yaml" &&
           !pluck_exists(config_file, "aftables")) {
@@ -343,7 +347,7 @@ create_config_yaml <- function(path = getwd(),
     tibble::tibble(
       correct_parent = c(
         rep("workbook_properties", 6),
-        rep("workbook_format", 8)
+        rep("workbook_format", 9)
       ),
       entry = c(
         "author",
@@ -359,11 +363,12 @@ create_config_yaml <- function(path = getwd(),
         "nchar_break",
         "sheet_heading_size",
         "sheet_subheading_size",
-        "table_header_size"
+        "table_header_size",
+        "config_links"
       ),
       datatype = c(
         rep("character", 7),
-        rep("integer", 7)
+        rep("integer", 8)
       )
     )
 

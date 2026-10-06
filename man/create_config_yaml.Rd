@@ -46,6 +46,7 @@ Contents of example config.yaml:
       cellwidth_default: 16
       cellwidth_wider: 32
       nchar_break: 50
+      config_links: 0
   workbook1:
     workbook_properties:
       category: "aftables workbook 1 category"
@@ -94,7 +95,11 @@ of characters in a column header or the contents of a column exceeds the
 value of \code{nchar_break} aftables will set the column width to the value of
 \code{cellwidth_wider}. Users can avoid text wrapping in columns or column headers
 by setting the value of \code{nchar_break} based on their data or the content of
-their column headers.
+their column headers. The value of \code{config_links} determines which column of
+the Contents table is turned into an internal link to each tab. The default
+value of \code{0} will stop aftables from creating internal links in the Contents
+table. Setting it to any other number will create internal links in the
+corresponding column of the Contents table.
 
 Not all workbook configuration options need to be set. Required settings are
 documented in \code{\link[aftables]{generate_workbook}}.

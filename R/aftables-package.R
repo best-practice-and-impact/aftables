@@ -19,10 +19,12 @@
 #' @importFrom purrr pluck_exists
 #' @importFrom purrr list_modify
 #' @importFrom purrr map_depth
+#' @importFrom purrr map2
 #' @importFrom purrr compact
 #' @importFrom stringr str_extract
 #' @importFrom stringr str_replace
 #' @importFrom stringr str_replace_all
 #' @importFrom tibble tibble
+#' @importFrom yaml read_yaml
 ## usethis namespace: end
 NULL
