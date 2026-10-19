@@ -262,7 +262,7 @@ test_that("non-conforming tab_titles are cleaned", {
       tab_titles = c("cover", "contents", "Table 2"),
       sheet_types = c("cover", "contents", "tables"),
       sheet_titles = c("Cover", "Contents", "Table"),
-      sources = "Source",
+      sources = c(NA_character_, NA_character_, "Source"),
       tables = list(
         demo_df[["table"]][[1]],
         demo_df[["table"]][[2]][3, ],
@@ -363,7 +363,7 @@ test_that("Note mismatch is caught", {
 
 
 test_that("warning is raised if a source statement is missing", {
-  demo_df[demo_df$tab_title == "Table_1", "source"] <- NA_character_
+  demo_df[demo_df$tab_title == "Table_1", "sources"] <- NA_character_
 
   expect_warning(
     as_aftable(demo_df),
@@ -461,3 +461,4 @@ test_that("character class columns are caught if not character class", {
   demo_df[, "sheet_type"] <- seq_len(nrow(demo_df))
   expect_error(as_aftable(demo_df))
 })
+

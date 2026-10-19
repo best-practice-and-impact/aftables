@@ -126,7 +126,7 @@ test_that("Cell formats are set properly when no config set", {
   expect_true(stringr::str_detect(cell_format, "<sz val=\"14\"/>")) # size 14
 
   # table header
-  xf_font_id <- openxlsx2::wb_get_cell_style(wb, "Table_1", "A8") |> as.integer()
+  xf_font_id <- openxlsx2::wb_get_cell_style(wb, "Table_1", "A9") |> as.integer()
 
   font_id <- (wb_xf |> filter(id == xf_font_id))$name
 
@@ -188,7 +188,7 @@ test_that("Cell formats are set properly from default and custom configs combine
   expect_true(stringr::str_detect(cell_format, "<sz val=\"18\"/>")) # custom size 18
 
   # table header
-  xf_font_id <- openxlsx2::wb_get_cell_style(wb, "Table_1", "A8") |> as.integer()
+  xf_font_id <- openxlsx2::wb_get_cell_style(wb, "Table_1", "A9") |> as.integer()
 
   font_id <- (wb_xf |> filter(id == xf_font_id))$name
 
