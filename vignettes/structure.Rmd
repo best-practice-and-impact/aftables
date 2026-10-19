@@ -74,10 +74,11 @@ Compare this to its appearance as a regular data.frame, which is trickier to und
 as.data.frame(my_aftable)
 ```
 
-Within `as_aftable()` itself are two major functions that help ensure proper construction of an aftable object:
+Within `as_aftable()` itself are three major functions that help ensure proper construction of an aftable object:
 
 * `.validate_aftable()` will generate errors if basic structural expectations of an aftable aren't met (e.g. if 'cover', 'contents' or 'notes' have been provided more than once to the `sheet_type` argument)
 * `.warn_aftable()` checks for things that the user may have forgotten and prints warnings about them (e.g. if 5 notes are declared in the notes sheet but there are fewer in the tables themselves)
+* `.clean_aftable()` removes metadata (blank_cells, custom_rows, sources) which isn't needed (e.g. NA values or wrong sheet type)
 
 Advanced users can create a correctly-formatted data.frame on the fly and convert it to an aftable with `as_aftable()` directly. The `as_aftable()` function mainly exists to make testing easier, i.e. you can pass to it the pre-prepared `demo_df` dataset.
 
@@ -153,7 +154,8 @@ A table of data is added under the metadata with `.insert_table()`, which is pro
 
 The exact `.insert_*()` functions called depend on the `sheet_type` declared in the aftable:
 
-* meta sheets (cover, contents and notes) need only `.insert_title()` and `.insert_table_count()`
+* The cover sheet needs only `.insert_title()` and `.insert_table_count()`.
+* The contents and notes sheets need `.insert_title()`, `.insert_table_count()`, and `.insert_custom_rows()` if the relevant content is provided by the user.
 * statistical tables may also require `.insert_blanks_message()`, `.insert_custom_rows()` and `.insert_source()` if the relevant content is provided by the user, as well as `.insert_notes_statement()` if there are notes
 
 Simple logic is used to check for the presence of meta elements with the `.has_*()` functions, while the `get_start_row_*()` functions handle the cell to which each message should be inserted. 

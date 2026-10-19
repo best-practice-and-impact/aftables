@@ -1,5 +1,7 @@
 # aftables (development version)
 
+*  `create_aftable` now accepts a list of character vectors for `sources` argument. This allows multiple sources per sheet.
+
 # aftables 2.1.0
 
 * Added `number_formatter` function for control over how numbers appear.

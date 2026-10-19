@@ -9,7 +9,7 @@ create_aftable(
   sheet_types = c("cover", "contents", "notes", "tables"),
   sheet_titles,
   blank_cells = NA_character_,
-  sources = NA_character_,
+  sources = list(NA_character_),
   custom_rows = list(NA_character_),
   tables
 )
@@ -23,26 +23,29 @@ underscores for spaces. For example: 'Cover', 'Contents', 'Notes',
 
 \item{sheet_types}{Required character vector, one value per sheet. Sheets
 that don't contain publication tables ('meta' sheets) should be of type
-'contents', 'cover' or 'notes'. Sheets that contain statistical tables of
+'cover', 'contents', or 'notes'. Sheets that contain statistical tables of
 data are type 'tables'.}
 
 \item{sheet_titles}{Required character vector, one value per sheet. The main
 title for each sheet, which will appear in cell A1 (top-left corner).}
 
 \item{blank_cells}{Optional character vector, one value per sheet. A short
-sentence to explain the reason for any blank cells in the sheet. Supply
-as \code{NA_character_} if empty. Most likely to be used with sheet type
-'tables'.}
+sentence to explain the reason for any blank cells in the sheet. Supply as
+\code{NA_character_} if empty. Value should be \code{NA_character_} when sheet
+type is not 'tables`.}
 
-\item{sources}{Optional character vector, one value per sheet. The origin of
-the data for a given sheet. Supply as \code{NA_character_} if empty. To
-be used with sheet type 'tables'.}
+\item{sources}{Optional character vector or list of character vectors, one
+value or list element per sheet. The origin of the data for a given sheet.
+If using a list of character vectors, each sheet can have multiple sources
+by supplying a character vector of length greater than 1 for that list
+item. Supply as \code{NA_character_} if empty. To be used with sheet type
+'tables'. Value should be \code{NA_character_} when sheet type is not 'tables`.}
 
 \item{custom_rows}{Optional list of character vectors. One list element per
-sheet, one character vector element per row of pre-table metadata. Supply
-a list element as \code{NA_character_} if empty. To be used with sheet
-type 'tables', but can also be used for sheet types 'contents' and
-'notes'.}
+sheet, one character vector element per row of pre-table metadata. Supply a
+list element as \code{NA_character_} if empty. To be used with sheet type
+'tables', but can also be used for sheet types 'contents' and 'notes'.
+Value should be \code{NA_character_} when sheet type is 'cover`.}
 
 \item{tables}{Required list of data.frames (though the cover sheet may be
 supplied as a list), one per sheet. See details.}
@@ -181,11 +184,13 @@ x <- aftables::create_aftable(
     ),
     "A custom row."
   ),
-  sources = c(
-    rep(NA_character_, 3),
-    paste0(
-      "[The Source Material, 2024.]",
-      "(https://best-practice-and-impact.github.io/aftables/)"
+  sources = list(
+    NA_character_,
+    NA_character_,
+    NA_character_,
+    c(
+      "[The Source Material, 2024](https://best-practice-and-impact.github.io/aftables/)",
+      "[A second source, 2026](https://github.com/best-practice-and-impact/aftables)"
     ),
     "The Source Material, 2024."
   ),

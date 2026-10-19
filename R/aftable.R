@@ -6,30 +6,33 @@
 #' wbWorkbook-class object with the function \code{\link{generate_workbook}}.
 #'
 #' @param tab_titles Required character vector, one value per sheet. Each title
-#'     will appear literally on each tab of the final spreadsheet output. Keep
-#'     brief. Letters and numbers only; do not start with a number; use
-#'     underscores for spaces. For example: 'Cover', 'Contents', 'Notes',
-#'     'Table_1'. Will be corrected automatically unless there's an error.
+#'   will appear literally on each tab of the final spreadsheet output. Keep
+#'   brief. Letters and numbers only; do not start with a number; use
+#'   underscores for spaces. For example: 'Cover', 'Contents', 'Notes',
+#'   'Table_1'. Will be corrected automatically unless there's an error.
 #' @param sheet_types Required character vector, one value per sheet. Sheets
-#'     that don't contain publication tables ('meta' sheets) should be of type
-#'     'contents', 'cover' or 'notes'. Sheets that contain statistical tables of
-#'     data are type 'tables'.
+#'   that don't contain publication tables ('meta' sheets) should be of type
+#'   'cover', 'contents', or 'notes'. Sheets that contain statistical tables of
+#'   data are type 'tables'.
 #' @param sheet_titles Required character vector, one value per sheet. The main
-#'     title for each sheet, which will appear in cell A1 (top-left corner).
+#'   title for each sheet, which will appear in cell A1 (top-left corner).
 #' @param blank_cells Optional character vector, one value per sheet. A short
-#'     sentence to explain the reason for any blank cells in the sheet. Supply
-#'     as \code{NA_character_} if empty. Most likely to be used with sheet type
-#'     'tables'.
+#'   sentence to explain the reason for any blank cells in the sheet. Supply as
+#'   \code{NA_character_} if empty. Value should be `NA_character_` when sheet
+#'   type is not 'tables`.
 #' @param custom_rows Optional list of character vectors. One list element per
-#'     sheet, one character vector element per row of pre-table metadata. Supply
-#'     a list element as \code{NA_character_} if empty. To be used with sheet
-#'     type 'tables', but can also be used for sheet types 'contents' and
-#'     'notes'.
-#' @param sources Optional character vector, one value per sheet. The origin of
-#'     the data for a given sheet. Supply as \code{NA_character_} if empty. To
-#'     be used with sheet type 'tables'.
+#'   sheet, one character vector element per row of pre-table metadata. Supply a
+#'   list element as \code{NA_character_} if empty. To be used with sheet type
+#'   'tables', but can also be used for sheet types 'contents' and 'notes'.
+#'   Value should be `NA_character_` when sheet type is 'cover`.
+#' @param sources Optional character vector or list of character vectors, one
+#'   value or list element per sheet. The origin of the data for a given sheet.
+#'   If using a list of character vectors, each sheet can have multiple sources
+#'   by supplying a character vector of length greater than 1 for that list
+#'   item. Supply as \code{NA_character_} if empty. To be used with sheet type
+#'   'tables'. Value should be `NA_character_` when sheet type is not 'tables`.
 #' @param tables Required list of data.frames (though the cover sheet may be
-#'     supplied as a list), one per sheet. See details.
+#'   supplied as a list), one per sheet. See details.
 #'
 #' @details
 #'
@@ -157,11 +160,13 @@
 #'     ),
 #'     "A custom row."
 #'   ),
-#'   sources = c(
-#'     rep(NA_character_, 3),
-#'     paste0(
-#'       "[The Source Material, 2024.]",
-#'       "(https://best-practice-and-impact.github.io/aftables/)"
+#'   sources = list(
+#'     NA_character_,
+#'     NA_character_,
+#'     NA_character_,
+#'     c(
+#'       "[The Source Material, 2024](https://best-practice-and-impact.github.io/aftables/)",
+#'       "[A second source, 2026](https://github.com/best-practice-and-impact/aftables)"
 #'     ),
 #'     "The Source Material, 2024."
 #'   ),
@@ -179,19 +184,23 @@ create_aftable <- function(tab_titles,
                            sheet_types = c("cover", "contents", "notes", "tables"),
                            sheet_titles,
                            blank_cells = NA_character_,
-                           sources = NA_character_,
+                           sources = list(NA_character_),
                            custom_rows = list(NA_character_),
                            tables) {
+
+  if (is.character(sources)) {
+    sources <- as.list(sources)
+  }
 
   x <- data.frame(
     tab_title = unlist(tab_titles),
     sheet_type = unlist(sheet_types),
     sheet_title = unlist(sheet_titles),
     blank_cells = unlist(blank_cells),
-    source = unlist(sources),
     stringsAsFactors = FALSE # because default is TRUE prior to R v4
   )
 
+  x[["sources"]] <- sources
   x[["custom_rows"]] <- custom_rows
   x[["table"]] <- tables
 
@@ -227,6 +236,8 @@ as_aftable <- function(x) {
 
   .validate_aftable(x)
   .warn_aftable(x)
+
+  x <- .clean_aftable(x)
 
   x
 }
