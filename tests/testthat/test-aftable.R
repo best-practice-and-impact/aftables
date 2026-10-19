@@ -461,4 +461,3 @@ test_that("character class columns are caught if not character class", {
   demo_df[, "sheet_type"] <- seq_len(nrow(demo_df))
   expect_error(as_aftable(demo_df))
 })
-
