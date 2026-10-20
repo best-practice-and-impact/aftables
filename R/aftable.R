@@ -19,7 +19,7 @@
 #' @param blank_cells Optional character vector, one value per sheet. A short
 #'   sentence to explain the reason for any blank cells in the sheet. Supply as
 #'   \code{NA_character_} if empty. Value should be `NA_character_` when sheet
-#'   type is not 'tables`.
+#'   type is not 'tables'.
 #' @param custom_rows Optional list of character vectors. One list element per
 #'   sheet, one character vector element per row of pre-table metadata. Supply a
 #'   list element as \code{NA_character_} if empty. To be used with sheet type
