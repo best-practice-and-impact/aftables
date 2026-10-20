@@ -68,9 +68,14 @@ demo_aftable <- create_aftable(
     ),
     "A custom row."
   ),
-  sources = c(
-    rep(NA_character_, 3),
-    "[The Source Material, 2024.](https://best-practice-and-impact.github.io/aftables/)",
+  sources = list(
+    NA_character_,
+    NA_character_,
+    NA_character_,
+    c(
+      "[The Source Material, 2024](https://best-practice-and-impact.github.io/aftables/)",
+      "[A second source, 2026](https://github.com/best-practice-and-impact/aftables)"
+    ),
     "The Source Material, 2024."
   ),
   tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)

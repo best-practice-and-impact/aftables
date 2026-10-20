@@ -90,6 +90,8 @@ generate_workbook <- function(aftable,
     stop("keywords must be a character vector", call. = FALSE)
   }
 
+
+  # Set workbook properties
   user_config <- list(
     workbook_properties = list(
       author = author,
@@ -106,11 +108,13 @@ generate_workbook <- function(aftable,
 
   font_ref <- .style_font(workbook_format)
 
+
   # Create a table_name from tab_title (unique, no spaces, no punctuation)
   aftable[["table_name"]] <-
     gsub(" ", "_", tolower(trimws(aftable[["tab_title"]])))
   aftable[["table_name"]] <-
     gsub("(?!_)[[:punct:]]", "", aftable[["table_name"]], perl = TRUE)
+
 
   # Create workbook, set base style, set properties, add tabs, cover, contents (required for all workbooks)
   wb <- wb_workbook(theme = "Office 2007 - 2010 Theme")
