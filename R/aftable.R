@@ -24,13 +24,13 @@
 #'   sheet, one character vector element per row of pre-table metadata. Supply a
 #'   list element as \code{NA_character_} if empty. To be used with sheet type
 #'   'tables', but can also be used for sheet types 'contents' and 'notes'.
-#'   Value should be `NA_character_` when sheet type is 'cover`.
+#'   Value should be `NA_character_` when sheet type is 'cover'.
 #' @param sources Optional character vector or list of character vectors, one
 #'   value or list element per sheet. The origin of the data for a given sheet.
 #'   If using a list of character vectors, each sheet can have multiple sources
 #'   by supplying a character vector of length greater than 1 for that list
 #'   item. Supply as \code{NA_character_} if empty. To be used with sheet type
-#'   'tables'. Value should be `NA_character_` when sheet type is not 'tables`.
+#'   'tables'. Value should be `NA_character_` when sheet type is not 'tables'.
 #' @param tables Required list of data.frames (though the cover sheet may be
 #'   supplied as a list), one per sheet. See details.
 #'

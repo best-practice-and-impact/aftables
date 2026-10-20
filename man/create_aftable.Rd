@@ -32,20 +32,20 @@ title for each sheet, which will appear in cell A1 (top-left corner).}
 \item{blank_cells}{Optional character vector, one value per sheet. A short
 sentence to explain the reason for any blank cells in the sheet. Supply as
 \code{NA_character_} if empty. Value should be \code{NA_character_} when sheet
-type is not 'tables`.}
+type is not 'tables'.}
 
 \item{sources}{Optional character vector or list of character vectors, one
 value or list element per sheet. The origin of the data for a given sheet.
 If using a list of character vectors, each sheet can have multiple sources
 by supplying a character vector of length greater than 1 for that list
 item. Supply as \code{NA_character_} if empty. To be used with sheet type
-'tables'. Value should be \code{NA_character_} when sheet type is not 'tables`.}
+'tables'. Value should be \code{NA_character_} when sheet type is not 'tables'.}
 
 \item{custom_rows}{Optional list of character vectors. One list element per
 sheet, one character vector element per row of pre-table metadata. Supply a
 list element as \code{NA_character_} if empty. To be used with sheet type
 'tables', but can also be used for sheet types 'contents' and 'notes'.
-Value should be \code{NA_character_} when sheet type is 'cover`.}
+Value should be \code{NA_character_} when sheet type is 'cover'.}
 
 \item{tables}{Required list of data.frames (though the cover sheet may be
 supplied as a list), one per sheet. See details.}
