@@ -153,6 +153,11 @@ test_that("class validation works", {
                "The input data.frame must have sheet_type 'cover' and 'contents'.")
 
   test_demo_df <- demo_df
+  test_demo_df$sources <- 1
+  expect_error(as_aftable(test_demo_df),
+               "List-column 'sources' must contain character vectors only.")
+
+  test_demo_df <- demo_df
   test_demo_df$custom_rows <- NA_character_
   expect_error(as_aftable(test_demo_df),
                "Column 'table' must be a listcol of character vectors")
@@ -370,6 +375,52 @@ test_that("warning is raised if a source statement is missing", {
     "One of your tables is missing a source statement."
   )
 })
+
+test_that("warning is raised if source provided for wrong sheet", {
+  demo_df[demo_df$tab_title == "Cover", "sources"] <- "Source for cover"
+
+  expect_warning(
+    test_aftable <- as_aftable(demo_df),
+    "You have provided a source for a sheet which doesn't have types 'tables'. This will be removed."
+  )
+
+  expect_identical(
+    test_aftable$sources[test_aftable$tab_title == "Cover"],
+    list(NA_character_)
+  )
+
+})
+
+test_that("warning is raised if custom_rows provided for wrong sheet", {
+  demo_df[demo_df$tab_title == "Cover", "custom_rows"] <- "custom_rows for cover"
+
+  expect_warning(
+    test_aftable <- as_aftable(demo_df),
+    "You have provided a custom row for the cover sheet. This will be removed."
+  )
+
+  expect_identical(
+    test_aftable$custom_rows[test_aftable$tab_title == "Cover"],
+    list(NA_character_)
+  )
+
+})
+
+test_that("warning is raised if blank_cells provided for wrong sheet", {
+  demo_df[demo_df$tab_title == "Notes", "blank_cells"] <- "blank_cells for notes"
+
+  expect_warning(
+    test_aftable <- as_aftable(demo_df),
+    "You have provided a blank_cells for a sheet which doesn't have types 'tables'. This will be removed."
+  )
+
+  expect_identical(
+    test_aftable$blank_cells[test_aftable$tab_title == "Notes"],
+    NA_character_
+  )
+
+})
+
 
 test_that("warning is raised if there's no blank cells but there is a reason", {
   demo_df[demo_df$tab_title == "Table_2", "blank_cells"] <- "x"

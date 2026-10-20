@@ -223,6 +223,12 @@ create_aftable <- function(tab_titles,
 #'
 #' @export
 as_aftable <- function(x) {
+
+  if (is.data.frame(x) && is.character(x$sources)) {
+    x$sources <- as.list(x$sources)
+  }
+
+
   if (any(names(x) %in% "tab_title")) {
     .check_tab_titles(x[["tab_title"]])
     x[["tab_title"]] <- .clean_tab_titles(x[["tab_title"]])
