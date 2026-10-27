@@ -437,8 +437,8 @@ test_that("period added to end of text if needed", {
   expect_identical(.append_period(NA), NA)
 
   expect_identical(
-    .append_period(c("Test", "Test.", NA_character_)),
-    c("Test.", "Test.", NA)
+    .append_period(c("Test", "Test.", NA_character_, "")),
+    c("Test.", "Test.", NA, "")
   )
 })
 

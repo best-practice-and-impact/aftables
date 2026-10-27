@@ -44,7 +44,7 @@
   last_char <- substr(text, nchar(text), nchar(text))
 
   for (i in seq_along(text)) {
-    if (!is.na(last_char[i]) && last_char[i] != ".") {
+    if (nzchar(text[i]) && !is.na(last_char[i]) && last_char[i] != ".") {
       text[i] <- paste0(text[i], ".")
     }
   }
@@ -243,7 +243,9 @@
 
   if (
     any(
-      purrr::map_lgl(table_sources, .f = \(x) length(x) == 1 && is.na(x))
+      purrr::map_lgl(
+        table_sources, .f = \(x) length(x) == 1 && (is.na(x) || !nzchar(x))
+      )
     )
   ) {
     warning(
@@ -254,11 +256,14 @@
 
   if (
     any(
-      purrr::map_lgl(table_sources, .f = \(x) length(x) > 1 && any(is.na(x)))
+      purrr::map_lgl(
+        table_sources,
+        .f = \(x) length(x) > 1 && any(is.na(x) | !nzchar(x))
+      )
     )
   ) {
     warning(
-      "One of your source statements is blank (NA) and will be removed.",
+      "One of your source statements is blank (NA or empty string) and will be removed.",
       call. = FALSE
     )
   }
@@ -278,11 +283,14 @@
 
   if (
     any(
-      purrr::map_lgl(custom_rows, .f = \(x) length(x) > 1 && any(is.na(x)))
+      purrr::map_lgl(
+        custom_rows,
+        .f = \(x) any(!nzchar(x)) || (length(x) > 1 && any(is.na(x)))
+      )
     )
   ) {
     warning(
-      "One of your custom rows is blank (NA) and will be removed.",
+      "One of your custom rows is blank (NA or empty string) and will be removed.",
       call. = FALSE
     )
   }
@@ -438,7 +446,7 @@
 
   # Remove blanks message from non-table sheets
 
-  x[["blank_cells"]][x$sheet_type != "tables"] <- NA
+  x[["blank_cells"]][x[["sheet_type"]] != "tables" | !nzchar(x[["blank_cells"]])] <- NA
 
 
   # Remove blank sources
@@ -448,7 +456,7 @@
     x[["sheet_type"]],
     .f = \(val, sheet_type) {
 
-      val <- val[!is.na(val)]
+      val <- val[!is.na(val) & nzchar(val)]
 
       if (sheet_type != "tables" || length(val) == 0) {
         val <- NA_character_
@@ -467,7 +475,7 @@
     x[["sheet_type"]],
     .f = \(val, sheet_type) {
 
-      val <- val[!is.na(val)]
+      val <- val[!is.na(val) & nzchar(val)]
 
       if (sheet_type == "cover" || length(val) == 0) {
         val <- NA_character_
