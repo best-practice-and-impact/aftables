@@ -22,6 +22,7 @@ importFrom(pillar,tbl_sum)
 importFrom(purrr,
   compact,
   list_modify,
+  map2,
   map_depth,
   pluck,
   pluck_exists,
@@ -38,3 +39,4 @@ importFrom(stringr,
 )
 importFrom(tibble,tibble)
 importFrom(tidyselect,where)
+importFrom(yaml,read_yaml)

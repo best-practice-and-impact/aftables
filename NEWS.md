@@ -1,6 +1,8 @@
 # aftables (development version)
 
-*  `create_aftable` now accepts a list of character vectors for `sources` argument. This allows multiple sources per sheet.
+* Added functionality to create internal links in the Contents table. This optional feature is disabled by default and can be enabled by using a config file. (#140)
+* A new optional entry has been added to the config file `content_links` as a child of the `workbook_format` entry. The default value of `0` will stop aftables from creating internal links in the Contents table. Setting it to any other number will cause aftables to create internal links in the corresponding column of the Contents table.
+* `create_aftable` now accepts a list of character vectors for `sources` argument. This allows multiple sources per sheet.
 
 # aftables 2.1.0
 

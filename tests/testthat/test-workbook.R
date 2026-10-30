@@ -37,8 +37,6 @@ test_that("Error if workbook properties arguments are not correct type", {
 
 })
 
-
-
 test_that(".stop_bad_input works as intended", {
   wb <- openxlsx2::wb_workbook()
 
@@ -58,4 +56,41 @@ test_that("hyperlinks are generated on the cover page", {
   )
 
   expect_equal(sum(grepl("HYPERLINK", wb$worksheets[[1]]$sheet_data$cc$f)), 2)
+})
+
+test_that("Creating links in a column which doesn't exist causes error", {
+
+  # create a temp config file
+  config_file <-
+    withr::local_tempfile(
+      pattern = "config",
+      fileext = ".yaml"
+    )
+
+  config_path <- gsub(pattern = "config.*.yaml",
+                      x = config_file,
+                      "")
+
+  suppressMessages(
+    create_config_yaml(path = config_path,
+                       open_config = FALSE)
+  )
+
+  temp_config <- read_yaml(paste0(config_path, "config.yaml"))
+
+  # demo_df only has 2 columns in the Contents table
+  temp_config$aftables$default$workbook_format$config_links <- as.integer(3)
+
+  yaml::write_yaml(x = temp_config,
+                   file = paste0(config_path, "config.yaml"))
+
+  expect_error(
+    expect_warning(
+      generate_workbook(as_aftable(demo_df),
+                        config_path = paste0(config_path, "config.yaml")),
+      "Your config file contains values identical to the aftables example config."
+    ),
+    "The column to be turned into internal links does not exist in the Contents table"
+  )
+
 })
