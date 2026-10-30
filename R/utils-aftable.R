@@ -44,7 +44,7 @@
   last_char <- substr(text, nchar(text), nchar(text))
 
   for (i in seq_along(text)) {
-    if (!is.na(last_char[i]) && last_char[i] != ".") {
+    if (nzchar(text[i]) && !is.na(last_char[i]) && last_char[i] != ".") {
       text[i] <- paste0(text[i], ".")
     }
   }
@@ -62,7 +62,7 @@
     "sheet_type",
     "sheet_title",
     "blank_cells",
-    "source",
+    "sources",
     "custom_rows",
     "table"
   )
@@ -107,9 +107,9 @@
     )
   }
 
-  # Class must be character for all columns except 'table' and 'custom_rows'
+  # Class must be character for all columns except 'table', 'sources' and 'custom_rows'
 
-  char_cols <- x[, !names(x) %in% c("table", "custom_rows")]
+  char_cols <- x[, !names(x) %in% c("table", "sources", "custom_rows")]
   are_char_cols <- unlist(lapply(char_cols, is.character))
 
   if (!all(are_char_cols)) {
@@ -124,6 +124,14 @@
     stop(
       "List-column 'table' must contain data.frame objects only. ",
       "The cover can also be of class 'list'.",
+      call. = FALSE
+    )
+  }
+
+  # Content of 'sources' listcol must be character
+  if (!all(unlist(lapply(x[["sources"]], is.character)))) {
+    stop(
+      "List-column 'sources' must contain character vectors only. ",
       call. = FALSE
     )
   }
@@ -208,17 +216,85 @@
     )
   }
 
+  # Warn if provide blank_cells on non-table sheet
+
+  non_table_blank_cells <- content[content$sheet_type != "tables", "blank_cells"]
+
+  if (!all(is.na(non_table_blank_cells))) {
+    warning(
+      "You have provided a blank_cells for a sheet which doesn't have types 'tables'. This will be removed.",
+      call. = FALSE
+    )
+  }
+
 
   # Warn about missing sources
 
-  table_sources <- content[content$sheet_type == "tables", "source"]
+  non_table_sources <- content[content$sheet_type != "tables", "sources"]
 
-  if (any(is.na(table_sources))) {
+  if (!all(is.na(non_table_sources))) {
+    warning(
+      "You have provided a source for a sheet which doesn't have types 'tables'. This will be removed.",
+      call. = FALSE
+    )
+  }
+
+  table_sources <- content[content$sheet_type == "tables", "sources"]
+
+  if (
+    any(
+      purrr::map_lgl(
+        table_sources, .f = \(x) length(x) == 1 && (is.na(x) || !nzchar(x))
+      )
+    )
+  ) {
     warning(
       "One of your tables is missing a source statement.",
       call. = FALSE
     )
   }
+
+  if (
+    any(
+      purrr::map_lgl(
+        table_sources,
+        .f = \(x) length(x) > 1 && any(is.na(x) | !nzchar(x))
+      )
+    )
+  ) {
+    warning(
+      "One of your source statements is blank (NA or empty string) and will be removed.",
+      call. = FALSE
+    )
+  }
+
+  # Warn about NA rows in custom cols
+
+  cover_custom_rows <- unlist(content[content$sheet_type == "cover", "custom_rows"])
+
+  if (!all(is.na(cover_custom_rows))) {
+    warning(
+      "You have provided a custom row for the cover sheet. This will be removed.",
+      call. = FALSE
+    )
+  }
+
+  custom_rows <- content[content$sheet_type != "cover", "custom_rows"]
+
+  if (
+    any(
+      purrr::map_lgl(
+        custom_rows,
+        .f = \(x) any(!nzchar(x)) || (length(x) > 1 && any(is.na(x)))
+      )
+    )
+  ) {
+    warning(
+      "One of your custom rows is blank (NA or empty string) and will be removed.",
+      call. = FALSE
+    )
+  }
+
 
   # Warn about possibly missing rows in the contents table
 
@@ -359,4 +435,59 @@
       call. = FALSE
     )
   }
+}
+
+
+#' Clean aftable to remove metadata which isn't needed
+#' @param text x. An object with class 'aftable', likely created with
+#'     \code{\link{create_aftable}}.
+#' @noRd
+.clean_aftable <- function(x) {
+
+  # Remove blanks message from non-table sheets
+
+  x[["blank_cells"]][x[["sheet_type"]] != "tables" | !nzchar(x[["blank_cells"]])] <- NA
+
+
+  # Remove blank sources
+
+  x[["sources"]] <- purrr::map2(
+    x[["sources"]],
+    x[["sheet_type"]],
+    .f = \(val, sheet_type) {
+
+      val <- val[!is.na(val) & nzchar(val)]
+
+      if (sheet_type != "tables" || length(val) == 0) {
+        val <- NA_character_
+      }
+
+      val
+
+    }
+  )
+
+
+  # Remove blank custom rows
+
+  x[["custom_rows"]] <- purrr::map2(
+    x[["custom_rows"]],
+    x[["sheet_type"]],
+    .f = \(val, sheet_type) {
+
+      val <- val[!is.na(val) & nzchar(val)]
+
+      if (sheet_type == "cover" || length(val) == 0) {
+        val <- NA_character_
+      }
+
+      val
+
+
+    }
+  )
+
+
+  x
+
 }
