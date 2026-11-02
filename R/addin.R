@@ -58,9 +58,9 @@ string_tables <- function() {
 contents_df <- data.frame(
   "Sheet name" = c("Notes", "Table 1", "Table 2"),
   "Sheet title" = c(
-    "Notes used in this workbook",
-    "First Example Sheet",
-    "Second Example Sheet"
+    "[Notes used in this workbook](Notes)",
+    "[First Example Sheet](Table_1)",
+    "[Second Example Sheet](Table_2)"
   ),
   check.names = FALSE
 )

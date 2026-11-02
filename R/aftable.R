@@ -31,8 +31,9 @@
 #'   by supplying a character vector of length greater than 1 for that list
 #'   item. Supply as \code{NA_character_} if empty. To be used with sheet type
 #'   'tables'. Value should be `NA_character_` when sheet type is not 'tables'.
-#' @param tables Required list of data.frames (though the cover sheet may be
-#'   supplied as a list), one per sheet. See details.
+#' @param tables Required list of data.frames, one per sheet. The cover sheet
+#'  may be supplied as a list, and the contents can be 'auto' instead of a data
+#'  frame. See details.
 #'
 #' @details
 #'
@@ -52,7 +53,10 @@
 #'         telephone number. You can use line breaks (i.e. '\\n') to separate
 #'         text into paragraphs.
 #'     \item Sheet type 'contents': one row per sheet, two columns suggested at
-#'         least (named 'Tab title' and 'Worksheet title').
+#'         least (named 'Tab title' and 'Worksheet title'). If supplied as
+#'         'auto', `create_aftable` will create a two-column Contents data frame
+#'         from the `tab_titles` and `sheet_titles` arguments. The second column
+#'         will be internal links to cell A1 of each sheet.
 #'     \item Sheet type 'notes': one row per note, two columns suggested (named
 #'         'Note number', 'Note text'), where notes are in the form
 #'         '\[note 1\]'.
@@ -65,19 +69,22 @@
 #'
 #' You can provide text in Markdown link syntax (e.g.
 #' '\[GOV.UK\](https://www.gov.uk)', adding 'mailto:' before an
-#' email address) and the containing cell will be rendered as a hyperlink in the
-#' output spreadsheet. Note that whole cells will become hyperlinks; there is no
-#' support for selected words in a sentence to be rendered as a hyperlink.
+#' email address) and the containing cell will be rendered as an external
+#' hyperlink in the output spreadsheet. Text in Markdown link syntax that does
+#' not contain a URL starting with 'http', 'https', 'ftp', or 'mailto' will be
+#' rendered as an internal hyperlink. Note that whole cells will become
+#' hyperlinks; there is no support for selected words in a sentence to be
+#' rendered as a hyperlink.
 #'
 #' Hyperlinks can be supplied in the character strings to three arguments:
 #'
 #' \itemize{
-#'     \item To the 'tables' argument for sheet type 'cover' only. It's
-#'         recommended to supply the cover information as a list rather than a
-#'         data.frame, which will allow you to make specific rows within a
-#'         section (e.g. 'contact us') into hyperlinks.
-#'     \item To the 'custom_rows' argument for sheets of type 'contents, 'notes'
-#'        and 'tables'.
+#'     \item To the 'tables' argument for sheet types 'cover', 'contents', and
+#'     'notes' only. It's recommended to supply the cover information as a list
+#'      rather than a data.frame, which will allow you to make specific rows
+#'      within a section (e.g. 'contact us') into hyperlinks.
+#'     \item To the 'custom_rows' argument for sheets of type 'contents',
+#'     'notes' and 'tables'.
 #'     \item To the 'source' argument for sheets of type 'table' only.
 #' }
 #'
@@ -100,9 +107,9 @@
 #' contents_df <- data.frame(
 #'   "Sheet name" = c("Notes", "Table_1", "Table_2"),
 #'   "Sheet title" = c(
-#'     "Notes used in this workbook",
-#'     "First Example Sheet",
-#'     "Second Example Sheet"
+#'     "[Notes used in this workbook](Notes)",
+#'     "[First Example Sheet](Table_1)",
+#'     "[Second Example Sheet](Table_2)"
 #'   ),
 #'   check.names = FALSE
 #' )
@@ -190,6 +197,23 @@ create_aftable <- function(tab_titles,
 
   if (is.character(sources)) {
     sources <- as.list(sources)
+  }
+
+  # create automatic table of contents with links in second column
+  if ("contents" %in% sheet_types &&
+        tables[sheet_types == "contents"] == "auto") {
+
+    tables[sheet_types == "contents"][[1]] <-
+      tibble(
+        "Sheet name" = tab_titles[!sheet_types %in% c("cover", "contents")],
+        "Sheet title" = paste0(
+          "[",
+          sheet_titles[!sheet_types %in% c("cover", "contents")],
+          "](",
+          tab_titles[!sheet_types %in% c("cover", "contents")],
+          ")"
+        )
+      )
   }
 
   x <- data.frame(

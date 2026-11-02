@@ -47,8 +47,9 @@ list element as \code{NA_character_} if empty. To be used with sheet type
 'tables', but can also be used for sheet types 'contents' and 'notes'.
 Value should be \code{NA_character_} when sheet type is 'cover'.}
 
-\item{tables}{Required list of data.frames (though the cover sheet may be
-supplied as a list), one per sheet. See details.}
+\item{tables}{Required list of data.frames, one per sheet. The cover sheet
+may be supplied as a list, and the contents can be 'auto' instead of a data
+frame. See details.}
 }
 \value{
 An object with classes 'aftable', 'tbl' and 'data.frame'.
@@ -76,7 +77,10 @@ the title 'Contact details' that contains an email address and
 telephone number. You can use line breaks (i.e. '\\n') to separate
 text into paragraphs.
 \item Sheet type 'contents': one row per sheet, two columns suggested at
-least (named 'Tab title' and 'Worksheet title').
+least (named 'Tab title' and 'Worksheet title'). If supplied as
+'auto', \code{create_aftable} will create a two-column Contents data frame
+from the \code{tab_titles} and \code{sheet_titles} arguments. The second column
+will be internal links to cell A1 of each sheet.
 \item Sheet type 'notes': one row per note, two columns suggested (named
 'Note number', 'Note text'), where notes are in the form
 '[note 1]'.
@@ -90,19 +94,22 @@ the form '[note 1]' to column headers, or in a special 'Notes' row.
 
 You can provide text in Markdown link syntax (e.g.
 '[GOV.UK](https://www.gov.uk)', adding 'mailto:' before an
-email address) and the containing cell will be rendered as a hyperlink in the
-output spreadsheet. Note that whole cells will become hyperlinks; there is no
-support for selected words in a sentence to be rendered as a hyperlink.
+email address) and the containing cell will be rendered as an external
+hyperlink in the output spreadsheet. Text in Markdown link syntax that does
+not contain a URL starting with 'http', 'https', 'ftp', or 'mailto' will be
+rendered as an internal hyperlink. Note that whole cells will become
+hyperlinks; there is no support for selected words in a sentence to be
+rendered as a hyperlink.
 
 Hyperlinks can be supplied in the character strings to three arguments:
 
 \itemize{
-\item To the 'tables' argument for sheet type 'cover' only. It's
-recommended to supply the cover information as a list rather than a
-data.frame, which will allow you to make specific rows within a
-section (e.g. 'contact us') into hyperlinks.
-\item To the 'custom_rows' argument for sheets of type 'contents, 'notes'
-and 'tables'.
+\item To the 'tables' argument for sheet types 'cover', 'contents', and
+'notes' only. It's recommended to supply the cover information as a list
+rather than a data.frame, which will allow you to make specific rows
+within a section (e.g. 'contact us') into hyperlinks.
+\item To the 'custom_rows' argument for sheets of type 'contents',
+'notes' and 'tables'.
 \item To the 'source' argument for sheets of type 'table' only.
 }
 }
@@ -124,9 +131,9 @@ cover_list <- list(
 contents_df <- data.frame(
   "Sheet name" = c("Notes", "Table_1", "Table_2"),
   "Sheet title" = c(
-    "Notes used in this workbook",
-    "First Example Sheet",
-    "Second Example Sheet"
+    "[Notes used in this workbook](Notes)",
+    "[First Example Sheet](Table_1)",
+    "[Second Example Sheet](Table_2)"
   ),
   check.names = FALSE
 )

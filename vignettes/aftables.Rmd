@@ -48,7 +48,7 @@ Each argument to `create_aftable()` provides the information needed to construct
 | `blank_cells` | No | Character vector | | A sentence that explains the reason for any blank cells in the sheet (if applicable) |
 | `custom_rows` | No | List of character vectors | | Arbitrary rows of text that the user wants to insert above a table, one list-item per sheet (contents, notes and tables sheets), one vector element per row |
 | `sources` | No | Character vector or List of character vectors | | A sentence provides the source of the data found in each table (only needed for sheets with `sheet_types` of 'table') |
-| `tables` | Yes | List of dataframes (although the cover sheet content can be provided as a list object) | | The main content for each sheet, expressed as flat ([probably tidy](https://www.jstatsoft.org/article/view/v059i10)) dataframes of rows and columns (though the cover can be a list) |
+| `tables` | Yes | List of dataframes, although the cover sheet content can be provided as a list object and the contents can be 'auto'. | | The main content for each sheet, expressed as flat ([probably tidy](https://www.jstatsoft.org/article/view/v059i10)) dataframes of rows and columns, though the cover can be a list and the contents can be 'auto'. |
 
 You can read more about these arguments and their requirements in the function's help pages, which you can access by running `?create_aftable` in the R console. See also the [terminology vignette](https://best-practice-and-impact.github.io/aftables/articles/terminology), `vignette("terminology", "aftables")`, for these terms and more.
 
@@ -81,9 +81,9 @@ Here's a demo table for the contents page (required):
 contents_df <- data.frame(
   "Sheet name" = c("Notes", "Table_1", "Table_2"),
   "Sheet title" = c(
-    "Notes used in this workbook",
-    "First Example Sheet",
-    "Second Example Sheet"
+    "[Notes used in this workbook](Notes)",
+    "[First Example Sheet](Table_1)",
+    "[Second Example Sheet](Table_2)"
   ),
   check.names = FALSE
 )
@@ -209,7 +209,49 @@ my_aftable <- aftables::create_aftable(
 )
 ```
 
-The function will return errors or warnings if anything is missing or seems odd. For example, we were warned that a value we supplied to `tab_title` had to be cleaned from 'Table 1' to 'Table_1', since blank spaces are not allowed in tab names. Note that there will be an error if there are any tab titles that start with a numeral.
+Alternatively, the `contents` entry of the `tables` list can be 'auto', and `create_aftable` will create a two-column Contents data frame from the values supplied to the `tab_titles` and `sheet_titles` arguments. The second column will be internal links to cell A1 of each sheet.
+
+```{r contents-aftable}
+my_aftable <- aftables::create_aftable(
+  tab_titles = c("Cover", "Contents", "Notes", "Table 1", "Table_2"),
+  sheet_types = c("cover", "contents", "notes", "tables", "tables"),
+  sheet_titles = c(
+    "The 'aftables' Demo Workbook",
+    "Table of contents",
+    "Notes",
+    "Table 1: First Example Sheet",
+    "Table 2: Second Example Sheet"
+  ),
+  blank_cells = c(
+    rep(NA_character_, 3),
+    "Blank cells indicate that there's no note in that row.",
+    NA_character_
+  ),
+  custom_rows = list(
+    NA_character_,
+    NA_character_,
+    "A custom row.",
+    c(
+      "First custom row [with a hyperlink.](https://best-practice-and-impact.github.io/aftables/)",
+      "Second custom row."
+    ),
+    "A custom row."
+  ),
+  sources = list(
+    NA_character_,
+    NA_character_,
+    NA_character_,
+    c(
+      "[The Source Material, 2024](https://best-practice-and-impact.github.io/aftables/)",
+      "[A second source, 2026](https://github.com/best-practice-and-impact/aftables)"
+    ),
+    "The Source Material, 2024."
+  ),
+  tables = list(cover_list, "auto", notes_df, table_1_df, table_2_df)
+)
+```
+
+The function will return errors or warnings if anything is missing or seems odd. For example, we were warned that a value we supplied to `tab_titles` had to be cleaned from 'Table 1' to 'Table_1', since blank spaces are not allowed in tab names. Note that there will be an error if there are any tab titles that start with a numeral.
 
 Here's a preview of the object that was created:
 

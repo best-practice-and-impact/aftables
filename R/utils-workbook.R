@@ -277,7 +277,7 @@
     start_row <- .get_start_row_custom_rows(has_notes, has_blanks)
 
     for (i in seq_along(custom_rows_text)) {
-      has_hyperlink <- class(custom_rows_text[[i]]) == "hyperlink"
+      has_hyperlink <- class(custom_rows_text[[i]]) == "external_hyperlink"
 
       if (has_hyperlink) {
         wb$add_formula(
@@ -335,7 +335,7 @@
 
       source_text <- .make_hyperlink(source_text)
 
-      has_hyperlink <- class(source_text) == "hyperlink"
+      has_hyperlink <- class(source_text) == "external_hyperlink"
 
       if (has_hyperlink) {
         wb$add_formula(
@@ -523,6 +523,50 @@
     number_formats = number_formats
   )
 
+  #=============================================================================
+  # insert any links in contents/notes as formula
+  #=============================================================================
+
+  if (sheet_type == "contents" || sheet_type == "notes") {
+
+    table_with_links <- unlist(table)
+
+    table_with_links <- lapply(table_with_links, .make_hyperlink)
+
+    for (i in seq_along(table_with_links)) {
+
+      has_internal_hyperlink <-
+        class(table_with_links[[i]]) == "internal_hyperlink"
+
+      has_external_hyperlink <-
+        class(table_with_links[[i]]) == "external_hyperlink"
+
+      # internal hyperlinks have destination added as
+      # sheet argument in create_hyperlink function
+      if (has_internal_hyperlink) {
+        wb$add_formula(
+          sheet = tab_title,
+          x = create_hyperlink(
+            text = names(table_with_links[[i]]),
+            sheet = table_with_links[[i]]
+          ),
+          dims = table_cell_references[[i]]
+        )
+        # external hyperlinks have destination added as
+        # file argument in create_hyperlink function
+      } else if (has_external_hyperlink) {
+        wb$add_formula(
+          sheet = tab_title,
+          x = create_hyperlink(
+            text = names(table_with_links[[i]]),
+            file = table_with_links[[i]]
+          ),
+          dims = table_cell_references[[i]]
+        )
+      }
+    }
+  }
+
   output
 }
 
@@ -546,7 +590,7 @@
   table_with_links <- lapply(table, .make_hyperlink)
 
   for (i in seq_along(table_with_links)) {
-    has_hyperlink <- class(table_with_links[[i]]) == "hyperlink"
+    has_hyperlink <- class(table_with_links[[i]]) == "external_hyperlink"
 
     if (has_hyperlink) {
       wb$add_formula(
@@ -596,18 +640,25 @@
 }
 
 .check_scheme <- function(string) {
-  scheme_rx <- paste("((http(s?)|ftp)://?)", "(mailto:?)", sep = "|")
+  scheme_rx <- paste("((http(s?)|ftp)://?)",
+                     "(mailto:?)",
+                     sep = "|")
   grepl(scheme_rx, string)
 }
 
-.extract_hyperlink <- function(string, keep_full_string = TRUE) {
+.extract_hyperlink <- function(string,
+                               keep_full_string = TRUE,
+                               type = c(
+                                 "internal",
+                                 "external"
+                               )) {
   md_rx <- "\\[(([[:graph:]]|[[:space:]])+?)\\]\\([[:graph:]]+?\\)"
   md_match <- regexpr(md_rx, string, perl = TRUE)
   md_extract <- regmatches(string, md_match)[[1]]
 
-  url_rx <- "(?<=\\]\\()([[:graph:]]|[[:space:]])+(?=\\))"
-  url_match <- regexpr(url_rx, md_extract, perl = TRUE)
-  url_extract <- regmatches(md_extract, url_match)[[1]]
+  location_rx <- "(?<=\\]\\()([[:graph:]]|[[:space:]])+(?=\\))"
+  location_match <- regexpr(location_rx, md_extract, perl = TRUE)
+  location_extract <- regmatches(md_extract, location_match)[[1]]
 
   string_rx <- "(?<=\\[)([[:graph:]]|[[:space:]])+(?=\\])"
   string_match <- regexpr(string_rx, md_extract, perl = TRUE)
@@ -617,10 +668,35 @@
     string_extract <- gsub(md_rx, string_extract, string)
   }
 
-  named_hyperlink <- stats::setNames(url_extract, string_extract)
-  class(named_hyperlink) <- "hyperlink"
+  named_hyperlink <- stats::setNames(location_extract, string_extract)
+
+  if (type == "internal") {
+    class(named_hyperlink) <- "internal_hyperlink"
+  } else if (type == "external") {
+    class(named_hyperlink) <- "external_hyperlink"
+  }
+
   named_hyperlink
 }
+#
+# .extract_internal_hyperlink <- function(string) {
+#
+#   md_rx <- "\\[(([[:graph:]]|[[:space:]])+?)\\]\\([[:graph:]]+?\\)"
+#   md_match <- regexpr(md_rx, string, perl = TRUE)
+#   md_extract <- regmatches(string, md_match)[[1]]
+#
+#   location_rx <- "(?<=\\]\\()([[:graph:]]|[[:space:]])+(?=\\))"
+#   location_match <- regexpr(location_rx, md_extract, perl = TRUE)
+#   location_extract <- regmatches(md_extract, location_match)[[1]]
+#
+#   string_rx <- "(?<=\\[)([[:graph:]]|[[:space:]])+(?=\\])"
+#   string_match <- regexpr(string_rx, md_extract, perl = TRUE)
+#   string_extract <- regmatches(md_extract, string_match)[[1]]
+#
+#   named_hyperlink <- stats::setNames(location_extract, string_extract)
+#   class(named_hyperlink) <- "internal_hyperlink"
+#   named_hyperlink
+# }
 
 .make_hyperlink <- function(string) {
   has_hyperlink <- .detect_hyperlink(string)
@@ -629,8 +705,18 @@
     .detect_multi_hyperlink(string)
     scheme_is_ok <- .check_scheme(string)
 
-    if (scheme_is_ok) {
-      string <- .extract_hyperlink(string)
+    if (scheme_is_ok) { # external hyperlink starting with http/https/ftp/mailto
+      string <-
+        .extract_hyperlink(
+          string,
+          type = "external"
+        )
+    } else { # internal hyperlink
+      string <-
+        .extract_hyperlink(
+          string,
+          type = "internal"
+        )
     }
   }
 

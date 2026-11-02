@@ -1,6 +1,8 @@
 # aftables (development version)
 
-*  `create_aftable` now accepts a list of character vectors for `sources` argument. This allows multiple sources per sheet.
+* `create_aftable` now accepts a list of character vectors for `sources` argument. This allows multiple sources per sheet. (#137)
+* The Contents and Notes sheet can now include links to internal and external hyperlinks. Links must be provided in the format `[link text](link)`. For external hyperlinks, the link should be the URL. For internal hyperlinks, the link should be a sheet name, and aftables will create a link to cell A1 of that sheet. (#140)
+* `create_aftable` can create an automatic contents table from the `tab_titles` and `sheet_titles` arguments. The `contents` entry of the `tables` list can be 'auto' instead of a data frame. `create_aftable` will then create a two-column Contents data frame with the entries from `tab_titles` in column 1 and the entries from `sheet_titles` in column 2 (as internal hyperlinks to cell A1 of the relevant tab). The cover sheet and contents are not included in the automatic contents table.
 
 # aftables 2.1.0
 

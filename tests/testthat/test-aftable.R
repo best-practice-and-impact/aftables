@@ -309,7 +309,7 @@ test_that("input other than data.frame is intercepted during validation", {
   y[, "table"] <- list(rep(list("x"), nrow(y)))
   expect_error(
     as_aftable(y),
-    "List-column 'table' must contain data.frame objects only."
+    "List-column 'table' must contain data.frame objects only"
   )
 })
 

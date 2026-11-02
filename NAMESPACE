@@ -28,7 +28,7 @@ importFrom(purrr,
   pwalk
 )
 importFrom(rlang,
-  '%||%',
+  "%||%",
   .data
 )
 importFrom(stringr,
