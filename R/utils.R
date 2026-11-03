@@ -155,22 +155,16 @@ number_formatter <- function(table,
 #' Helper function to specify how `aftables` should format column widths and set
 #' text alignments
 #'
-#' Control how `aftables` formats numeric data in tables in the excel output.
-#' Set the number of decimal places to display and whether to use commas as
-#' thousand separators. This function can be used to overwrite the default
-#' behaviour of `aftables`, which normally determines the number of decimal
-#' places required automatically from the data in each numeric column, and adds
-#' thousand separators to all numeric columns. A key use case for this function
-#' is to prevent `aftables` from displaying calendar or financial years as
-#' numbers with thousand separators, but it can be used with any numeric data
-#' column. Use this function before the data frame is passed to the
-#' [aftables::create_aftable()] function.
+#' Control how `aftables` formats columns and text in tables in the Excel output.
+#' Set the column widths and alignments. This function can be used to overwrite
+#' the default behaviour of `aftables`, which normally sets column widths based
+#' on the width of the data, and left aligns text and right aligns numbers.
 #'
 #' @param table Required data frame. Data frame to be passed into
 #'   aftables::create_aftable function. No default.
 #' @param columns Required character vector of column names or
 #'   [`<tidy-select>`][dplyr::select()] syntax determining columns to be
-#'   processed with specified number formatting. No default.
+#'   processed with specified widths and/or alignments. No default.
 #' @param width Optional numeric value or numeric vector specifying
 #'   column widths measured in points. See [openxlsx2::wb_set_col_widths()]
 #'   function for more information. Default `NA` keeps any existing column

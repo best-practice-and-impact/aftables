@@ -26,6 +26,10 @@ at_template_workflow <- function() {
       "\n\n",
       string_tables(),
       "\n\n",
+      "# Optionally, apply helper functions as needed",
+      "\n\n",
+      string_helper_functions(),
+      "\n\n",
       "# Create new aftable",
       "\n\n",
       string_create_aftable(),
@@ -83,6 +87,16 @@ table_1_df <- data.frame(
 )
 
 table_2_df <- data.frame(Category = LETTERS[1:10], Numeric = 1:10)'
+}
+
+#' A String Containing Code with examples of helper functions
+#' @noRd
+
+string_helper_functions <- function() {
+  'table_1_df <-
+    column_formatter(table = table_1_df,
+                     columns = "Numeric",
+                     alignment = "left")'
 }
 
 #' A String Containing Code to Generate an 'aftables' Object

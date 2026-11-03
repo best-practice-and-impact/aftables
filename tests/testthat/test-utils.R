@@ -395,7 +395,7 @@ test_that("column_formatter works as intended", {
         columns = "Date_column",
         alignment = 20
       ),
-    "`alignment` must be character, and can only be `left` or `right`."
+    '`alignment` must be character, and can only be "left" or "right".'
   )
 
   expect_error(
@@ -413,7 +413,7 @@ test_that("column_formatter works as intended", {
         columns = "Date_column",
         alignment = "middle"
       ),
-    "`alignment` must be character, and can only be `left` or `right`."
+    '`alignment` must be character, and can only be "left" or "right".'
   )
 
 })

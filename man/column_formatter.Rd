@@ -13,7 +13,7 @@ aftables::create_aftable function. No default.}
 
 \item{columns}{Required character vector of column names or
 \code{\link[dplyr:select]{<tidy-select>}} syntax determining columns to be
-processed with specified number formatting. No default.}
+processed with specified widths and/or alignments. No default.}
 
 \item{width}{Optional numeric value or numeric vector specifying
 column widths measured in points. See \code{\link[openxlsx2:wb_set_col_widths]{openxlsx2::wb_set_col_widths()}}
@@ -28,16 +28,10 @@ columns. Set to \code{NULL} to remove any custom column alignments and for
 aftables to set column alignments automatically.}
 }
 \description{
-Control how \code{aftables} formats numeric data in tables in the excel output.
-Set the number of decimal places to display and whether to use commas as
-thousand separators. This function can be used to overwrite the default
-behaviour of \code{aftables}, which normally determines the number of decimal
-places required automatically from the data in each numeric column, and adds
-thousand separators to all numeric columns. A key use case for this function
-is to prevent \code{aftables} from displaying calendar or financial years as
-numbers with thousand separators, but it can be used with any numeric data
-column. Use this function before the data frame is passed to the
-\code{\link[=create_aftable]{create_aftable()}} function.
+Control how \code{aftables} formats columns and text in tables in the Excel output.
+Set the column widths and alignments. This function can be used to overwrite
+the default behaviour of \code{aftables}, which normally sets column widths based
+on the width of the data, and left aligns text and right aligns numbers.
 }
 \examples{
 \dontrun{
