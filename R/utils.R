@@ -243,8 +243,8 @@ column_formatter <- function(table,
   }
 
   if (is.numeric(width) &&
-      !is.na(width) &&
-      width < 0) {
+        !is.na(width) &&
+        width < 0) {
     stop("`width` must be a positive number.", call. = FALSE)
   }
 
