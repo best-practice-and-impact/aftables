@@ -253,7 +253,7 @@ column_formatter <- function(table,
         !is.na(alignment) &&
         !alignment %in% c("left", "right")) {
     stop(paste0("`alignment` must be character, and can ",
-                "only be `left` or `right`."),
+                'only be "left" or "right".'),
          call. = FALSE)
   }
 
