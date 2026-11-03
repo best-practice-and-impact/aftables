@@ -28,6 +28,7 @@ reference:
       - summary.aftable
       - tbl_sum.aftable
       - number_formatter
+      - column_formatter
   - title: "Workbooks"
     desc: "Convert aftable- to Workbook-class objects"
     contents: generate_workbook
