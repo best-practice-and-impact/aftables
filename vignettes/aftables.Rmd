@@ -2,7 +2,7 @@
 title: "Introduction to {aftables}"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{aftables}
+  %\VignetteIndexEntry{Introduction to {aftables}}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -47,7 +47,7 @@ Each argument to `create_aftable()` provides the information needed to construct
 | `sheet_titles` | Yes | Character vector | | The main heading of each sheet, which will appear in cell A1 |
 | `blank_cells` | No | Character vector | | A sentence that explains the reason for any blank cells in the sheet (if applicable) |
 | `custom_rows` | No | List of character vectors | | Arbitrary rows of text that the user wants to insert above a table, one list-item per sheet (contents, notes and tables sheets), one vector element per row |
-| `sources` | No | Character vector | | A sentence provides the source of the data found in each table (if applicable, likely only needed for sheets with `sheet_types` of 'table') |
+| `sources` | No | Character vector or List of character vectors | | A sentence provides the source of the data found in each table (only needed for sheets with `sheet_types` of 'table') |
 | `tables` | Yes | List of dataframes (although the cover sheet content can be provided as a list object) | | The main content for each sheet, expressed as flat ([probably tidy](https://www.jstatsoft.org/article/view/v059i10)) dataframes of rows and columns (though the cover can be a list) |
 
 You can read more about these arguments and their requirements in the function's help pages, which you can access by running `?create_aftable` in the R console. See also the [terminology vignette](https://best-practice-and-impact.github.io/aftables/articles/terminology), `vignette("terminology", "aftables")`, for these terms and more.
@@ -195,9 +195,14 @@ my_aftable <- aftables::create_aftable(
     ),
     "A custom row."
   ),
-  sources = c(
-    rep(NA_character_, 3),
-    "[The Source Material., 2024](https://best-practice-and-impact.github.io/aftables/)",
+  sources = list(
+    NA_character_,
+    NA_character_,
+    NA_character_,
+    c(
+      "[The Source Material, 2024](https://best-practice-and-impact.github.io/aftables/)",
+      "[A second source, 2026](https://github.com/best-practice-and-impact/aftables)"
+    ),
     "The Source Material, 2024."
   ),
   tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)

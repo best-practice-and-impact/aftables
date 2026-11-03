@@ -28,9 +28,9 @@
 }
 
 .has_source <- function(content, tab_title) {
-  table_source <- content[content$tab_title == tab_title, "source"][[1]]
+  table_sources <- unlist(content[content$tab_title == tab_title, "sources"])
 
-  if (!is.na(table_source)) {
+  if (!all(is.na(table_sources))) {
     TRUE
   } else {
     FALSE
@@ -165,7 +165,8 @@
   }
 
   if (has_source) {
-    start_row <- start_row + 1
+    sources <- content[content$tab_title == tab_title, "sources"][[1]]
+    start_row <- start_row + length(sources)
   }
 
   start_row
@@ -307,9 +308,8 @@
   has_source <- .has_source(content, tab_title)
 
   if (has_source) {
-    source_text <- content[content$tab_title == tab_title, "source"][[1]]
-    source_text <- paste("Source:", source_text)
-    source_text <- .make_hyperlink(source_text)
+
+    sources <-  content[content$tab_title == tab_title, "sources"][[1]]
 
     start_row <- .get_start_row_source(
       content,
@@ -319,25 +319,45 @@
       .has_custom_rows(content, tab_title)
     )
 
-    has_hyperlink <- class(source_text) == "hyperlink"
-    if (has_hyperlink) {
-      wb$add_formula(
-        sheet = tab_title,
-        x = create_hyperlink(
-          text = names(source_text)[[1]],
-          file = source_text
-        ),
-        dims = wb_dims(cols = 1, rows = start_row)
-      )
-    } else {
-      wb$add_data(
-        sheet = tab_title,
-        x = source_text,
-        start_col = 1,
-        start_row = start_row,
-        na.strings = ""
-      )
+
+    multiple_sources <- length(sources) > 1
+
+    for (i in seq_along(sources)) {
+
+      source_text <- sources[i]
+
+      # Add source number if there are multiple sources
+      if (multiple_sources) {
+        source_text <- paste0("Source ", i, ": ", source_text)
+      } else {
+        source_text <- paste0("Source: ", source_text)
+      }
+
+      source_text <- .make_hyperlink(source_text)
+
+      has_hyperlink <- class(source_text) == "hyperlink"
+
+      if (has_hyperlink) {
+        wb$add_formula(
+          sheet = tab_title,
+          x = create_hyperlink(
+            text = names(source_text)[[1]],
+            file = source_text
+          ),
+          dims = wb_dims(cols = 1, rows = start_row + (i - 1))
+        )
+
+      } else {
+        wb$add_data(
+          sheet = tab_title,
+          x = source_text,
+          start_col = 1,
+          start_row = start_row + (i - 1),
+          na.strings = ""
+        )
+      }
     }
+
   }
 
   wb
