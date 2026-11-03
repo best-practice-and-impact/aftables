@@ -168,7 +168,7 @@
   )
 
   #=============================================================================
-  # Set column widths
+  # Set default column widths
   #=============================================================================
 
   # Find indices of columns that should be wider than default
@@ -192,6 +192,11 @@
       widths = cellwidth_wider
     )
   }
+
+  #=============================================================================
+  # Set user specified column widths
+  #=============================================================================
+
   # get columns with user specified column widths
   aftables_column_widths <- purrr::map(
     table,
@@ -200,8 +205,10 @@
     unlist()
 
   custom_width_cols <-
-    match(names(aftables_column_widths),
-          names(table))
+    match(
+      names(aftables_column_widths),
+      names(table)
+    )
 
   # set user specified widths
   if (length(aftables_column_widths) >= 1) {

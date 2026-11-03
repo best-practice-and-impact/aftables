@@ -332,16 +332,16 @@ test_that("column_formatter works as intended", {
 
   # only Date_column and col1 are affected
 
-  expect_equal(attr(named_cols_df$Date_column, "aftables_width"), 20)
-  expect_equal(attr(named_cols_df$Date_column, "aftables_alignment"), "left")
-  expect_equal(attr(named_cols_df$col1, "aftables_width"), 25)
-  expect_equal(attr(named_cols_df$col1, "aftables_alignment"), "right")
-  expect_null(attr(named_cols_df$col2, "aftables_width"))
-  expect_null(attr(named_cols_df$col2, "aftables_alignment"))
-  expect_null(attr(named_cols_df$col3, "aftables_width"))
-  expect_null(attr(named_cols_df$col3, "aftables_alignment"))
-  expect_null(attr(named_cols_df$col4, "aftables_width"))
-  expect_null(attr(named_cols_df$col4, "aftables_alignment"))
+  expect_equal(attr(named_cols_df$Date_column, "aftables_column_width"), 20)
+  expect_equal(attr(named_cols_df$Date_column, "aftables_column_alignment"), "left")
+  expect_equal(attr(named_cols_df$col1, "aftables_column_width"), 25)
+  expect_equal(attr(named_cols_df$col1, "aftables_column_alignment"), "right")
+  expect_null(attr(named_cols_df$col2, "aftables_column_width"))
+  expect_null(attr(named_cols_df$col2, "aftables_column_alignment"))
+  expect_null(attr(named_cols_df$col3, "aftables_column_width"))
+  expect_null(attr(named_cols_df$col3, "aftables_column_alignment"))
+  expect_null(attr(named_cols_df$col4, "aftables_column_width"))
+  expect_null(attr(named_cols_df$col4, "aftables_column_alignment"))
 
   # test leaving width to default (NA) adds attributes
   df_add_attribute <-
@@ -359,7 +359,7 @@ test_that("column_formatter works as intended", {
     )
 
   # width set for Date_column is preserved after setting alignment
-  expect_equal(attr(df_add_attribute$Date_column, "aftables_width"), 20)
+  expect_equal(attr(df_add_attribute$Date_column, "aftables_column_width"), 20)
 
   # test setting alignment to NULL removes attributes
   df_remove_attribute <-
@@ -369,7 +369,7 @@ test_that("column_formatter works as intended", {
       alignment = NULL
     )
 
-  expect_null(attr(df_remove_attribute$Date_column, "aftables_alignment"))
+  expect_null(attr(df_remove_attribute$Date_column, "aftables_column_alignment"))
 
   expect_error(
     test_df |>

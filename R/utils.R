@@ -258,7 +258,7 @@ column_formatter <- function(table,
         .fns = \(x) {
           .set_aftables_attributes(
             x,
-            "aftables_width",
+            "aftables_column_width",
             width
           )
         }
@@ -268,7 +268,7 @@ column_formatter <- function(table,
         .fns = \(x) {
           .set_aftables_attributes(
             x,
-            "aftables_alignment",
+            "aftables_column_alignment",
             alignment
           )
         }
