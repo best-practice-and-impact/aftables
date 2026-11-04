@@ -76,6 +76,7 @@ notes_df <- data.frame(
 )
 
 table_1_df <- data.frame(
+  Date = 2001:2010,
   Category = LETTERS[1:10],
   Numeric = 1:10,
   "Numeric suppressed" = c(1:4, "[c]", 6:9, "[x]"),
@@ -103,12 +104,12 @@ table_1_df <-
     width = 10
   )
 
-# add thousand separators to larger numbers
+# remove thousand separators from a numeric column containing calendar years
 table_1_df <-
   number_formatter(
     table = table_1_df,
-    columns = "Numeric thousands",
-    thousand_separators = TRUE
+    columns = "Date",
+    thousand_separators = FALSE
   )
 
 # limit the number of decimal places to 2 for high precision numbers
@@ -119,8 +120,10 @@ table_1_df <-
     decimal_places = 2
   )
 
-# Helper function changes to column widths, column alignments, and number formatting are not applied to the data tables in R.
-# They will only be visible when opening the spreadsheet created by the aftables::generate_workbook() function.'
+# Helper function changes to column widths, column alignments, and number
+# formatting are not applied to the data tables in R. They will only be visible
+# when opening the spreadsheet created by the aftables::generate_workbook()
+# function.'
 }
 
 #' A String Containing Code to Generate an 'aftables' Object
