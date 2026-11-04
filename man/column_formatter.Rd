@@ -15,17 +15,17 @@ aftables::create_aftable function. No default.}
 \code{\link[dplyr:select]{<tidy-select>}} syntax determining columns to be
 processed with specified widths and/or alignments. No default.}
 
-\item{width}{Optional numeric value or length 1 numeric vector specifying
-column widths measured in points. See \code{\link[openxlsx2:wb_set_col_widths]{openxlsx2::wb_set_col_widths()}}
-function for more information. Default \code{NA} keeps any existing column
-widths already applied to columns. Set to \code{NULL} to remove any custom
-column widths and for aftables to set column widths automatically.}
+\item{width}{Optional numeric value specifying column widths measured in
+points. See \code{\link[openxlsx2:wb_set_col_widths]{openxlsx2::wb_set_col_widths()}} function for more information.
+Default \code{NA} keeps any existing column widths already applied to columns.
+Set to \code{NULL} to remove any custom column widths and for aftables to set
+column widths automatically.}
 
-\item{alignment}{Optional character value or length 1 character vector
-specifying column alignment. Valid options are \code{left}, \code{right}, NA or
-NULL. Default \code{NA} keeps any existing column alignments already applied to
-columns. Set to \code{NULL} to remove any custom column alignments and for
-aftables to set column alignments automatically.}
+\item{alignment}{Optional character value specifying column alignment. Valid
+options are \code{left}, \code{right}, NA or NULL. Default \code{NA} keeps any existing
+column alignments already applied to columns. Set to \code{NULL} to remove any
+custom column alignments and for aftables to set column alignments
+automatically.}
 }
 \description{
 Control how \code{aftables} formats columns and text in tables in the Excel output.

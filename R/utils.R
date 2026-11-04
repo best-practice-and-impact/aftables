@@ -181,16 +181,16 @@ number_formatter <- function(table,
 #' @param columns Required character vector of column names or
 #'   [`<tidy-select>`][dplyr::select()] syntax determining columns to be
 #'   processed with specified widths and/or alignments. No default.
-#' @param width Optional numeric value or length 1 numeric vector specifying
-#'   column widths measured in points. See [openxlsx2::wb_set_col_widths()]
-#'   function for more information. Default `NA` keeps any existing column
-#'   widths already applied to columns. Set to `NULL` to remove any custom
-#'   column widths and for aftables to set column widths automatically.
-#' @param alignment Optional character value or length 1 character vector
-#'   specifying column alignment. Valid options are `left`, `right`, NA or
-#'   NULL. Default `NA` keeps any existing column alignments already applied to
-#'   columns. Set to `NULL` to remove any custom column alignments and for
-#'   aftables to set column alignments automatically.
+#' @param width Optional numeric value specifying column widths measured in
+#'   points. See [openxlsx2::wb_set_col_widths()] function for more information.
+#'   Default `NA` keeps any existing column widths already applied to columns.
+#'   Set to `NULL` to remove any custom column widths and for aftables to set
+#'   column widths automatically.
+#' @param alignment Optional character value specifying column alignment. Valid
+#'   options are `left`, `right`, NA or NULL. Default `NA` keeps any existing
+#'   column alignments already applied to columns. Set to `NULL` to remove any
+#'   custom column alignments and for aftables to set column alignments
+#'   automatically.
 #'
 #' @seealso [aftables::number_formatter()] to control how `aftables` formats
 #' numeric data in tables in the Excel output.
