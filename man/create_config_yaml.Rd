@@ -96,6 +96,9 @@ value of \code{nchar_break} aftables will set the column width to the value of
 by setting the value of \code{nchar_break} based on their data or the content of
 their column headers.
 
+Column widths set for specific columns using the \code{\link[=column_formatter]{column_formatter()}}
+function will be preferred over any column widths set in the config file.
+
 Not all workbook configuration options need to be set. Required settings are
 documented in \code{\link[aftables]{generate_workbook}}.
 }

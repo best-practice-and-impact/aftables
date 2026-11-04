@@ -25,7 +25,7 @@ Imports:
     purrr,
     dplyr,
     stringr,
-    tidyselect,
+    tidyselect (>= 1.2.0),
     tidyr,
     rlang,
     utils,

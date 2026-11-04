@@ -26,6 +26,10 @@ at_template_workflow <- function() {
       "\n\n",
       string_tables(),
       "\n\n",
+      "# Optionally, apply helper functions as needed",
+      "\n\n",
+      string_helper_functions(),
+      "\n\n",
       "# Create new aftable",
       "\n\n",
       string_create_aftable(),
@@ -72,6 +76,7 @@ notes_df <- data.frame(
 )
 
 table_1_df <- data.frame(
+  Date = 2001:2010,
   Category = LETTERS[1:10],
   Numeric = 1:10,
   "Numeric suppressed" = c(1:4, "[c]", 6:9, "[x]"),
@@ -83,6 +88,42 @@ table_1_df <- data.frame(
 )
 
 table_2_df <- data.frame(Category = LETTERS[1:10], Numeric = 1:10)'
+}
+
+#' A String Containing Code with examples of helper functions
+#' @noRd
+
+string_helper_functions <- function() {
+  '# set left alignment, overriding default right alignment of numbers
+# also shrink column width to 10, overriding default width of 16
+table_1_df <-
+  column_formatter(
+    table = table_1_df,
+    columns = "Numeric",
+    alignment = "left",
+    width = 10
+  )
+
+# remove thousand separators from a numeric column containing calendar years
+table_1_df <-
+  number_formatter(
+    table = table_1_df,
+    columns = "Date",
+    thousand_separators = FALSE
+  )
+
+# limit the number of decimal places to 2 for high precision numbers
+table_1_df <-
+  number_formatter(
+    table = table_1_df,
+    columns = "Numeric decimal",
+    decimal_places = 2
+  )
+
+# Helper function changes to column widths, column alignments, and number
+# formatting are not applied to the data tables in R. They will only be visible
+# when opening the spreadsheet created by the aftables::generate_workbook()
+# function.'
 }
 
 #' A String Containing Code to Generate an 'aftables' Object

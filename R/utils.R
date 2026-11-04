@@ -14,7 +14,7 @@
 
 #' Helper function to specify how `aftables` should display numeric data
 #'
-#' Control how `aftables` formats numeric data in tables in the excel output.
+#' Control how `aftables` formats numeric data in tables in the Excel output.
 #' Set the number of decimal places to display and whether to use commas as
 #' thousand separators. This function can be used to overwrite the default
 #' behaviour of `aftables`, which normally determines the number of decimal
@@ -22,8 +22,12 @@
 #' thousand separators to all numeric columns. A key use case for this function
 #' is to prevent `aftables` from displaying calendar or financial years as
 #' numbers with thousand separators, but it can be used with any numeric data
-#' column. Use this function before the data frame is passed to the
-#' [aftables::create_aftable()] function.
+#' column.
+#'
+#' Use this function before the data frame is passed to the [aftables::create_aftable()] function.
+#'
+#' Changes to numeric formatting are not applied to data frames in R.
+#' They will only be visible when opening the spreadsheet created by the [aftables::generate_workbook()] function.
 #'
 #' @param table Required data frame. Data frame to be passed into
 #'   aftables::create_aftable function. No default.
@@ -39,6 +43,10 @@
 #'   custom number formatting already applied to the column. Set to `NULL` to
 #'   remove any custom number formatting and for aftables to set thousand
 #'   separators automatically.
+#'
+#' @seealso [aftables::column_formatter()] to control how `aftables` formats
+#' columns and text in tables in the Excel output.
+#'
 #' @examples
 #' \dontrun{
 #' library(dplyr)
@@ -86,7 +94,6 @@
 #'     columns = tidyselect::starts_with("Date"),
 #'     thousand_separators = FALSE
 #'   )
-#'
 #' }
 #' @export
 
@@ -150,6 +157,141 @@ number_formatter <- function(table,
     )
 
   output
+}
+
+#' Helper function to specify how `aftables` should format column widths and set
+#' text alignments
+#'
+#' Control how `aftables` formats columns and text in tables in the Excel output.
+#' Set the column widths and alignments. This function can be used to overwrite
+#' the default behaviour of `aftables`, which normally sets column widths based
+#' on the width of the data, and left aligns text and right aligns numbers.
+#'
+#' Use this function before the data frame is passed to the [aftables::create_aftable()] function.
+#'
+#' Column widths set for specific columns using this function will be preferred
+#' over any column widths set in a config file. See [aftables::create_config_yaml()]
+#' for more information about config files.
+#'
+#' Changes to column widths and column alignments are not applied to data frames in R.
+#' They will only be visible when opening the spreadsheet created by the [aftables::generate_workbook()] function.
+#'
+#' @param table Required data frame. Data frame to be passed into
+#'   aftables::create_aftable function. No default.
+#' @param columns Required character vector of column names or
+#'   [`<tidy-select>`][dplyr::select()] syntax determining columns to be
+#'   processed with specified widths and/or alignments. No default.
+#' @param width Optional numeric value specifying column widths measured in
+#'   points. See [openxlsx2::wb_set_col_widths()] function for more information.
+#'   Default `NA` keeps any existing column widths already applied to columns.
+#'   Set to `NULL` to remove any custom column widths and for aftables to set
+#'   column widths automatically.
+#' @param alignment Optional character value specifying column alignment. Valid
+#'   options are `left`, `right`, NA or NULL. Default `NA` keeps any existing
+#'   column alignments already applied to columns. Set to `NULL` to remove any
+#'   custom column alignments and for aftables to set column alignments
+#'   automatically.
+#'
+#' @seealso [aftables::number_formatter()] to control how `aftables` formats
+#' numeric data in tables in the Excel output.
+#'
+#' @examples
+#' \dontrun{
+#' library(dplyr)
+#'
+#' set.seed(1066)
+#'
+#' table_1_df <- data.frame(Category = LETTERS[1:10], Numeric = 1:10)
+#'
+#' # The simplest use case of column_formatter is a single column and a single
+#' # width or alignment value
+#'
+#' table_1_df <-
+#' column_formatter(
+#'   table = table_1_df,
+#'   columns = "Numeric",
+#'   alignment = "left"
+#'   )
+#'
+#' # column_formatter accepts multiple columns with a single value for width
+#' # or alignment, which is applied to every column
+#'
+#' table_1_df <-
+#' column_formatter(
+#'   table = table_1_df,
+#'   columns = c("Category", "Numeric"),
+#'   width = 12
+#' )
+#' }
+#' @export
+
+column_formatter <- function(table,
+                             columns = NULL,
+                             width = NA,
+                             alignment = NA) {
+
+
+  # error check width and alignment are length 1
+  if (length(width) > 1) {
+    stop("`width` must be of length 1.", call. = FALSE)
+  }
+
+  if (length(alignment) > 1) {
+    stop("`alignment` must be of length 1.", call. = FALSE)
+  }
+
+  # error check all widths must be numeric
+  if (!is.null(width) &&
+        !is.na(width) &&
+        !is.numeric(width)) {
+    stop("`width` must be numeric.",
+         call. = FALSE)
+  }
+
+  if (is.numeric(width) && is.infinite(width)) {
+    stop("`width` can not be infinite.", call. = FALSE)
+  }
+
+  if (is.numeric(width) &&
+        !is.na(width) &&
+        width < 0) {
+    stop("`width` must be a positive number.", call. = FALSE)
+  }
+
+  # error check all alignment are character and left/right
+  if (!is.null(alignment) &&
+        !is.na(alignment) &&
+        !alignment %in% c("left", "right")) {
+    stop(paste0("`alignment` must be character, and can ",
+                'only be "left" or "right".'),
+         call. = FALSE)
+  }
+
+  output <- table |>
+    mutate(
+      across(
+        .cols = {{ columns }},
+        .fns = \(x) {
+          .set_aftables_attributes(
+            x,
+            "aftables_column_width",
+            width
+          )
+        }
+      ),
+      across(
+        .cols = {{ columns }},
+        .fns = \(x) {
+          .set_aftables_attributes(
+            x,
+            "aftables_column_alignment",
+            alignment
+          )
+        }
+      )
+    )
+
+
 }
 
 .set_aftables_attributes <- function(column,

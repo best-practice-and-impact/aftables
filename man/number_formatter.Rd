@@ -26,7 +26,7 @@ remove any custom number formatting and for aftables to set thousand
 separators automatically.}
 }
 \description{
-Control how \code{aftables} formats numeric data in tables in the excel output.
+Control how \code{aftables} formats numeric data in tables in the Excel output.
 Set the number of decimal places to display and whether to use commas as
 thousand separators. This function can be used to overwrite the default
 behaviour of \code{aftables}, which normally determines the number of decimal
@@ -34,8 +34,13 @@ places required automatically from the data in each numeric column, and adds
 thousand separators to all numeric columns. A key use case for this function
 is to prevent \code{aftables} from displaying calendar or financial years as
 numbers with thousand separators, but it can be used with any numeric data
-column. Use this function before the data frame is passed to the
-\code{\link[=create_aftable]{create_aftable()}} function.
+column.
+}
+\details{
+Use this function before the data frame is passed to the \code{\link[=create_aftable]{create_aftable()}} function.
+
+Changes to numeric formatting are not applied to data frames in R.
+They will only be visible when opening the spreadsheet created by the \code{\link[=generate_workbook]{generate_workbook()}} function.
 }
 \examples{
 \dontrun{
@@ -84,6 +89,9 @@ table_1_df_multiple_formats <- table_1_df |>
     columns = tidyselect::starts_with("Date"),
     thousand_separators = FALSE
   )
-
 }
+}
+\seealso{
+\code{\link[=column_formatter]{column_formatter()}} to control how \code{aftables} formats
+columns and text in tables in the Excel output.
 }
