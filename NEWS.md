@@ -1,6 +1,6 @@
 # aftables (development version)
 * Added `column_formatter` function for control over column alignment and column width (#158).
-* Added `column_formatter` to {aftables} workflow.
+* Added `column_formatter` and `number_formatter` to {aftables} workflow addin.
 
 *  `create_aftable` now accepts a list of character vectors for `sources` argument. This allows multiple sources per sheet.
 

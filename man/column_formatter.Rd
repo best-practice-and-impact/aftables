@@ -15,13 +15,13 @@ aftables::create_aftable function. No default.}
 \code{\link[dplyr:select]{<tidy-select>}} syntax determining columns to be
 processed with specified widths and/or alignments. No default.}
 
-\item{width}{Optional numeric value or numeric vector specifying
+\item{width}{Optional numeric value or length 1 numeric vector specifying
 column widths measured in points. See \code{\link[openxlsx2:wb_set_col_widths]{openxlsx2::wb_set_col_widths()}}
 function for more information. Default \code{NA} keeps any existing column
 widths already applied to columns. Set to \code{NULL} to remove any custom
 column widths and for aftables to set column widths automatically.}
 
-\item{alignment}{Optional character value or character vector
+\item{alignment}{Optional character value or length 1 character vector
 specifying column alignment. Valid options are \code{left}, \code{right}, NA or
 NULL. Default \code{NA} keeps any existing column alignments already applied to
 columns. Set to \code{NULL} to remove any custom column alignments and for
@@ -32,6 +32,16 @@ Control how \code{aftables} formats columns and text in tables in the Excel outp
 Set the column widths and alignments. This function can be used to overwrite
 the default behaviour of \code{aftables}, which normally sets column widths based
 on the width of the data, and left aligns text and right aligns numbers.
+}
+\details{
+Use this function before the data frame is passed to the \code{\link[=create_aftable]{create_aftable()}} function.
+
+Column widths set for specific columns using this function will be preferred
+over any column widths set in a config file. See \code{\link[=create_config_yaml]{create_config_yaml()}}
+for more information about config files.
+
+Changes to column widths and column alignments are not applied to data frames in R.
+They will only be visible when opening the spreadsheet created by the \code{\link[=generate_workbook]{generate_workbook()}} function.
 }
 \examples{
 \dontrun{
@@ -61,4 +71,8 @@ column_formatter(
   width = 12
 )
 }
+}
+\seealso{
+\code{\link[=number_formatter]{number_formatter()}} to control how \code{aftables} formats
+numeric data in tables in the Excel output.
 }
