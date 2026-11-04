@@ -93,10 +93,34 @@ table_2_df <- data.frame(Category = LETTERS[1:10], Numeric = 1:10)'
 #' @noRd
 
 string_helper_functions <- function() {
-  'table_1_df <-
-    column_formatter(table = table_1_df,
-                     columns = "Numeric",
-                     alignment = "left")'
+  '# set left alignment, overriding default right alignment of numbers
+# also shrink column width to 10, overriding default width of 16
+table_1_df <-
+  column_formatter(
+    table = table_1_df,
+    columns = "Numeric",
+    alignment = "left",
+    width = 10
+  )
+
+# add thousand separators to larger numbers
+table_1_df <-
+  number_formatter(
+    table = table_1_df,
+    columns = "Numeric thousands",
+    thousand_separators = TRUE
+  )
+
+# limit the number of decimal places to 2 for high precision numbers
+table_1_df <-
+  number_formatter(
+    table = table_1_df,
+    columns = "Numeric decimal",
+    decimal_places = 2
+  )
+
+# Helper function changes to column widths, column alignments, and number formatting are not applied to the data tables in R.
+# They will only be visible when opening the spreadsheet created by the aftables::generate_workbook() function.'
 }
 
 #' A String Containing Code to Generate an 'aftables' Object

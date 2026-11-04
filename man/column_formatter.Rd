@@ -39,30 +39,26 @@ library(dplyr)
 
 set.seed(1066)
 
-table_1_df <- data.frame(
-  Category = LETTERS[1:10],
-  Date = 2001:2010,
-  Date2 = 2001:2010,
-  "Count" = abs(round(rnorm(10), 3) * 1e3),
-  "Population" = abs(round(rnorm(10), 5) * 1e5),
-  check.names = FALSE
-) |>
-  mutate(Percentage = Count/Population * 100)
+table_1_df <- data.frame(Category = LETTERS[1:10], Numeric = 1:10)
 
 # The simplest use case of column_formatter is a single column and a single
 # width or alignment value
 
 table_1_df <-
-column_formatter(table = table_1_df,
-                 columns = "Date",
-                 alignment = "left")
+column_formatter(
+  table = table_1_df,
+  columns = "Numeric",
+  alignment = "left"
+  )
 
 # column_formatter accepts multiple columns with a single value for width
 # or alignment, which is applied to every column
 
 table_1_df <-
-column_formatter(table = table_1_df,
-                 columns = c("Date", "Date2"),
-                 alignment = "left")
+column_formatter(
+  table = table_1_df,
+  columns = c("Category", "Numeric"),
+  width = 12
+)
 }
 }
