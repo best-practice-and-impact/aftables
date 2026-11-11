@@ -209,7 +209,7 @@ my_aftable <- aftables::create_aftable(
 )
 ```
 
-Alternatively, the `contents` entry of the `tables` list can be 'auto', and `create_aftable` will create a two-column Contents data frame from the values supplied to the `tab_titles` and `sheet_titles` arguments. The second column will be internal links to cell A1 of each sheet.
+Alternatively, the `contents` entry of the `tables` list can be 'auto', and `create_aftable` will create a two-column Contents data frame from the values supplied to the `tab_titles` and `sheet_titles` arguments. The first column will be internal links to cell A1 of each sheet.
 
 ```{r contents-aftable}
 my_aftable <- aftables::create_aftable(

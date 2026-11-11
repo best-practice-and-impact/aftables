@@ -79,7 +79,7 @@ text into paragraphs.
 \item Sheet type 'contents': one row per sheet, two columns suggested at
 least (named 'Tab title' and 'Worksheet title'). If supplied as
 'auto', \code{create_aftable} will create a two-column Contents data frame
-from the \code{tab_titles} and \code{sheet_titles} arguments. The second column
+from the \code{tab_titles} and \code{sheet_titles} arguments. The first column
 will be internal links to cell A1 of each sheet.
 \item Sheet type 'notes': one row per note, two columns suggested (named
 'Note number', 'Note text'), where notes are in the form

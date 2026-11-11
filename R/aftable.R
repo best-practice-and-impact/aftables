@@ -55,7 +55,7 @@
 #'     \item Sheet type 'contents': one row per sheet, two columns suggested at
 #'         least (named 'Tab title' and 'Worksheet title'). If supplied as
 #'         'auto', `create_aftable` will create a two-column Contents data frame
-#'         from the `tab_titles` and `sheet_titles` arguments. The second column
+#'         from the `tab_titles` and `sheet_titles` arguments. The first column
 #'         will be internal links to cell A1 of each sheet.
 #'     \item Sheet type 'notes': one row per note, two columns suggested (named
 #'         'Note number', 'Note text'), where notes are in the form
@@ -205,14 +205,14 @@ create_aftable <- function(tab_titles,
 
     tables[sheet_types == "contents"][[1]] <-
       tibble(
-        "Sheet name" = tab_titles[!sheet_types %in% c("cover", "contents")],
-        "Sheet title" = paste0(
+        "Sheet name" = paste0(
           "[",
-          sheet_titles[!sheet_types %in% c("cover", "contents")],
+          tab_titles[!sheet_types %in% c("cover", "contents")],
           "](",
           tab_titles[!sheet_types %in% c("cover", "contents")],
           ")"
-        )
+        ),
+        "Sheet title" = tab_titles[!sheet_types %in% c("cover", "contents")]
       )
   }
 
