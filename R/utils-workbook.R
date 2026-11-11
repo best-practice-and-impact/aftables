@@ -678,25 +678,6 @@
 
   named_hyperlink
 }
-#
-# .extract_internal_hyperlink <- function(string) {
-#
-#   md_rx <- "\\[(([[:graph:]]|[[:space:]])+?)\\]\\([[:graph:]]+?\\)"
-#   md_match <- regexpr(md_rx, string, perl = TRUE)
-#   md_extract <- regmatches(string, md_match)[[1]]
-#
-#   location_rx <- "(?<=\\]\\()([[:graph:]]|[[:space:]])+(?=\\))"
-#   location_match <- regexpr(location_rx, md_extract, perl = TRUE)
-#   location_extract <- regmatches(md_extract, location_match)[[1]]
-#
-#   string_rx <- "(?<=\\[)([[:graph:]]|[[:space:]])+(?=\\])"
-#   string_match <- regexpr(string_rx, md_extract, perl = TRUE)
-#   string_extract <- regmatches(md_extract, string_match)[[1]]
-#
-#   named_hyperlink <- stats::setNames(location_extract, string_extract)
-#   class(named_hyperlink) <- "internal_hyperlink"
-#   named_hyperlink
-# }
 
 .make_hyperlink <- function(string) {
   has_hyperlink <- .detect_hyperlink(string)
