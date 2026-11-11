@@ -58,6 +58,10 @@ Rather than pass a big list of dataframes directly to the `tables` argument of `
 
 Below are some demo tables that we will later pass to `create_aftable()`. I've used `tibble::tribble()` for human-readable row-by-row dataframe construction, but you can just use `data.frame()` if you want.
 
+##### How to supply hyperlinks
+
+You can provide text in Markdown link syntax (e.g. `[GOV.UK](https://www.gov.uk)`, adding `mailto:` before an email address) and the containing cell will be rendered as an external hyperlink in the output spreadsheet. Text in Markdown link syntax that does not contain a URL starting with 'http', 'https', 'ftp', or 'mailto' will be rendered as an internal hyperlink. Note that whole cells will become hyperlinks; there is no support for selected words in a sentence to be rendered as a hyperlink.
+
 ##### Meta-sheets
 
 The cover can accept either a list or a data.frame (the latter was the only acceptable input prior to version 0.2.0). We recommend a list so that you can have multiple rows per section on the cover. This also means you can dedicate certain rows to be hyperlinks to web URLs or mailto links that will open an email client. Here's a demo list for the contents page (required):
