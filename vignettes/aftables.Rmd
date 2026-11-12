@@ -224,8 +224,15 @@ We can use `generate_workbook()` to convert our aftable to an [{openxlsx2}](http
 
 This type of object adds information from each row of our aftable into separate sheets and applies other relevant structure, mark-up and styles for compliance with [the best practice guidance](https://analysisfunction.civilservice.gov.uk/policy-store/releasing-statistics-in-spreadsheets/).
 
+Workbook properties can be added using the `author`, `title` and `keywords` arguments of `generate_workbook()`.
+
 ```{r create-af-wb}
-my_wb <- aftables::generate_workbook(my_aftable)
+my_wb <- aftables::generate_workbook(
+  my_aftable,
+  author = "Example author",
+  title = "Example workbook",
+  keywords = c("keyword1", "keyword2", "keyword3")
+)
 ```
 
 <details><summary>Click for a preview of the Workbook object</summary>
