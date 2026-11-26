@@ -305,3 +305,15 @@ test_that("number_formatter function works as intended", {
   )
 
 })
+
+# test .generate_hyperlink error handling
+test_that(".generate_hyperlink function returns error when invalid sheet provided by user", {
+  expect_error(
+    .generate_hyperlink("test text",
+                        "Nonexistent_sheet",
+                        "internal_hyperlink",
+                        demo_workbook),
+    paste0("The sheet Nonexistent_sheet does not exist. Please check the tab_titles ",
+           "argument and any internal hyperlinks.")
+  )
+})

@@ -122,7 +122,8 @@
   # Content of 'table' listcol must be single data.frame objects (or cover list)
   if (!all(unlist(lapply(x[["table"]], is.list)))) {
     stop(
-      "List-column 'table' must contain data.frame objects only. ",
+      "List-column 'table' must contain data.frame objects only, ",
+      "apart from contents which can be 'auto'. ",
       "The cover can also be of class 'list'.",
       call. = FALSE
     )

@@ -21,14 +21,16 @@ importFrom(dplyr,
 importFrom(pillar,tbl_sum)
 importFrom(purrr,
   compact,
+  imap,
   list_modify,
+  map,
   map_depth,
   pluck,
   pluck_exists,
   pwalk
 )
 importFrom(rlang,
-  '%||%',
+  "%||%",
   .data
 )
 importFrom(stringr,

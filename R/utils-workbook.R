@@ -270,35 +270,21 @@
     custom_rows_text <-
       content[content$tab_title == tab_title, "custom_rows"][[1]]
 
-    custom_rows_text <- lapply(custom_rows_text, .make_hyperlink)
-
     has_notes <- .has_notes(content, tab_title)
     has_blanks <- .has_blanks_message(content, tab_title)
     start_row <- .get_start_row_custom_rows(has_notes, has_blanks)
 
-    for (i in seq_along(custom_rows_text)) {
-      has_hyperlink <- class(custom_rows_text[[i]]) == "hyperlink"
+    wb$add_data(
+      sheet = tab_title,
+      x = custom_rows_text,
+      start_row = start_row,
+      na.strings = ""
+    )
 
-      if (has_hyperlink) {
-        wb$add_formula(
-          sheet = tab_title,
-          x = create_hyperlink(
-            text = names(custom_rows_text[[i]]),
-            file = custom_rows_text[[i]]
-          ),
-          dims = wb_dims(cols = 1, rows = start_row + (i - 1))
-        )
-      }
-
-      if (!has_hyperlink) {
-        wb$add_data(
-          sheet = tab_title,
-          x = custom_rows_text[[i]],
-          start_row = start_row + (i - 1),
-          na.strings = ""
-        )
-      }
-    }
+    wb <- .insert_hyperlinks(wb = wb,
+                             content = custom_rows_text,
+                             sheet = tab_title,
+                             start_row = start_row)
   }
 
   wb
@@ -319,44 +305,32 @@
       .has_custom_rows(content, tab_title)
     )
 
-
     multiple_sources <- length(sources) > 1
 
-    for (i in seq_along(sources)) {
+    sources <-
+      imap(
+        sources,
+        \(x, idx) {
+          if (multiple_sources) {
+            paste0("Source ", idx, ": ", x)
+          } else {
+            paste0("Source: ", x)
+          }
+        }
+      ) |>
+      unlist(use.names = FALSE)
 
-      source_text <- sources[i]
+    wb$add_data(
+      sheet = tab_title,
+      x = sources,
+      start_row = start_row,
+      na.strings = ""
+    )
 
-      # Add source number if there are multiple sources
-      if (multiple_sources) {
-        source_text <- paste0("Source ", i, ": ", source_text)
-      } else {
-        source_text <- paste0("Source: ", source_text)
-      }
-
-      source_text <- .make_hyperlink(source_text)
-
-      has_hyperlink <- class(source_text) == "hyperlink"
-
-      if (has_hyperlink) {
-        wb$add_formula(
-          sheet = tab_title,
-          x = create_hyperlink(
-            text = names(source_text)[[1]],
-            file = source_text
-          ),
-          dims = wb_dims(cols = 1, rows = start_row + (i - 1))
-        )
-
-      } else {
-        wb$add_data(
-          sheet = tab_title,
-          x = source_text,
-          start_col = 1,
-          start_row = start_row + (i - 1),
-          na.strings = ""
-        )
-      }
-    }
+    wb <- .insert_hyperlinks(wb = wb,
+                             content = sources,
+                             sheet = tab_title,
+                             start_row = start_row)
 
   }
 
@@ -370,13 +344,13 @@
   tab_title <- content[content$table_name == table_name, "tab_title"][[1]]
 
   # get columns with decimal places and thousand separators attributes
-  aftables_decimal_places <- purrr::map(
+  aftables_decimal_places <- map(
     table,
     \(x) attr(x, "aftables_decimal_places")
   ) |>
     unlist()
 
-  aftables_thousand_separators <- purrr::map(
+  aftables_thousand_separators <- map(
     table,
     \(x) attr(x, "aftables_thousand_separators")
   ) |>
@@ -523,6 +497,18 @@
     number_formats = number_formats
   )
 
+  #=============================================================================
+  # insert any links in contents/notes as formula
+  #=============================================================================
+
+  if (sheet_type == "contents" || sheet_type == "notes") {
+    wb <- .insert_hyperlinks(wb = wb,
+                             sheet = tab_title,
+                             content = table,
+                             start_row = start_row,
+                             content_cell_references = table_cell_references)
+  }
+
   output
 }
 
@@ -543,31 +529,18 @@
     table <- unlist(c(rbind(names(table), table)))
   }
 
-  table_with_links <- lapply(table, .make_hyperlink)
+  wb$add_data(
+    sheet = tab_title,
+    x = table,
+    start_col = 1,
+    start_row = 2,
+    na.strings = ""
+  )
 
-  for (i in seq_along(table_with_links)) {
-    has_hyperlink <- class(table_with_links[[i]]) == "hyperlink"
-
-    if (has_hyperlink) {
-      wb$add_formula(
-        sheet = tab_title,
-        x = create_hyperlink(
-          text = names(table_with_links[[i]]),
-          file = table_with_links[[i]]
-        ),
-        dims = wb_dims(cols = 1, rows = i + 1)
-      )
-    }
-
-    if (!has_hyperlink) {
-      wb$add_data(
-        sheet = tab_title,
-        x = table_with_links[[i]],
-        start_row = i + 1,
-        na.strings = ""
-      )
-    }
-  }
+  wb <- .insert_hyperlinks(wb = wb,
+                           sheet = tab_title,
+                           content = table,
+                           start_row = 2)
 }
 
 
@@ -596,18 +569,25 @@
 }
 
 .check_scheme <- function(string) {
-  scheme_rx <- paste("((http(s?)|ftp)://?)", "(mailto:?)", sep = "|")
+  scheme_rx <- paste("((http(s?)|ftp)://?)",
+                     "(mailto:?)",
+                     sep = "|")
   grepl(scheme_rx, string)
 }
 
-.extract_hyperlink <- function(string, keep_full_string = TRUE) {
+.extract_hyperlink <- function(string,
+                               keep_full_string = TRUE,
+                               type = c(
+                                 "internal",
+                                 "external"
+                               )) {
   md_rx <- "\\[(([[:graph:]]|[[:space:]])+?)\\]\\([[:graph:]]+?\\)"
   md_match <- regexpr(md_rx, string, perl = TRUE)
   md_extract <- regmatches(string, md_match)[[1]]
 
-  url_rx <- "(?<=\\]\\()([[:graph:]]|[[:space:]])+(?=\\))"
-  url_match <- regexpr(url_rx, md_extract, perl = TRUE)
-  url_extract <- regmatches(md_extract, url_match)[[1]]
+  location_rx <- "(?<=\\]\\()([[:graph:]]|[[:space:]])+(?=\\))"
+  location_match <- regexpr(location_rx, md_extract, perl = TRUE)
+  location_extract <- regmatches(md_extract, location_match)[[1]]
 
   string_rx <- "(?<=\\[)([[:graph:]]|[[:space:]])+(?=\\])"
   string_match <- regexpr(string_rx, md_extract, perl = TRUE)
@@ -617,8 +597,14 @@
     string_extract <- gsub(md_rx, string_extract, string)
   }
 
-  named_hyperlink <- stats::setNames(url_extract, string_extract)
-  class(named_hyperlink) <- "hyperlink"
+  named_hyperlink <- stats::setNames(location_extract, string_extract)
+
+  if (type == "internal") {
+    class(named_hyperlink) <- "internal_hyperlink"
+  } else if (type == "external") {
+    class(named_hyperlink) <- "external_hyperlink"
+  }
+
   named_hyperlink
 }
 
@@ -629,14 +615,125 @@
     .detect_multi_hyperlink(string)
     scheme_is_ok <- .check_scheme(string)
 
-    if (scheme_is_ok) {
-      string <- .extract_hyperlink(string)
+    if (scheme_is_ok) { # external hyperlink starting with http/https/ftp/mailto
+      string <-
+        .extract_hyperlink(
+          string,
+          type = "external"
+        )
+    } else { # internal hyperlink
+      string <-
+        .extract_hyperlink(
+          string,
+          type = "internal"
+        )
     }
   }
 
   string
 }
 
+# wrapper for openxlsx2::create_hyperlink covering both internal and external
+# hyperlinks
+.generate_hyperlink <- function(text,
+                                target,
+                                type,
+                                wb) {
+
+  if (type == "internal_hyperlink") {
+    # internal hyperlinks have destination added as
+    # sheet argument in create_hyperlink function
+
+    # check target sheet exists
+    if (!target %in% wb$get_sheet_names()) {
+      stop(
+        paste0(
+          "The sheet ",
+          target,
+          " does not exist. Please check the tab_titles argument",
+          " and any internal hyperlinks."
+        ),
+        call. = FALSE
+      )
+    }
+    link <-
+      create_hyperlink(
+        text = text,
+        sheet = target
+      )
+  } else if (type == "external_hyperlink") {
+    # external hyperlinks have destination added as
+    # file argument in create_hyperlink function
+    link <-
+      create_hyperlink(
+        text = text,
+        file = target
+      )
+  }
+
+  link
+}
+
+# Internal function to process content which contains hyperlinks consistently
+# used when inserting contents and notes tables, custom rows and sources
+# tables have cell references already determined
+# cover sheet, custom rows and sources do not
+.insert_hyperlinks <- function(wb,
+                               sheet,
+                               content,
+                               start_row = NULL,
+                               content_cell_references = NULL) {
+
+  content_with_links <-
+    map(
+      unlist(
+        content,
+        use.names = FALSE
+      ),
+      \(x) if (.detect_hyperlink(x)) .make_hyperlink(x)
+    )
+
+  content_links <-
+    unlist(
+      map(
+        content_with_links,
+        \(x) !is.null(x)
+      )
+    )
+
+  # determine content cell references
+  if (is.null(content_cell_references)) {
+
+    content_cell_references <-
+      wb_dims(
+        x = content,
+        from_row = start_row,
+        cols = names(content)
+      )
+
+    content_cell_references <- dims_to_rowcol(content_cell_references)
+
+    content_cell_references <- t(outer(content_cell_references$col, content_cell_references$row, paste0))
+  }
+
+  content_cell_references <- content_cell_references[content_links]
+
+  content_with_links <- content_with_links |> compact()
+
+  for (i in seq_along(content_with_links)) {
+    wb$add_formula(
+      sheet = sheet,
+      x = .generate_hyperlink(
+        text =  names(content_with_links[[i]]),
+        target = content_with_links[[i]],
+        type = class(content_with_links[[i]]),
+        wb = wb
+      ),
+      dims = content_cell_references[i]
+    )
+  }
+
+}
 
 # Add sheets to workbook --------------------------------------------------
 

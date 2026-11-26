@@ -52,7 +52,7 @@ Note that {aftables} uses a convention that internal functions (i.e. those not p
 
 ## To create aftables
 
-Actually, `create_aftable()` itself only does one thing: it takes user inputs from the arguments and combines them into a dataframe. It then passes this off to the most important function in the package, `as_aftable()`, which is responsible for coercing the dataframe to aftable class and performing checks on its content.
+Actually, `create_aftable()` itself only does one main thing: it takes user inputs from the arguments and combines them into a dataframe, and optionally creates an automatic Contents table in that dataframe. It then passes this off to the most important function in the package, `as_aftable()`, which is responsible for coercing the dataframe to aftable class and performing checks on its content.
 
 Basically, `as_aftable()` creates an S3-class object with classes 'data.frame' and 'tbl' (i.e. [tibble](https://tibble.tidyverse.org/)) and an additional 'aftable' class.
 
