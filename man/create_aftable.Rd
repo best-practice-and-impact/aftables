@@ -125,17 +125,11 @@ cover_list <- list(
   "Section 3" = c(
     "[Website](https://best-practice-and-impact.github.io/aftables/)",
     "[Email address](mailto:fake.address@aftables.com)"
-  )
-)
-
-contents_df <- data.frame(
-  "Sheet name" = c("Notes", "Table_1", "Table_2"),
-  "Sheet title" = c(
-    "[Notes used in this workbook](Notes)",
-    "[First Example Sheet](Table_1)",
-    "[Second Example Sheet](Table_2)"
   ),
-  check.names = FALSE
+  "Section 4" = c(
+    "An internal link to the Table_1 sheet:",
+    "[Table 1: First Example Sheet](Table_1)"
+  )
 )
 
 notes_df <- data.frame(
@@ -163,46 +157,47 @@ table_2_df <- data.frame(Category = LETTERS[1:10], Numeric = 1:10)
 
 # Create 'aftables' object
 
-x <- aftables::create_aftable(
-  tab_titles = c("Cover", "Contents", "Notes", "Table_1", "Table_2"),
-  sheet_types = c("cover", "contents", "notes", "tables", "tables"),
-  sheet_titles = c(
-    "The 'aftables' Demo Workbook",
-    "Table of contents",
-    "Notes",
-    "Table 1: First Example Sheet",
-    "Table 2: Second Example Sheet"
-  ),
-  blank_cells = c(
-    rep(NA_character_, 3),
-    "Blank cells indicate that there's no note in that row.",
-    NA_character_
-  ),
-  custom_rows = list(
-    NA_character_,
-    NA_character_,
-    "A custom row.",
-    c(
-      paste0(
-        "First custom row [with a hyperlink.]",
-        "(https://best-practice-and-impact.github.io/aftables/)"
+x <-
+  aftables::create_aftable(
+    tab_titles = c("Cover", "Contents", "Notes", "Table_1", "Table_2"),
+    sheet_types = c("cover", "contents", "notes", "tables", "tables"),
+    sheet_titles = c(
+      "The 'aftables' Demo Workbook",
+      "Table of contents",
+      "Notes",
+      "Table 1: First Example Sheet",
+      "Table 2: Second Example Sheet"
+    ),
+    blank_cells = c(
+      rep(NA_character_, 3),
+      "Blank cells indicate that there's no note in that row.",
+      NA_character_
+    ),
+    custom_rows = list(
+      NA_character_,
+      "A custom row in the Contents sheet.",
+      NA_character_,
+      c(
+        "First custom row for Table 1.",
+        "A second custom row [with a hyperlink.](https://best-practice-and-impact.github.io/aftables/)"
       ),
-      "Second custom row."
+      c(
+        "A custom row for Table 2",
+        "A custom row with an internal link to the [Contents](Contents) sheet"
+      )
     ),
-    "A custom row."
-  ),
-  sources = list(
-    NA_character_,
-    NA_character_,
-    NA_character_,
-    c(
-      "[The Source Material, 2024](https://best-practice-and-impact.github.io/aftables/)",
-      "[A second source, 2026](https://github.com/best-practice-and-impact/aftables)"
+    sources = list(
+      NA_character_,
+      NA_character_,
+      NA_character_,
+      c(
+        "[The Source Material, 2024](https://best-practice-and-impact.github.io/aftables/)",
+        "[A second source, 2026](https://github.com/best-practice-and-impact/aftables)"
+      ),
+      "The Source Material, 2024."
     ),
-    "The Source Material, 2024."
-  ),
-  tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)
-)
+    tables = list(cover_list, "auto", notes_df, table_1_df, table_2_df)
+  )
 
 # Test that 'aftable' is one of the object's classes
 is_aftable(x)

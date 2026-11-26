@@ -52,17 +52,11 @@ string_tables <- function() {
   "Section 3" = c(
     "[Website](https://best-practice-and-impact.github.io/aftables/)",
     "[Email address](mailto:fake.address@aftables.com)"
-  )
-)
-
-contents_df <- data.frame(
-  "Sheet name" = c("Notes", "Table 1", "Table 2"),
-  "Sheet title" = c(
-    "[Notes used in this workbook](Notes)",
-    "[First Example Sheet](Table_1)",
-    "[Second Example Sheet](Table_2)"
   ),
-  check.names = FALSE
+  "Section 4" = c(
+    "An internal link to the Table_1 sheet:",
+    "[Table 1: First Example Sheet](Table_1)"
+  )
 )
 
 notes_df <- data.frame(
@@ -112,7 +106,10 @@ string_create_aftable <- function() {
         "First custom row for Table 1.",
         "A second custom row [with a hyperlink.](https://best-practice-and-impact.github.io/aftables/)"
       ),
-      "A custom row for Table 2"
+      c(
+        "A custom row for Table 2",
+        "A custom row with an internal link to the [Contents](Contents) sheet"
+      )
     ),
     sources = list(
       NA_character_,
@@ -124,6 +121,6 @@ string_create_aftable <- function() {
       ),
      "The Source Material, 2024."
   ),
-    tables = list(cover_list, contents_df, notes_df, table_1_df, table_2_df)
+    tables = list(cover_list, "auto", notes_df, table_1_df, table_2_df)
   )'
 }
