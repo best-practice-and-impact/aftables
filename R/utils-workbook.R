@@ -310,10 +310,12 @@
     sources <-
       imap(
         sources,
-        \(x, idx) if (multiple_sources) {
-          paste0("Source ", idx, ": ", x)
-        } else {
-          paste0("Source: ", x)
+        \(x, idx) {
+          if (multiple_sources) {
+            paste0("Source ", idx, ": ", x)
+          } else {
+            paste0("Source: ", x)
+          }
         }
       ) |>
       unlist(use.names = FALSE)
@@ -342,13 +344,13 @@
   tab_title <- content[content$table_name == table_name, "tab_title"][[1]]
 
   # get columns with decimal places and thousand separators attributes
-  aftables_decimal_places <- purrr::map(
+  aftables_decimal_places <- map(
     table,
     \(x) attr(x, "aftables_decimal_places")
   ) |>
     unlist()
 
-  aftables_thousand_separators <- purrr::map(
+  aftables_thousand_separators <- map(
     table,
     \(x) attr(x, "aftables_thousand_separators")
   ) |>
@@ -638,43 +640,44 @@
                                 type,
                                 wb) {
 
+  if (type == "internal_hyperlink") {
+    # internal hyperlinks have destination added as
+    # sheet argument in create_hyperlink function
 
-    if (type == "internal_hyperlink") {
-      # internal hyperlinks have destination added as
-      # sheet argument in create_hyperlink function
-
-      # check target sheet exists
-      if (!target %in% wb$get_sheet_names()) {
-        stop(
-          paste0(
-            "The sheet ",
-            target,
-            " does not exist. Please check the tab_titles argument",
-            " and any internal hyperlinks."
-          ),
-          call. = FALSE
-        )
-      }
-      link <-
-        create_hyperlink(
-          text = text,
-          sheet = target
-        )
-    } else if (type == "external_hyperlink") {
-      # external hyperlinks have destination added as
-      # file argument in create_hyperlink function
-      link <-
-        create_hyperlink(
-          text = text,
-          file = target
-        )
+    # check target sheet exists
+    if (!target %in% wb$get_sheet_names()) {
+      stop(
+        paste0(
+          "The sheet ",
+          target,
+          " does not exist. Please check the tab_titles argument",
+          " and any internal hyperlinks."
+        ),
+        call. = FALSE
+      )
     }
+    link <-
+      create_hyperlink(
+        text = text,
+        sheet = target
+      )
+  } else if (type == "external_hyperlink") {
+    # external hyperlinks have destination added as
+    # file argument in create_hyperlink function
+    link <-
+      create_hyperlink(
+        text = text,
+        file = target
+      )
+  }
 
   link
 }
 
-# tables will have cell references already determined
-# cover sheet and custom rows do not
+# Internal function to process content which contains hyperlinks consistently
+# used when inserting contents and notes tables, custom rows and sources
+# tables have cell references already determined
+# cover sheet, custom rows and sources do not
 .insert_hyperlinks <- function(wb,
                                sheet,
                                content,

@@ -155,7 +155,7 @@
 #'       NA_character_,
 #'       c(
 #'         "First custom row for Table 1.",
-#'         "A second custom row [with a hyperlink.](https://best-practice-and-impact.github.io/aftables/)"
+#'         "A custom row [with a hyperlink.](https://best-practice-and-impact.github.io/aftables/)"
 #'       ),
 #'       c(
 #'         "A custom row for Table 2",
